@@ -54,13 +54,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="Nome:"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName"
+        app:layout_constraintBottom_toBottomOf="@+id/EtNomeCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/SlTipoEquipamentoCadastro" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/EtNomeCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -81,12 +81,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="N° de Série:"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName2"
+        app:layout_constraintBottom_toBottomOf="@+id/EtNumeroSerieCadastroEquipamento"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName2" />
+        app:layout_constraintTop_toTopOf="@+id/EtNumeroSerieCadastroEquipamento" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/EtNumeroSerieCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -98,7 +98,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView19"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintTop_toBottomOf="@+id/EtNomeCadastroEquipamento" />
 
     <TextView
         android:id="@+id/textView20"
@@ -107,10 +107,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="Marca:"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName3"
+        app:layout_constraintBottom_toBottomOf="@+id/EtMarcaCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName3" />
+        app:layout_constraintTop_toTopOf="@+id/EtMarcaCadastroEquipamento" />
 
     <TextView
         android:id="@+id/textView21"
@@ -119,13 +119,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="Modelo:"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName4"
+        app:layout_constraintBottom_toBottomOf="@+id/EtModeloCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName4" />
+        app:layout_constraintTop_toTopOf="@+id/EtModeloCadastroEquipamento" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/EtMarcaCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -137,10 +137,10 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView20"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />
+        app:layout_constraintTop_toBottomOf="@+id/EtNumeroSerieCadastroEquipamento" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName4"
+        android:id="@+id/EtModeloCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -152,7 +152,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView21"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+        app:layout_constraintTop_toBottomOf="@+id/EtMarcaCadastroEquipamento" />
 
     <TextView
         android:id="@+id/textView22"
@@ -161,13 +161,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="Inventário:"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName5"
+        app:layout_constraintBottom_toBottomOf="@+id/EtInventarioCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName4" />
+        app:layout_constraintTop_toBottomOf="@+id/EtModeloCadastroEquipamento" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName5"
+        android:id="@+id/EtInventarioCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -179,7 +179,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView22"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName4" />
+        app:layout_constraintTop_toBottomOf="@+id/EtModeloCadastroEquipamento" />
 
     <TextView
         android:id="@+id/textView23"
@@ -204,7 +204,7 @@
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView23"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName5" />
+        app:layout_constraintTop_toBottomOf="@+id/EtInventarioCadastroEquipamento" />
 
     <Spinner
         android:id="@+id/SlEstadosCadastroEquipamento"
@@ -232,12 +232,11 @@
         app:layout_constraintTop_toTopOf="@+id/SlEstadosCadastroEquipamento" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/BtSalvarCadastroEquipamento"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
@@ -245,5 +244,44 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EtIdCadastroEquipamento" />
+
+    <TextView
+        android:id="@+id/textView25"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="ID:"
+        app:layout_constraintBottom_toBottomOf="@+id/EtIdCadastroEquipamento"
+        app:layout_constraintEnd_toEndOf="@+id/textView19"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/EtIdCadastroEquipamento" />
+
+    <EditText
+        android:id="@+id/EtIdCadastroEquipamento"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintEnd_toStartOf="@+id/BtLerQrCodeCadastroEquipamento"
+        app:layout_constraintStart_toEndOf="@+id/textView25"
         app:layout_constraintTop_toBottomOf="@+id/SlEstadosCadastroEquipamento" />
+
+    <ImageButton
+        android:id="@+id/BtLerQrCodeCadastroEquipamento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/EtIdCadastroEquipamento"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/EtIdCadastroEquipamento"
+        app:srcCompat="@drawable/qr_code_24" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
