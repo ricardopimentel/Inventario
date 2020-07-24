@@ -15,23 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true" >
-        <activity
-            android:name=".ExcudoActivity"
-            android:label="@string/title_activity_excudo" >
-        </activity>
-        <activity
-            android:name=".ExcluirActivity"
-            android:label="@string/title_activity_excluir" >
-        </activity>
-        <activity
-            android:name="com.cyberrocket.ExcluirActivity"
-            android:label="@string/title_activity_excluir" >
-        </activity>
-        <activity
-            android:name="com.cyberrocket.coard.exluirActivity"
-            android:label="@string/title_activity_exluir" >
-        </activity>
-        <activity android:name=".CadEquipamentoActivity" />
+
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
@@ -76,8 +60,18 @@
             android:label="Alterar Localização"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert" />
-        <activity android:name=".CadMudancaActivity" />
-        <activity android:name=".FinalizarMudancaActivity" />
+        <activity android:name=".CadMudancaActivity"
+            android:label="@string/app_name"
+            android:resizeableActivity="true"
+            android:screenOrientation="portrait" />
+        <activity android:name=".CadEquipamentoActivity"
+            android:label="@string/app_name"
+            android:resizeableActivity="true"
+            android:screenOrientation="portrait" />
+        <activity android:name=".FinalizarMudancaActivity"
+            android:label="@string/app_name"
+            android:resizeableActivity="true"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
