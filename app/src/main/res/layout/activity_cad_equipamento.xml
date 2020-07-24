@@ -29,13 +29,13 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         android:text="Tipo:"
-        app:layout_constraintBottom_toBottomOf="@+id/spinner"
+        app:layout_constraintBottom_toBottomOf="@+id/SlTipoEquipamentoCadastro"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/SlTipoEquipamentoCadastro"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -57,7 +57,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/SlTipoEquipamentoCadastro" />
 
     <EditText
         android:id="@+id/editTextTextPersonName"
@@ -72,7 +72,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView18"
-        app:layout_constraintTop_toBottomOf="@+id/spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/SlTipoEquipamentoCadastro" />
 
     <TextView
         android:id="@+id/textView19"
@@ -187,14 +187,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:text="Estado:"
-        app:layout_constraintBottom_toBottomOf="@+id/spinner2"
+        android:text="Local:"
+        app:layout_constraintBottom_toBottomOf="@+id/SlLocaisCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner2" />
+        app:layout_constraintTop_toTopOf="@+id/SlLocaisCadastroEquipamento" />
 
     <Spinner
-        android:id="@+id/spinner2"
+        android:id="@+id/SlLocaisCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -207,7 +207,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName5" />
 
     <Spinner
-        android:id="@+id/spinner3"
+        android:id="@+id/SlEstadosCadastroEquipamento"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -217,7 +217,7 @@
         android:layout_marginRight="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView24"
-        app:layout_constraintTop_toBottomOf="@+id/spinner2" />
+        app:layout_constraintTop_toBottomOf="@+id/SlLocaisCadastroEquipamento" />
 
     <TextView
         android:id="@+id/textView24"
@@ -225,11 +225,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:text="Local:"
-        app:layout_constraintBottom_toBottomOf="@+id/spinner3"
+        android:text="Estado:"
+        app:layout_constraintBottom_toBottomOf="@+id/SlEstadosCadastroEquipamento"
         app:layout_constraintEnd_toEndOf="@+id/textView19"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/spinner3" />
+        app:layout_constraintTop_toTopOf="@+id/SlEstadosCadastroEquipamento" />
 
     <Button
         android:id="@+id/button"
@@ -245,5 +245,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner3" />
+        app:layout_constraintTop_toBottomOf="@+id/SlEstadosCadastroEquipamento" />
 </androidx.constraintlayout.widget.ConstraintLayout>
