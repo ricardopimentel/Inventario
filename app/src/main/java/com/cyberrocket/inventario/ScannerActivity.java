@@ -13,6 +13,8 @@ import com.cyberrocket.inventario.models.MudancasLine;
 import com.cyberrocket.inventario.models.PlacasRedeLine;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -79,8 +81,16 @@ public class ScannerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mTvIdEquipamento.setText("1");
                 inicializarListas();
-                BuscarListaEquipamentos();
-                BuscarListaMudancas();
+
+                IntentIntegrator integrator = new IntentIntegrator(ScannerActivity.this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                integrator.setPrompt("Aponte para o Código");
+                integrator.setCameraId(0);  // Use a specific camera of the device
+                integrator.setBeepEnabled(true);
+                integrator.setBarcodeImageEnabled(true);
+                integrator.setOrientationLocked(false);
+                integrator.setBarcodeImageEnabled(false);
+                integrator.initiateScan();
             }
         });
 
@@ -313,5 +323,31 @@ public class ScannerActivity extends AppCompatActivity {
         wifi.setMac(data);
         wifi.setIp(status);
         listaplacaswifi.add(wifi);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
+        if(result != null) {
+            if(result.getContents() == null) {
+                // as duas linhas seguintes devem ser descomentadas assim que seja necessário testar lendo um código
+                //Log.d("MainActivity", "Escaneamento cancelado");
+                //Toast.makeText(this, "Escaneamento cancelado", Toast.LENGTH_LONG).show();
+
+                // as linhas seguintes devem ser excluidas, são para teste
+                mTvIdEquipamento.setText("1");
+                BuscarListaEquipamentos();
+                BuscarListaMudancas();
+            } else {
+                Log.d("MainActivity", "Escaneado");
+                //Toast.makeText(this, "Escaneado: " + result.getContents(), Toast.LENGTH_LONG).show();
+                mTvIdEquipamento.setText(result.getContents());
+                BuscarListaEquipamentos();
+                BuscarListaMudancas();
+            }
+        } else {
+            // This is important, otherwise the result will not be passed to the fragment
+        }
     }
 }
