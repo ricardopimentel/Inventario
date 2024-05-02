@@ -8,7 +8,6 @@ import android.os.Bundle;
 import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
 import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
-import com.cyberrocket.inventario.adapter.ListAdapterPlacasRede;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.models.EquipamentoLine;
@@ -35,7 +34,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -222,7 +220,7 @@ public class ScannerActivity extends AppCompatActivity {
                             JSONArray monitoresarray = jsonObject.getJSONObject("_connections").getJSONArray("Monitor");
                             for (int i = 0; i < monitoresarray.length(); i++) {
                                 JSONObject monitor = monitoresarray.getJSONObject(i);
-                                CriarListaMonitores(monitor.getString("name"), monitor.getString("manufacturers_id"), monitor.getString("monitormodels_id"), monitor.getString("states_id"), monitor.getString("id"));
+                                CriarListaMonitores(monitor.getString("name"), monitor.getString("manufacturers_id"), monitor.getString("monitormodels_id"), monitor.getString("states_id"), monitor.getString("id"), monitor.getString("serial"));
                             }
                             //Seta dados pata a lista de monitores
                             ListAdapterMonitores adapter = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
@@ -327,18 +325,14 @@ public class ScannerActivity extends AppCompatActivity {
         listaequipamentos.add(equip);
     }
 
-    private void CriarListaMonitores(String nome, String marca, String modelo, String estado, String id) {
+    private void CriarListaMonitores(String nome, String marca, String modelo, String estado, String id, String numeroserie) {
         MonitorLine monitor = new MonitorLine();
         monitor.setNome(nome);
-        Log.d("grub", nome);
         monitor.setMarca(marca);
-        Log.d("grub", marca);
         monitor.setModelo(modelo);
-        Log.d("grub", modelo);
         monitor.setEstado(estado);
-        Log.d("grub", estado);
         monitor.setIdMonitor(id);
-        Log.d("grub", id);
+        monitor.setNumeroSerie(numeroserie);
         listamonitores.add(monitor);
     }
 

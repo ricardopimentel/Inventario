@@ -13,8 +13,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.cyberrocket.inventario.AlterarNomeMonitorActivity;
 import com.cyberrocket.inventario.R;
+import com.cyberrocket.inventario.ScannerActivity;
+import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.models.MonitorLine;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -29,7 +36,6 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         this.dados = dados;
         this.contexto = contexto;
         mIdEquipamento = IdEquipamento;
-        Log.d("grub", "entrei no construtor");
     }
 
     @NonNull
@@ -38,19 +44,18 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = layoutInflater.inflate(R.layout.monitores_line_view, parent, false);
         ListAdapterMonitores.ViewHolderMonitores holderMonitor = new ListAdapterMonitores.ViewHolderMonitores(view);
-        Log.d("grub", "entrei no adaptador");
         return holderMonitor;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListAdapterMonitores.ViewHolderMonitores holder, int position) {
-        Log.d("grub", "entrei no adaptador1");
         if((dados!=null)&&(dados.size()>0)){
             MonitorLine monitor = dados.get(position);
             holder.mTvNome.setText(monitor.getNome());
             holder.mTvMarca.setText(monitor.getMarca());
             holder.mTvModelo.setText(monitor.getModelo());
             holder.mTvEstado.setText(monitor.getEstado());
+            holder.mTvNumeroSerie.setText(monitor.getNumeroSerie());
             holder.mTvId.setText(monitor.getIdMonitor());
         }
     }
@@ -67,7 +72,9 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         public TextView mTvModelo;
         public TextView mTvEstado;
         public TextView mTvId;
+        public TextView mTvNumeroSerie;
         public ImageButton mBtEditarNome;
+        public ImageButton mBtEditarEstado;
         public ImageButton mBtRemover;
 
         public ViewHolderMonitores(final View itemView) {
@@ -77,7 +84,9 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mTvModelo = itemView.findViewById(R.id.TvMonitoresViewModelo);
             mTvEstado = itemView.findViewById(R.id.TvMonitoresViewEstado);
             mTvId = itemView.findViewById(R.id.TvMonitoresViewId);
-            mBtEditarNome = itemView.findViewById(R.id.BtMonitoresViewEdit);
+            mTvNumeroSerie = itemView.findViewById(R.id.TvMonitoresViewNumeroSerie);
+            mBtEditarNome = itemView.findViewById(R.id.BtMonitoresViewEditNome);
+            mBtEditarEstado = itemView.findViewById(R.id.BtMonitoresViewEditEstado);
             mBtRemover = itemView.findViewById(R.id.BtMonitoresViewRemover);
 
 
@@ -85,19 +94,60 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mBtEditarNome.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(contexto, "Não fiz essa função, to com preguiça", Toast.LENGTH_LONG).show();
-                    //IrPara(FinalizarMudancaActivity.class, mTvIdMudancas.getText().toString(), mTvDescricao.getText().toString());
+                    IrPara(AlterarNomeMonitorActivity.class, mTvId.getText().toString(), mTvNome.getText().toString());
+                }
+            });
+
+            mBtEditarEstado.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    IrPara(AlterarNomeMonitorActivity.class, mTvId.getText().toString(), mTvNome.getText().toString());
+                }
+            });
+
+            mBtRemover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DenvincularMonitor();
                 }
             });
         }
 
         //Metodos
-        private void IrPara(Class para, String IdMudanca, String Descricao) {
+        private void IrPara(Class para, String IdMonitor, String NomeMonitor) {
             Intent it = new Intent(contexto, para);
-            it.putExtra("idmudanca", IdMudanca);
-            it.putExtra("descricaomudanca", Descricao);
+            it.putExtra("idmonitor", IdMonitor);
+            it.putExtra("nomemonitor", NomeMonitor);
             it.putExtra("idequipamento", mIdEquipamento);
             contexto.startActivity(it);
+        }
+
+        private void DenvincularMonitor() {
+            JSONObject postparams = new JSONObject();
+            JSONObject finalarray = new JSONObject();
+            try {
+                postparams.put("id", "mIdMonitor");
+                postparams.put("name", "mTvNomeEquipamento.getText()");
+
+                finalarray.put("input", postparams);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.e("sessiontoken", finalarray.toString());
+
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.UpdateItem("/apirest.php/Computador/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    //IrPara(ScannerActivity.class);
+                }
+
+                @Override
+                public void onVolleyFailure(String url) {
+                    //Toast.makeText(getApplicationContext(), "Erro: "+ url, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 }

@@ -7,8 +7,10 @@ public class MonitorLine {
     private String Modelo;
     private String Estado;
     private String IdMonitor;
+    private String NumeroSerie;
     private ImageButton BtEditNomeMonitor;
     private ImageButton BtRemoverMonitor;
+    private ImageButton BtEditEstadoMonitor;
 
     public String getNome() {
         return Nome;
@@ -64,5 +66,21 @@ public class MonitorLine {
 
     public void setBtRemoverMonitor(ImageButton btRemoverMonitor) {
         BtRemoverMonitor = btRemoverMonitor;
+    }
+
+    public ImageButton getBtEditEstadoMonitor() {
+        return BtEditEstadoMonitor;
+    }
+
+    public void setBtEditEstadoMonitor(ImageButton btEditEstadoMonitor) {
+        BtEditEstadoMonitor = btEditEstadoMonitor;
+    }
+
+    public String getNumeroSerie() {
+        return NumeroSerie;
+    }
+
+    public void setNumeroSerie(String numeroSerie) {
+        NumeroSerie = numeroSerie;
     }
 }

@@ -1,7 +1,5 @@
 package com.cyberrocket.inventario;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.android.volley.Request;
+import com.cyberrocket.inventario.R;
+import com.cyberrocket.inventario.ScannerActivity;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 
 import org.json.JSONArray;
@@ -20,8 +22,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class AlterarLocalActivity extends AppCompatActivity {
-    ListView mListaLocais;
+public class AlterarEstadoActivity extends AppCompatActivity {
+    ListView mListaEstados;
     ArrayAdapter<String> mAdapter;
     ArrayList<String> mList;
     ArrayList mListaId;
@@ -33,10 +35,10 @@ public class AlterarLocalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alterar_local);
 
         //Inicializar
-        mListaLocais = findViewById(R.id.ListLocaisAlterarlocal);
+        mListaEstados = findViewById(R.id.ListLocaisAlterarlocal);
         mList = new ArrayList<String>();
         mAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, mList);
-        mListaLocais.setAdapter(mAdapter);
+        mListaEstados.setAdapter(mAdapter);
         mListaId = new ArrayList();
 
         //Métodos automáticos
@@ -44,7 +46,7 @@ public class AlterarLocalActivity extends AppCompatActivity {
         getExtras();
 
         //Listeners
-        mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListaEstados.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 AlterarLocalizacao(mListaId.get(position).toString());
@@ -61,7 +63,7 @@ public class AlterarLocalActivity extends AppCompatActivity {
 
     private void PreencherListaLocais() {
         GLPIConnect con = new GLPIConnect(getApplicationContext());
-        con.GetArray("/apirest.php/Location", new GLPIConnect.VolleyResponseListener() {
+        con.GetArray("/apirest.php/Estates", new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 JSONArray jsonArray = new JSONArray();
