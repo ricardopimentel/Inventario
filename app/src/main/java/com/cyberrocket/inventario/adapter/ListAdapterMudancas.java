@@ -2,6 +2,8 @@ package com.cyberrocket.inventario.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,8 @@ public class ListAdapterMudancas extends RecyclerView.Adapter<ListAdapterMudanca
             MudancasLine equip = dados.get(position);
             holder.mTvTitulo.setText(equip.getTitulo());
             holder.mTvUsuarioCriacao.setText(equip.getUsuarioCriacao());
-            holder.mTvDescricao.setText(equip.getTexto());
+            holder.mTvDescricao.setText(Html.fromHtml(Html.fromHtml(equip.getTexto()).toString()));
+            Log.d("Texto", equip.getTexto());
             holder.mTvDataManutencao.setText(equip.getDataManutencao());
             holder.mTvDataFinalizacao.setText(equip.getDataFinalizacao());
             holder.mTvUsuarioFinalizacao.setText(equip.getUsuarioFinalizacao());

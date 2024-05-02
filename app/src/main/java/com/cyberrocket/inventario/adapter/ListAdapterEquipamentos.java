@@ -3,6 +3,7 @@ package com.cyberrocket.inventario.adapter;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
         if((dados!=null)&&(dados.size()>0)){
             EquipamentoLine equip = dados.get(position);
             holder.mTvDescricao.setText(equip.getDescricao());
-            holder.mTvConteudo.setText(equip.getConteudo());
+            holder.mTvConteudo.setText(Html.fromHtml(equip.getConteudo()));
             holder.mBtEditar.setVisibility(equip.getBtEditar());
         }
     }

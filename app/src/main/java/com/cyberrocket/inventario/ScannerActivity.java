@@ -1,18 +1,23 @@
 package com.cyberrocket.inventario;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
+import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
 import com.cyberrocket.inventario.adapter.ListAdapterPlacasRede;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.models.EquipamentoLine;
+import com.cyberrocket.inventario.models.MonitorLine;
 import com.cyberrocket.inventario.models.MudancasLine;
 import com.cyberrocket.inventario.models.PlacasRedeLine;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -24,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -44,8 +50,7 @@ public class ScannerActivity extends AppCompatActivity {
     ProgressBar mPgbProgresso;
     RecyclerView mListaEquipamentos;
     RecyclerView mListaMudancas;
-    RecyclerView mListaPlacasRede;
-    RecyclerView mListaPlacasWifi;
+    RecyclerView mListaMonitores;
     Button mBtNovaManutencao;
 
     FloatingActionButton mBtLerEquipamento;
@@ -53,15 +58,12 @@ public class ScannerActivity extends AppCompatActivity {
     StaggeredGridLayoutManager gridLayoutManagerEquipamento;
     LinearLayoutManager linearLayoutManagerMudancas;
     StaggeredGridLayoutManager gridLayoutManagerMudancas;
-    LinearLayoutManager linearLayoutManagerPlacasRede;
-    StaggeredGridLayoutManager gridLayoutManagerPlacasRede;
-    LinearLayoutManager linearLayoutManagerPlacasWifi;
-    StaggeredGridLayoutManager gridLayoutManagerPlacasWifi;
+    LinearLayoutManager linearLayoutManagerMonitores;
+    StaggeredGridLayoutManager gridLayoutManagerMonitores;
     Crud mCrud;
     ArrayList<EquipamentoLine> listaequipamentos;
     ArrayList<MudancasLine> listamudancas;
-    ArrayList<PlacasRedeLine> listaplacasrede;
-    ArrayList<PlacasRedeLine> listaplacaswifi;
+    ArrayList<MonitorLine> listamonitores;
     Boolean existemanutencaoaberta = false;
 
     @Override
@@ -103,10 +105,32 @@ public class ScannerActivity extends AppCompatActivity {
         mBtLerEquipamento.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                Toast.makeText(getApplicationContext(), "Entrei", Toast.LENGTH_LONG);
-                return false;
+                DigitarManualmente();
+                return true;
             }
         });
+    }
+
+    private void DigitarManualmente() {
+        View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.dialog_input, null);
+        TextInputEditText edittext = view.findViewById(R.id.TvNome);
+        AlertDialog dialog = new AlertDialog.Builder(ScannerActivity.this)
+                .setTitle("Digite o Nome")
+                .setView(view)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mTvIdEquipamento.setText(edittext.getText().toString());
+                        dialogInterface.dismiss();
+                        GetIdEquipamento();
+                    }
+                }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).create();
+        dialog.show();
     }
 
     //Métodos
@@ -139,25 +163,21 @@ public class ScannerActivity extends AppCompatActivity {
 
         mListaEquipamentos = findViewById(R.id.RvDetalhesEquipamentoScanner);
         mListaMudancas = findViewById(R.id.RvMudancasScanner);
-        mListaPlacasRede = findViewById(R.id.RvPlacasRedeScanner);
-        mListaPlacasWifi = findViewById(R.id.RvPlacasWifiScanner);
+        mListaMonitores = findViewById(R.id.RvMonitoresScanner);
 
         linearLayoutManagerEquipamento = new LinearLayoutManager(this);
         gridLayoutManagerEquipamento = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
 
+        linearLayoutManagerMonitores = new LinearLayoutManager(this);
+        gridLayoutManagerMonitores = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
+
         linearLayoutManagerMudancas = new LinearLayoutManager(this);
         gridLayoutManagerMudancas = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
 
-        linearLayoutManagerPlacasRede = new LinearLayoutManager(this);
-        gridLayoutManagerPlacasRede = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
-
-        linearLayoutManagerPlacasWifi = new LinearLayoutManager(this);
-        gridLayoutManagerPlacasWifi = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
 
         mListaEquipamentos.setLayoutManager(gridLayoutManagerEquipamento);
         mListaMudancas.setLayoutManager(gridLayoutManagerMudancas);
-        mListaPlacasRede.setLayoutManager(gridLayoutManagerPlacasRede);
-        mListaPlacasWifi.setLayoutManager(gridLayoutManagerPlacasWifi);
+        mListaMonitores.setLayoutManager(gridLayoutManagerMonitores);
 
         mBtLerEquipamento = findViewById(R.id.BtLerEquipamentoScanner);
         mCrud = new Crud();
@@ -165,16 +185,15 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void inicializarListas() {
         listamudancas = new ArrayList<MudancasLine>();
-        listaplacasrede = new ArrayList<PlacasRedeLine>();
+        listamonitores = new ArrayList<MonitorLine>();
         listaequipamentos = new ArrayList<EquipamentoLine>();
-        listaplacaswifi = new ArrayList<PlacasRedeLine>();
     }
 
     private void BuscarListaEquipamentos(String idequipamento) {
         mTvIdEquipamento.setText(idequipamento);
         if(!idequipamento.equals("erro")) {
             GLPIConnect con = new GLPIConnect(getApplicationContext());
-            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_networkports=true&with_changes=true", new GLPIConnect.VolleyResponseListener() {
+            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_changes=true", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     JSONObject jsonObject = new JSONObject();
@@ -198,36 +217,19 @@ public class ScannerActivity extends AppCompatActivity {
                         ListAdapterEquipamentos equipamentoadapter = new ListAdapterEquipamentos(listaequipamentos, ScannerActivity.this, idequipamento);
                         mListaEquipamentos.setAdapter(equipamentoadapter);
 
+                        //Pega Monitores
                         try {
-                            //Pegar Placas de rede
-                            JSONArray networkportsethernet = jsonObject.getJSONObject("_networkports").getJSONArray("NetworkPortEthernet");
-                            for (int i = 0; i < networkportsethernet.length(); i++) {
-                                JSONObject ethernet = networkportsethernet.getJSONObject(i);
-                                CriarListaPlacasRede(ethernet.getString("name"), ethernet.getString("mac"), ethernet.getJSONObject("NetworkName").getJSONArray("IPAddress").getJSONObject(0).getString("name"));
+                            JSONArray monitoresarray = jsonObject.getJSONObject("_connections").getJSONArray("Monitor");
+                            for (int i = 0; i < monitoresarray.length(); i++) {
+                                JSONObject monitor = monitoresarray.getJSONObject(i);
+                                CriarListaMonitores(monitor.getString("name"), monitor.getString("manufacturers_id"), monitor.getString("monitormodels_id"), monitor.getString("states_id"), monitor.getString("id"));
                             }
-                        } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(), "Ethernet error", Toast.LENGTH_LONG).show();
+                            //Seta dados pata a lista de monitores
+                            ListAdapterMonitores adapter = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
+                            mListaMonitores.setAdapter(adapter);
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-
-                        //Seta dados para a lista de rede cabeada
-                        ListAdapterPlacasRede redeadapter = new ListAdapterPlacasRede(listaplacasrede, ScannerActivity.this);
-                        mListaPlacasRede.setAdapter(redeadapter);
-
-                        try {
-                            //Pegar Placas de rede wifi
-                            JSONArray networkportswifi = jsonObject.getJSONObject("_networkports").getJSONArray("NetworkPortWifi");
-                            for (int i = 0; i < networkportswifi.length(); i++) {
-                                JSONObject wifi = networkportswifi.getJSONObject(i);
-                                CriarListaPlacasWifi(wifi.getString("name"), wifi.getString("mac"), wifi.getJSONObject("NetworkName").getJSONArray("IPAddress").getJSONObject(0).getString("name"));
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        //Seta dados para a lista de rede wifi
-                        ListAdapterPlacasRede wifiadapter = new ListAdapterPlacasRede(listaplacaswifi, ScannerActivity.this);
-                        mListaPlacasWifi.setAdapter(wifiadapter);
 
                         //Pega as mudanças
                         try {
@@ -325,6 +327,21 @@ public class ScannerActivity extends AppCompatActivity {
         listaequipamentos.add(equip);
     }
 
+    private void CriarListaMonitores(String nome, String marca, String modelo, String estado, String id) {
+        MonitorLine monitor = new MonitorLine();
+        monitor.setNome(nome);
+        Log.d("grub", nome);
+        monitor.setMarca(marca);
+        Log.d("grub", marca);
+        monitor.setModelo(modelo);
+        Log.d("grub", modelo);
+        monitor.setEstado(estado);
+        Log.d("grub", estado);
+        monitor.setIdMonitor(id);
+        Log.d("grub", id);
+        listamonitores.add(monitor);
+    }
+
     public void CriarListaMudancas(String titulo, String nome, String texto, int Image, int visible, String datamanu, String datafinal, String usuariofinal, String Id){
         ImageView imageView = new ImageView(this);
         imageView.setImageResource(Image);
@@ -342,6 +359,7 @@ public class ScannerActivity extends AppCompatActivity {
         mud.setImagemStatus(imageView);
         mud.setBtFinalizarManutencao(botao);
         listamudancas.add(mud);
+        Log.d("grub", titulo);
     }
 
     public void CriarListaPlacasRede(String titulo, String data, String status){
@@ -349,7 +367,7 @@ public class ScannerActivity extends AppCompatActivity {
         rede.setNome(titulo); ;
         rede.setMac(data);
         rede.setIp(status);
-        listaplacasrede.add(rede);
+        //listaplacasrede.add(rede);
     }
 
     public void CriarListaPlacasWifi(String titulo, String data, String status){
@@ -357,7 +375,7 @@ public class ScannerActivity extends AppCompatActivity {
         wifi.setNome(titulo);
         wifi.setMac(data);
         wifi.setIp(status);
-        listaplacaswifi.add(wifi);
+        //listaplacaswifi.add(wifi);
     }
 
     @Override
