@@ -136,7 +136,6 @@ public class CadMudancaActivity extends AppCompatActivity {
         con.InsertItem("/apirest.php/Change/"+ idmudanca+"/Change_Item/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
-                JSONObject jsonObject = new JSONObject();
                 IrPara(ScannerActivity.class);
             }
             @Override

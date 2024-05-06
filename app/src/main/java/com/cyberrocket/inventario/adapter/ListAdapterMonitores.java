@@ -15,11 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.cyberrocket.inventario.AlterarNomeMonitorActivity;
+import com.cyberrocket.inventario.CadMudancaActivity;
 import com.cyberrocket.inventario.R;
 import com.cyberrocket.inventario.ScannerActivity;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.models.MonitorLine;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +32,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
     private ArrayList<MonitorLine> dados;
     private Context contexto;
     String mIdEquipamento;
+    String mIdConexao;
 
     //Construtor da classe
     public ListAdapterMonitores(ArrayList<MonitorLine> dados, Context contexto, String IdEquipamento){
@@ -94,58 +97,84 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mBtEditarNome.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    IrPara(AlterarNomeMonitorActivity.class, mTvId.getText().toString(), mTvNome.getText().toString());
+                    Intent it = new Intent(contexto, AlterarNomeMonitorActivity.class);
+                    it.putExtra("idmonitor", mTvId.getText().toString());
+                    it.putExtra("nomemonitor", mTvNome.getText().toString());
+                    it.putExtra("idequipamento", mIdEquipamento);
+                    IrPara(it);
                 }
             });
 
             mBtEditarEstado.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    IrPara(AlterarNomeMonitorActivity.class, mTvId.getText().toString(), mTvNome.getText().toString());
+                    Intent it = new Intent(contexto, AlterarNomeMonitorActivity.class);
+                    it.putExtra("idmonitor", mTvId.getText().toString());
+                    it.putExtra("nomemonitor", mTvNome.getText().toString());
+                    it.putExtra("idequipamento", mIdEquipamento);
+                    IrPara(it);
                 }
             });
 
             mBtRemover.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    DenvincularMonitor();
+                    DesvincularMonitor();
                 }
             });
         }
 
         //Metodos
-        private void IrPara(Class para, String IdMonitor, String NomeMonitor) {
-            Intent it = new Intent(contexto, para);
-            it.putExtra("idmonitor", IdMonitor);
-            it.putExtra("nomemonitor", NomeMonitor);
-            it.putExtra("idequipamento", mIdEquipamento);
+        private void IrPara(Intent it) {
+
             contexto.startActivity(it);
         }
 
-        private void DenvincularMonitor() {
-            JSONObject postparams = new JSONObject();
-            JSONObject finalarray = new JSONObject();
-            try {
-                postparams.put("id", "mIdMonitor");
-                postparams.put("name", "mTvNomeEquipamento.getText()");
-
-                finalarray.put("input", postparams);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Log.e("sessiontoken", finalarray.toString());
-
+        private void DesvincularMonitor() {
+            //Faz a conexão
             GLPIConnect con = new GLPIConnect(contexto);
-            con.UpdateItem("/apirest.php/Computador/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+            con.GetArray("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
-                    //IrPara(ScannerActivity.class);
-                }
+                    JSONArray jsonArray = new JSONArray();
+                    try {
+                        jsonArray = new JSONArray(response);
+                    }catch (JSONException err){
+                        Log.d("ParseError", err.toString());
+                    }
+                    try {
+                        //Pega id da conexao
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject local = jsonArray.getJSONObject(i);
+                            mIdConexao = local.getString("id");
+                            DeleteConexao("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/"+mIdConexao+"?force_purge=true");
+                        }
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
                 @Override
                 public void onVolleyFailure(String url) {
-                    //Toast.makeText(getApplicationContext(), "Erro: "+ url, Toast.LENGTH_LONG).show();
+                    Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+        private void DeleteConexao(String url) {
+            Log.d("Desvincular", url);
+            //Faz a conexão
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.DeleteItem(url, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    Intent it = new Intent(contexto, ScannerActivity.class);
+                    it.putExtra("id", mIdEquipamento);
+                    IrPara(it);
+                }
+                @Override
+                public void onVolleyFailure(String url) {
+                    Log.d("Desvincular", url);
+                    Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
                 }
             });
         }

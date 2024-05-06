@@ -258,6 +258,44 @@ public class GLPIConnect {
         mQueue.add(request);
     }
 
+    public void DeleteItem(String complemento, final VolleyResponseListener listener) {
+        //instancia objs
+        mQueue = Volley.newRequestQueue(mContext);
+
+        // pega URL no banco de dados
+        Crud crud = new Crud();
+        final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+ complemento;
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                // Deu certo
+                listener.onVolleySuccess(url, response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // Deu errado
+                listener.onVolleyFailure(error.toString());
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Crud crud = new Crud(); //instancia classe de conexão com bd interno, para buscar o token salvo
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-type", "application/json");
+                params.put("Session-Token", crud.SelectItem(mContext, "CONFIG", 1, 2));
+                return params;
+            }
+        };
+
+        try {
+            mQueue.add(request);
+        }catch (Exception e){
+        }
+    }
+
     //Interface para retornar a resposta do servidor
     public interface VolleyResponseListener {
 
