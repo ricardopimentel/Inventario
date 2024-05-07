@@ -1,6 +1,9 @@
 package com.cyberrocket.inventario.adapter;
 
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,9 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
 import com.cyberrocket.inventario.AlterarNomeMonitorActivity;
-import com.cyberrocket.inventario.CadMudancaActivity;
 import com.cyberrocket.inventario.R;
 import com.cyberrocket.inventario.ScannerActivity;
 import com.cyberrocket.inventario.lib.GLPIConnect;
@@ -147,7 +148,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject local = jsonArray.getJSONObject(i);
                             mIdConexao = local.getString("id");
-                            DeleteConexao("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/"+mIdConexao+"?force_purge=true");
+                            showDialog();
                         }
 
                     } catch (JSONException e) {
@@ -177,6 +178,24 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
                     Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
                 }
             });
+        }
+
+        private void showDialog(){
+            AlertDialog dialog = new AlertDialog.Builder(contexto)
+                .setTitle("Desvincular o Monitor?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //Deslincular monitor
+                        DeleteConexao("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/"+mIdConexao+"?force_purge=true");
+                    }
+                }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                }).create();
+            dialog.show();
         }
     }
 }
