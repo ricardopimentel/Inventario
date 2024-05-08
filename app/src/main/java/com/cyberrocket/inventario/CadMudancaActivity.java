@@ -97,7 +97,7 @@ public class CadMudancaActivity extends AppCompatActivity {
         Log.e("sessiontoken", finalarray.toString());
 
         GLPIConnect con = new GLPIConnect(getApplicationContext());
-        con.InsertItem("/apirest.php/Change/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
+        con.InsertItem("/apirest.php/Problem/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 JSONObject jsonObject = new JSONObject();
@@ -123,7 +123,7 @@ public class CadMudancaActivity extends AppCompatActivity {
         try {
             postparams.put("items_id", mIdEquipamento);
             postparams.put("itemtype", "Computer");
-            postparams.put("changes_id", idmudanca);
+            postparams.put("problems_id", idmudanca);
 
             finalarray.put("input", postparams);
         } catch (JSONException e) {
@@ -133,7 +133,7 @@ public class CadMudancaActivity extends AppCompatActivity {
         Log.e("sessiontoken", finalarray.toString());
 
         GLPIConnect con = new GLPIConnect(getApplicationContext());
-        con.InsertItem("/apirest.php/Change/"+ idmudanca+"/Change_Item/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
+        con.InsertItem("/apirest.php/Problem/"+ idmudanca+"/Item_Problem/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 IrPara(ScannerActivity.class);

@@ -191,7 +191,7 @@ public class ScannerActivity extends AppCompatActivity {
         mTvIdEquipamento.setText(idequipamento);
         if(!idequipamento.equals("erro")) {
             GLPIConnect con = new GLPIConnect(getApplicationContext());
-            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_changes=true", new GLPIConnect.VolleyResponseListener() {
+            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     JSONObject jsonObject = new JSONObject();
@@ -231,7 +231,7 @@ public class ScannerActivity extends AppCompatActivity {
 
                         //Pega as mudanças
                         try {
-                            JSONArray changesarray = jsonObject.getJSONArray("_changes");
+                            JSONArray changesarray = jsonObject.getJSONArray("_problems");
                             for (int i = 0; i < changesarray.length(); i++) {
                                 JSONObject mudanca = changesarray.getJSONObject(i);
                                 int imagem = R.drawable.status_aberto;

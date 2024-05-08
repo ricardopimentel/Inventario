@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cyberrocket.inventario.AlterarEstadoMonitorActivity;
 import com.cyberrocket.inventario.AlterarNomeMonitorActivity;
 import com.cyberrocket.inventario.R;
 import com.cyberrocket.inventario.ScannerActivity;
@@ -109,9 +110,9 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mBtEditarEstado.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent it = new Intent(contexto, AlterarNomeMonitorActivity.class);
+                    Intent it = new Intent(contexto, AlterarEstadoMonitorActivity.class);
                     it.putExtra("idmonitor", mTvId.getText().toString());
-                    it.putExtra("nomemonitor", mTvNome.getText().toString());
+                    it.putExtra("estadomonitor", mTvNome.getText().toString());
                     it.putExtra("idequipamento", mIdEquipamento);
                     IrPara(it);
                 }

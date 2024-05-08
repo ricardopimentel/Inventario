@@ -97,7 +97,7 @@ public class AlterarLocalActivity extends AppCompatActivity {
         try {
             postparams.put("id", mId);
             postparams.put("locations_id", local);
-
+            Log.d("casper", local);
             finalarray.put("input", postparams);
         } catch (JSONException e) {
             e.printStackTrace();

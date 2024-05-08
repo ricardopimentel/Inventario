@@ -95,9 +95,9 @@ public class AlterarNomeMonitorActivity extends AppCompatActivity {
 
     private void Inicializar() {
         mList = new ArrayList<String>();
-        mTvNomeEquipamento = findViewById(R.id.TvNomeMonitorAlterarMonitor);
-        mBtOk = findViewById(R.id.BtOkAlterarMonitor);
-        mBtCancelar = findViewById(R.id.BtCancelarAlterarMonitor);
+        mTvNomeEquipamento = findViewById(R.id.TvNomeMonitorAlterarEstadoMonitor);
+        mBtOk = findViewById(R.id.BtOkAlterarEstadoMonitor);
+        mBtCancelar = findViewById(R.id.BtCancelarAlterarEstadoMonitor);
     }
 
     private void getExtras(){

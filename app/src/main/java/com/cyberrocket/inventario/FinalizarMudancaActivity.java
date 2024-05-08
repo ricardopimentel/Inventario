@@ -101,7 +101,7 @@ public class FinalizarMudancaActivity extends AppCompatActivity {
         Log.e("sessiontoken", finalarray.toString());
 
         GLPIConnect con = new GLPIConnect(getApplicationContext());
-        con.UpdateItem("/apirest.php/Change/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+        con.UpdateItem("/apirest.php/Problem/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 IrPara(ScannerActivity.class);

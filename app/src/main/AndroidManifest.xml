@@ -80,6 +80,11 @@
             android:label="Alterar Nome"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert"/>
+        <activity
+            android:name=".AlterarEstadoMonitorActivity"
+            android:label="Alterar Estado"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert"/>
     </application>
 
 </manifest>
