@@ -96,7 +96,7 @@ public class CadMudancaActivity extends AppCompatActivity {
 
         Log.e("sessiontoken", finalarray.toString());
 
-        GLPIConnect con = new GLPIConnect(getApplicationContext());
+        GLPIConnect con = new GLPIConnect(this);
         con.InsertItem("/apirest.php/Problem/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
@@ -132,7 +132,7 @@ public class CadMudancaActivity extends AppCompatActivity {
 
         Log.e("sessiontoken", finalarray.toString());
 
-        GLPIConnect con = new GLPIConnect(getApplicationContext());
+        GLPIConnect con = new GLPIConnect(this);
         con.InsertItem("/apirest.php/Problem/"+ idmudanca+"/Item_Problem/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {

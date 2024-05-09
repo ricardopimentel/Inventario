@@ -1,5 +1,7 @@
 package com.cyberrocket.inventario.lib;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -94,7 +96,7 @@ public class GLPIConnect {
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {// entra se não receber resposta válida do servidor
+            public void onErrorResponse(VolleyError error) {
                 listener.onVolleyFailure(error.toString());
             }
         }){
@@ -128,12 +130,14 @@ public class GLPIConnect {
             public void onResponse(JSONObject response) {
                 //
                 listener.onVolleySuccess(url, response.toString());
-                Log.d("SessionToken", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                //
+                //Deu errado
+                if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
+                    SairSistema();
+                }
                 listener.onVolleyFailure(error.toString());
             }
         }){
@@ -163,15 +167,19 @@ public class GLPIConnect {
             @Override
             public void onResponse(JSONArray response) {
                 // Deu certo
+                Log.d("SessionToken", "SessionToken: "+ crud.SelectItem(mContext, "CONFIG", 1, 2));
                 listener.onVolleySuccess(url, response.toString());
-                Log.d("SessionToken", response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Deu errado
+                Log.d("SessionToken", "Deu erro aqui: "+crud.SelectItem(mContext, "CONFIG", 1, 2));
+                //Deu errado
+                if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
+                    Log.d("SessionToken", "Mandei sair do sistema");
+                    SairSistema();
+                }
                 listener.onVolleyFailure(error.toString());
-                Log.d("SessionToken", error.toString());
             }
         }){
             @Override
@@ -205,7 +213,10 @@ public class GLPIConnect {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Deu errado
+                //Deu errado
+                if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
+                    SairSistema();
+                }
                 listener.onVolleyFailure(error.toString());
             }
         }){
@@ -240,7 +251,10 @@ public class GLPIConnect {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // Deu errado
+                //Deu errado
+                if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
+                    SairSistema();
+                }
                 listener.onVolleyFailure(error.toString());
             }
         }){
@@ -276,6 +290,10 @@ public class GLPIConnect {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Deu errado
+                //Deu errado
+                if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
+                    SairSistema();
+                }
                 listener.onVolleyFailure(error.toString());
             }
         }){
@@ -296,10 +314,28 @@ public class GLPIConnect {
         }
     }
 
+    private void IrPara(Class para){
+        Intent intent = new Intent(mContext, para);
+        mContext.startActivity(intent);
+    }
+
+    private void SairSistema() {
+        //Token de login inválido, rever na marra do banco de dados e redirecionar para a tela de login
+        Crud crud = new Crud(); //instancia classe de conexão com bd interno, para buscar o token salvo
+        //Alterar no banco de dados
+        ContentValues values = new ContentValues();
+        values.put("SESSION_TOKEN", "");
+        crud.UpdateItem(mContext, "CONFIG", 1, values);
+        Log.d("SessionToken", "Tô apagando o token: "+crud.SelectItem(mContext, "CONFIG", 1, 2));
+        Toast.makeText(mContext, "Sua sessão expirou, refaça o login", Toast.LENGTH_LONG).show();
+        IrPara(LoginActivity.class);
+    }
+
     //Interface para retornar a resposta do servidor
     public interface VolleyResponseListener {
 
         void onVolleySuccess(String url, String serverResponse);
         void onVolleyFailure(String url);
     }
+
 }

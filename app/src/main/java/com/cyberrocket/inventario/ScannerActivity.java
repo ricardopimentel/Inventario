@@ -190,7 +190,7 @@ public class ScannerActivity extends AppCompatActivity {
     private void BuscarListaEquipamentos(String idequipamento) {
         mTvIdEquipamento.setText(idequipamento);
         if(!idequipamento.equals("erro")) {
-            GLPIConnect con = new GLPIConnect(getApplicationContext());
+            GLPIConnect con = new GLPIConnect(this);
             con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
@@ -267,6 +267,7 @@ public class ScannerActivity extends AppCompatActivity {
 
                 @Override
                 public void onVolleyFailure(String url) {
+                    Log.d("VolleyFailure", url);
                     Snackbar.make(
                             mCLayout,
                             "Erro de conexão\n" + url,
@@ -281,7 +282,7 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void GetIdEquipamento() {
         mPgbProgresso.setIndeterminate(true);
-        GLPIConnect con = new GLPIConnect(getApplicationContext());
+        GLPIConnect con = new GLPIConnect(this);
         con.GetArray("/apirest.php/Computer?searchText[name]=PSO-"+ mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {

@@ -122,11 +122,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void GetToken() {
+
         mTvToken.setText(mCrud.SelectItem(getApplication(), "CONFIG", 1, 2));
         //Excluir depois
-        Log.println(Log.ASSERT,"SessionToken", mTvToken.getText().toString());
+        Log.d("SessionToken","SessionToken"+ mTvToken.getText().toString());
 
         if(!mTvToken.getText().toString().equals("")){
+            Log.d("SessionToken","Redirecionando pra home");
             IrPara(HomeActivity.class, true);
         }
     }
