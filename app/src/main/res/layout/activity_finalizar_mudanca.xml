@@ -10,7 +10,6 @@
         android:id="@+id/constraintLayout"
         android:layout_width="wrap_content"
         android:layout_height="250dp"
-        android:background="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -19,6 +18,7 @@
             android:id="@+id/imageView14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@color/md_theme_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,23 +50,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Finalizar Mudança"
+        android:text="Finalizar Manutenção"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
         android:layout_marginTop="8dp"
-        android:text="Id Mudança:"
+        android:text="Id Manutenção:"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/TvIdMudancaFinalizar"
@@ -80,7 +81,8 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/EtDescricaoFinMudanca"
@@ -120,20 +122,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Problema Resolvido" />
+                android:text="Problema Resolvido"
+                android:layout_marginRight="8dp"/>
 
             <Button
                 android:id="@+id/Bt2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Manutenção Finalizada Com Sucesso" />
+                android:text="Manutenção Finalizada Com Sucesso"
+                android:layout_marginRight="8dp"/>
 
             <Button
                 android:id="@+id/Bt3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Placa de rede trocada" />
+                android:text="Placa de rede trocada"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
     </HorizontalScrollView>
 

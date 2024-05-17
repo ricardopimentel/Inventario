@@ -9,19 +9,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
 import com.cyberrocket.inventario.AlterarEstadoMonitorActivity;
 import com.cyberrocket.inventario.AlterarNomeMonitorActivity;
 import com.cyberrocket.inventario.R;
 import com.cyberrocket.inventario.ScannerActivity;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.models.MonitorLine;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +46,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         this.dados = dados;
         this.contexto = contexto;
         mIdEquipamento = IdEquipamento;
+
     }
 
     @NonNull
@@ -62,6 +68,10 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             holder.mTvEstado.setText(monitor.getEstado());
             holder.mTvNumeroSerie.setText(monitor.getNumeroSerie());
             holder.mTvId.setText(monitor.getIdMonitor());
+            if(dados.size()>1){
+                holder.mLayout.setMaxWidth(600);
+                holder.mLayout.getLayoutParams();
+            }
         }
     }
 
@@ -81,6 +91,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         public ImageButton mBtEditarNome;
         public ImageButton mBtEditarEstado;
         public ImageButton mBtRemover;
+        public ConstraintLayout mLayout;
 
         public ViewHolderMonitores(final View itemView) {
             super(itemView);
@@ -93,17 +104,14 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mBtEditarNome = itemView.findViewById(R.id.BtMonitoresViewEditNome);
             mBtEditarEstado = itemView.findViewById(R.id.BtMonitoresViewEditEstado);
             mBtRemover = itemView.findViewById(R.id.BtMonitoresViewRemover);
-
+            mLayout = itemView.findViewById(R.id.LayoutMonitorLine);
 
             //Listeners
             mBtEditarNome.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent it = new Intent(contexto, AlterarNomeMonitorActivity.class);
-                    it.putExtra("idmonitor", mTvId.getText().toString());
-                    it.putExtra("nomemonitor", mTvNome.getText().toString());
-                    it.putExtra("idequipamento", mIdEquipamento);
-                    IrPara(it);
+                    //Chama a caixa de dialogo pra alterar o nome do monitor
+                    AlterarNome();
                 }
             });
 
@@ -126,10 +134,68 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             });
         }
 
+
         //Metodos
         private void IrPara(Intent it) {
 
             contexto.startActivity(it);
+        }
+
+        private void AlterarNome() {
+            //Cria a caixa de dialogo
+            View view = LayoutInflater.from(contexto).inflate(R.layout.activity_alterar_nome_monitor, null);
+            TextInputEditText edittext = view.findViewById(R.id.TvNomeMonitorAlterarEstadoMonitor);
+            //Preenche o campo de texo com o nome que já está no monitor
+            edittext.setText(mTvNome.getText().toString());
+            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto)
+                    .setTitle("Digite o nome")
+                    .setView(view)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //Salva a alteração passando o texto digitado pelo usuário
+                            SalvarAlteracaoNome(edittext.getText().toString());
+                            dialogInterface.dismiss();
+                        }
+                    }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+            dialog.create();
+            dialog.show();
+        }
+
+        private void SalvarAlteracaoNome(String novonome){
+            //Chama o volley para alterar o nome no glpi
+            JSONObject postparams = new JSONObject();
+            JSONObject finalarray = new JSONObject();
+            try {
+                postparams.put("id", mTvId.getText());
+                postparams.put("name", novonome);
+
+                finalarray.put("input", postparams);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Log.e("sessiontoken", finalarray.toString());
+
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.UpdateItem("/apirest.php/Monitor/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    Intent it = new Intent(contexto, ScannerActivity.class);
+                    it.putExtra("id", mIdEquipamento);
+                    IrPara(it);
+                }
+
+                @Override
+                public void onVolleyFailure(String url) {
+                    Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
+                }
+            });
         }
 
         private void DesvincularMonitor() {
@@ -182,20 +248,21 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         }
 
         private void showDialog(){
-            AlertDialog dialog = new AlertDialog.Builder(contexto)
+            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto)
                 .setTitle("Desvincular o Monitor?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //Deslincular monitor
                         DeleteConexao("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/"+mIdConexao+"?force_purge=true");
                     }
-                }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
-                }).create();
+                });
+            dialog.create();
             dialog.show();
         }
     }

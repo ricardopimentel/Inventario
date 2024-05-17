@@ -61,7 +61,7 @@ public class AlterarLocalActivity extends AppCompatActivity {
 
     private void PreencherListaLocais() {
         GLPIConnect con = new GLPIConnect(getApplicationContext());
-        con.GetArray("/apirest.php/Location", new GLPIConnect.VolleyResponseListener() {
+        con.GetArray("/apirest.php/Location?range=0-1000", new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 JSONArray jsonArray = new JSONArray();

@@ -20,9 +20,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="65dp"
-            android:background="@drawable/titulo1"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/md_theme_primary"
+            android:background="@drawable/corner"
+            android:elevation="5dp"
+            android:id="@+id/LayoutEquipamentosScanner"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView4"
@@ -45,8 +49,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#fff"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/md_theme_primaryContainer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageView3"
                 app:layout_constraintStart_toEndOf="@+id/imageView4"
@@ -56,7 +60,7 @@
                 android:id="@+id/imageView3"
                 android:layout_width="24dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/seta_baixo_24w"
+                android:src="@drawable/baseline_arrow_downward_24"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -69,15 +73,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:listitem="@layout/equipamento_line_view">
-
         </androidx.recyclerview.widget.RecyclerView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="65dp"
-            android:background="@drawable/titulo2"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/md_theme_primary"
+            android:background="@drawable/corner"
+            android:elevation="5dp"
+            android:id="@+id/LayoutMonitoresScanner"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView5"
@@ -100,18 +107,30 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#fff"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/md_theme_primaryContainer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageView5"
                 app:layout_constraintStart_toEndOf="@+id/imageView6"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageButton
+                android:id="@+id/BtAddMonitorScanner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="#00FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageView6"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_add_24" />
+
             <ImageView
                 android:id="@+id/imageView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/seta_direita_24w"
+                app:srcCompat="@drawable/baseline_arrow_forward_24"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -122,15 +141,19 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RvMonitoresScanner"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/monitores_line_view"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="65dp"
-            android:background="@drawable/titulo3"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/md_theme_primary"
+            android:background="@drawable/corner"
+            android:elevation="5dp"
+            android:id="@+id/LayoutManutencoesScanner"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView9"
@@ -153,8 +176,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#fff"
+                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textColor="@color/md_theme_primaryContainer"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imageView9"
                 app:layout_constraintStart_toEndOf="@+id/imageView10"
@@ -164,7 +187,7 @@
                 android:id="@+id/imageView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/seta_direita_24w"
+                app:srcCompat="@drawable/baseline_arrow_forward_24"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -199,6 +222,11 @@
 
             </LinearLayout>
         </HorizontalScrollView>
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_change_circle_24"
+            android:id="@+id/ImvSyncDevice">
+        </ImageView>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

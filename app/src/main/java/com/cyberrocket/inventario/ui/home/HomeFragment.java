@@ -15,14 +15,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.cyberrocket.inventario.CadEquipamentoActivity;
-import com.cyberrocket.inventario.ScanActivity;
 import com.cyberrocket.inventario.R;
 import com.cyberrocket.inventario.ScannerActivity;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    Button mBtCadEquipamento;
     Button mBtGoScanner;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,17 +35,9 @@ public class HomeFragment extends Fragment {
         });
 
         //Inicialização
-        mBtCadEquipamento = root.findViewById(R.id.BtCadEquipamentoHome);
         mBtGoScanner = root.findViewById(R.id.BtGoScanner);
 
         //Listeners
-        mBtCadEquipamento.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                IrPara(CadEquipamentoActivity.class);
-            }
-        });
-
         mBtGoScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

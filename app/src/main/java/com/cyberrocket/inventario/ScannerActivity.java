@@ -1,6 +1,7 @@
 package com.cyberrocket.inventario;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import com.cyberrocket.inventario.models.EquipamentoLine;
 import com.cyberrocket.inventario.models.MonitorLine;
 import com.cyberrocket.inventario.models.MudancasLine;
 import com.cyberrocket.inventario.models.PlacasRedeLine;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -22,6 +25,7 @@ import com.google.zxing.integration.android.IntentResult;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,9 +35,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,6 +57,8 @@ public class ScannerActivity extends AppCompatActivity {
     RecyclerView mListaMudancas;
     RecyclerView mListaMonitores;
     Button mBtNovaManutencao;
+    ImageButton mBtAddMonitorScanner;
+    ImageView mImvSyncDevice;
 
     FloatingActionButton mBtLerEquipamento;
     LinearLayoutManager linearLayoutManagerEquipamento;
@@ -63,6 +72,9 @@ public class ScannerActivity extends AppCompatActivity {
     ArrayList<MudancasLine> listamudancas;
     ArrayList<MonitorLine> listamonitores;
     Boolean existemanutencaoaberta = false;
+    ConstraintLayout mLayoutEquipamentos;
+    ConstraintLayout mLayoutMonitores;
+    ConstraintLayout mLayoutManutencoes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +119,21 @@ public class ScannerActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        mBtAddMonitorScanner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ScannerActivity.this, "Não quero! \uD83D\uDD95\uD83C\uDFFF", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void DigitarManualmente() {
         View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.dialog_input, null);
         TextInputEditText edittext = view.findViewById(R.id.TvNome);
-        AlertDialog dialog = new AlertDialog.Builder(ScannerActivity.this)
-                .setTitle("Digite o Nome")
+
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(ScannerActivity.this)
+                .setTitle("Digite o patrimônio")
                 .setView(view)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -127,7 +147,8 @@ public class ScannerActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
-                }).create();
+                });
+        dialog.create();
         dialog.show();
     }
 
@@ -158,27 +179,51 @@ public class ScannerActivity extends AppCompatActivity {
         mImvImgEquipamento = findViewById(R.id.ImvImgDevice);
         mPgbProgresso = findViewById(R.id.PgbScanner);
         mBtNovaManutencao = findViewById(R.id.BtNovaManutencaoScanner);
+        mBtAddMonitorScanner = findViewById(R.id.BtAddMonitorScanner);
 
         mListaEquipamentos = findViewById(R.id.RvDetalhesEquipamentoScanner);
         mListaMudancas = findViewById(R.id.RvMudancasScanner);
         mListaMonitores = findViewById(R.id.RvMonitoresScanner);
 
-        linearLayoutManagerEquipamento = new LinearLayoutManager(this);
-        gridLayoutManagerEquipamento = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+        linearLayoutManagerEquipamento = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        gridLayoutManagerEquipamento = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
 
-        linearLayoutManagerMonitores = new LinearLayoutManager(this);
-        gridLayoutManagerMonitores = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
+        linearLayoutManagerMonitores = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
         linearLayoutManagerMudancas = new LinearLayoutManager(this);
         gridLayoutManagerMudancas = new StaggeredGridLayoutManager(1, LinearLayoutManager.HORIZONTAL);
 
 
         mListaEquipamentos.setLayoutManager(gridLayoutManagerEquipamento);
+        mListaMonitores.setLayoutManager(linearLayoutManagerMonitores);
         mListaMudancas.setLayoutManager(gridLayoutManagerMudancas);
-        mListaMonitores.setLayoutManager(gridLayoutManagerMonitores);
+
+        mLayoutEquipamentos = findViewById(R.id.LayoutEquipamentosScanner);
+        mLayoutMonitores = findViewById(R.id.LayoutMonitoresScanner);
+        mLayoutManutencoes = findViewById(R.id.LayoutManutencoesScanner);
+
+        mImvSyncDevice = findViewById(R.id.ImvSyncDevice);
 
         mBtLerEquipamento = findViewById(R.id.BtLerEquipamentoScanner);
         mCrud = new Crud();
+    }
+
+    public class CustomGridLayoutManager extends LinearLayoutManager {
+        private boolean isScrollEnabled = false;
+
+        public CustomGridLayoutManager(Context context) {
+            super(context);
+        }
+
+        public void setScrollEnabled(boolean flag) {
+            this.isScrollEnabled = flag;
+        }
+
+        @Override
+        public boolean canScrollVertically() {
+            //Similarly you can customize "canScrollHorizontally()" for managing horizontal scroll
+            return isScrollEnabled && super.canScrollHorizontally();
+        }
     }
 
     private void inicializarListas() {
@@ -214,6 +259,7 @@ public class ScannerActivity extends AppCompatActivity {
                         //Seta dados para a lista de detalhes do equipamento
                         ListAdapterEquipamentos equipamentoadapter = new ListAdapterEquipamentos(listaequipamentos, ScannerActivity.this, idequipamento);
                         mListaEquipamentos.setAdapter(equipamentoadapter);
+                        mLayoutEquipamentos.setVisibility(View.VISIBLE);
 
                         //Pega Monitores
                         try {
@@ -225,6 +271,7 @@ public class ScannerActivity extends AppCompatActivity {
                             //Seta dados pata a lista de monitores
                             ListAdapterMonitores adapter = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
                             mListaMonitores.setAdapter(adapter);
+                            mLayoutMonitores.setVisibility(View.VISIBLE);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -252,6 +299,8 @@ public class ScannerActivity extends AppCompatActivity {
                             //Seta dados pata a lista de mudanças
                             ListAdapterMudancas adapter = new ListAdapterMudancas(listamudancas, ScannerActivity.this, idequipamento);
                             mListaMudancas.setAdapter(adapter);
+                            mLayoutManutencoes.setVisibility(View.VISIBLE);
+                            mImvSyncDevice.setVisibility(View.GONE);
                             mPgbProgresso.setIndeterminate(false);
 
                         } catch (Exception e) {
