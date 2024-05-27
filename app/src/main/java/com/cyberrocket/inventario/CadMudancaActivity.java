@@ -78,7 +78,7 @@ public class CadMudancaActivity extends AppCompatActivity {
 
     private void getExtras() {
         Intent it = getIntent();
-        mIdEquipamento = it.getStringExtra("idequipamento");
+        mIdEquipamento = it.getStringExtra("id");
     }
 
     private void SalvarMudanca() {

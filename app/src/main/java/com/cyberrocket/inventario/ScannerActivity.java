@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.android.volley.Request;
 import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
 import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
@@ -75,6 +76,7 @@ public class ScannerActivity extends AppCompatActivity {
     ConstraintLayout mLayoutEquipamentos;
     ConstraintLayout mLayoutMonitores;
     ConstraintLayout mLayoutManutencoes;
+    String mIdMonitor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +125,7 @@ public class ScannerActivity extends AppCompatActivity {
         mBtAddMonitorScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ScannerActivity.this, "Não quero! \uD83D\uDD95\uD83C\uDFFF", Toast.LENGTH_SHORT).show();
+                VincularMonitorDialog();
             }
         });
     }
@@ -155,8 +157,8 @@ public class ScannerActivity extends AppCompatActivity {
     //Métodos
 
     private void IrPara(Class para, boolean finalizar) {
-        Intent intent = new Intent(getApplicationContext(), para);
-        intent.putExtra("idequipamento", mTvIdEquipamento.getText().toString());
+        Intent intent = new Intent(ScannerActivity.this, para);
+        intent.putExtra("id", mTvIdEquipamento.getText().toString());
         startActivity(intent);
         if(finalizar){
             finish();
@@ -299,6 +301,7 @@ public class ScannerActivity extends AppCompatActivity {
                             //Seta dados pata a lista de mudanças
                             ListAdapterMudancas adapter = new ListAdapterMudancas(listamudancas, ScannerActivity.this, idequipamento);
                             mListaMudancas.setAdapter(adapter);
+                            //mostra a tela de manutenções
                             mLayoutManutencoes.setVisibility(View.VISIBLE);
                             mImvSyncDevice.setVisibility(View.GONE);
                             mPgbProgresso.setIndeterminate(false);
@@ -422,6 +425,99 @@ public class ScannerActivity extends AppCompatActivity {
         //listaplacaswifi.add(wifi);
     }
 
+    private void VincularMonitorDialog(){
+        View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.activity_vincular_monitor, null);
+        TextInputEditText edittext = view.findViewById(R.id.TvNomeMonitorVincularMonitor);
+        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(ScannerActivity.this)
+            .setTitle("Nome do Monitor")
+            .setView(view)
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    // Pega o ID do
+                    GetIdMonitor(edittext.getText().toString());
+                }
+            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+        dialog.create();
+        dialog.show();
+    }
+
+    private void AddConexao(String url, String idmonitor) {
+        JSONObject postparams = new JSONObject();
+        JSONObject finalarray = new JSONObject();
+        try {
+            postparams.put("items_id", idmonitor);
+            postparams.put("computers_id", mTvIdEquipamento.getText());
+            postparams.put("itemtype", "Monitor");
+            postparams.put("is_deleted", "0");
+            postparams.put("is_dynamic", "1");
+
+            finalarray.put("input", postparams);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.e("sessiontoken", url);
+        Log.e("sessiontoken", finalarray.toString());
+        //Faz a conexão
+        GLPIConnect con = new GLPIConnect(ScannerActivity.this);
+        con.InsertItem(url, finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                IrPara(ScannerActivity.class, true);
+            }
+            @Override
+            public void onVolleyFailure(String url) {
+                Log.d("sessiontoken", url);
+                Toast.makeText(ScannerActivity.this, "Erro: "+ url, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void GetIdMonitor(String nome) {
+        mIdMonitor = "";
+        GLPIConnect con = new GLPIConnect(this);
+        con.GetArray("/apirest.php/Monitor?searchText[name]="+ nome, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                JSONArray jsonArray = new JSONArray();
+                try {
+                    jsonArray = new JSONArray(response);
+                } catch (JSONException e) {
+                    Log.d("ParseError", e.toString());
+                    e.printStackTrace();
+                }
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                    //Pega dados do equipamento
+                    String idmonitor = jsonObject.getString("id");
+                    if (!idmonitor.equals("")) {
+                        //Vincular monitor
+                        AddConexao("/apirest.php/Computer_Item/", idmonitor);
+                    }else{
+                        Toast.makeText(ScannerActivity.this, "Monitor não encontrado", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                mTvIdEquipamento.setText("erro");
+                Snackbar.make(
+                        mCLayout,
+                        "Erro de conexão\n" + url,
+                        Snackbar.LENGTH_LONG
+                ).show();
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -445,4 +541,5 @@ public class ScannerActivity extends AppCompatActivity {
             // This is important, otherwise the result will not be passed to the fragment
         }
     }
+
 }
