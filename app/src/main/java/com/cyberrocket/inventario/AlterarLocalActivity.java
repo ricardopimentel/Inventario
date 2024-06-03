@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -21,10 +23,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class AlterarLocalActivity extends AppCompatActivity {
-    ListView mListaLocais;
+    AutoCompleteTextView mListaLocais;
     ArrayAdapter<String> mAdapter;
     ArrayList<String> mList;
     ArrayList mListaId;
+    ArrayList mListaNomes;
     String mId;
 
     @Override
@@ -35,19 +38,22 @@ public class AlterarLocalActivity extends AppCompatActivity {
         //Inicializar
         mListaLocais = findViewById(R.id.ListLocaisAlterarlocal);
         mList = new ArrayList<String>();
-        mAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, mList);
+        mAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, mList);
         mListaLocais.setAdapter(mAdapter);
         mListaId = new ArrayList();
+        mListaNomes = new ArrayList();
 
         //Métodos automáticos
         PreencherListaLocais();
         getExtras();
 
         //Listeners
+
         mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                AlterarLocalizacao(mListaId.get(position).toString());
+                String nome = mAdapter.getItem(position).toString();
+                AlterarLocalizacao(mListaId.get(mListaNomes.indexOf(nome)).toString());
             }
         });
     }
@@ -75,6 +81,7 @@ public class AlterarLocalActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject local = jsonArray.getJSONObject(i);
                         mAdapter.add(local.getString("name"));
+                        mListaNomes.add(local.getString("name"));
                         mListaId.add(local.getString("id"));
                     }
                     mAdapter.notifyDataSetChanged();

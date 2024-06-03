@@ -35,6 +35,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -95,7 +96,6 @@ public class ScannerActivity extends AppCompatActivity {
         mBtLerEquipamento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mTvIdEquipamento.setText("2");
                 inicializarListas();
                 IntentIntegrator integrator = new IntentIntegrator(ScannerActivity.this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
@@ -137,6 +137,13 @@ public class ScannerActivity extends AppCompatActivity {
                 IrPara(ScannerActivity.class, true);
             }
         });
+    }
+
+    //Sobrescreve a ação de voltar, redirecionando direto para a activity home
+    public void onBackPressed() { //Botão BACK padrão do android
+        startActivity(new Intent(this, HomeActivity.class)); //O efeito ao ser pressionado do botão (no caso abre a activity)
+        finishAffinity(); //Método para matar a activity e não deixa-lá indexada na pilhagem
+        return;
     }
 
     private void DigitarManualmente() {
@@ -281,15 +288,18 @@ public class ScannerActivity extends AppCompatActivity {
                                 JSONObject monitor = monitoresarray.getJSONObject(i);
                                 CriarListaMonitores(monitor.getString("name"), monitor.getString("manufacturers_id"), monitor.getString("monitormodels_id"), monitor.getString("states_id"), monitor.getString("id"), monitor.getString("serial"));
                             }
-                            //Seta dados pata a lista de monitores
-                            ListAdapterMonitores adapter = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
-                            mListaMonitores.setAdapter(adapter);
-
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
+                        //Seta dados pata a lista de monitores
+                        ListAdapterMonitores adaptermonitores = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
+                        mListaMonitores.setAdapter(adaptermonitores);
+
                         if(!tipo.equals("Notebook")){
                             mLayoutMonitores.setVisibility(View.VISIBLE);
+                        }else{
+                            mLayoutMonitores.setVisibility(View.GONE);
                         }
 
                         //Pega as mudanças
@@ -350,6 +360,7 @@ public class ScannerActivity extends AppCompatActivity {
         mPgbProgresso.setIndeterminate(true);
         //Limpa views
         inicializarViews();
+        //Limpa listas
         inicializarListas();
         GLPIConnect con = new GLPIConnect(this);
         con.GetArray("/apirest.php/Computer?searchText[name]=PSO-"+ mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
