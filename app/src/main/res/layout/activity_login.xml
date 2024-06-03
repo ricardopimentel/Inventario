@@ -56,8 +56,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/inventory_maneger"
-        tools:srcCompat="@drawable/inventory_maneger" />
+        app:srcCompat="@drawable/login2"
+        tools:srcCompat="@drawable/login2"
+        android:background="@color/md_theme_primary"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/BtConfig"

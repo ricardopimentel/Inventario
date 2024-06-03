@@ -31,6 +31,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,6 +78,7 @@ public class ScannerActivity extends AppCompatActivity {
     ConstraintLayout mLayoutMonitores;
     ConstraintLayout mLayoutManutencoes;
     String mIdMonitor;
+    SwipeRefreshLayout mSwipeRefreshListEquipamento;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +128,13 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 VincularMonitorDialog();
+            }
+        });
+
+        mSwipeRefreshListEquipamento.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                IrPara(ScannerActivity.class, true);
             }
         });
     }
@@ -207,6 +216,7 @@ public class ScannerActivity extends AppCompatActivity {
         mImvSyncDevice = findViewById(R.id.ImvSyncDevice);
 
         mBtLerEquipamento = findViewById(R.id.BtLerEquipamentoScanner);
+        mSwipeRefreshListEquipamento = findViewById(R.id.RefreshEquipamentosScanner);
         mCrud = new Crud();
     }
 
@@ -257,6 +267,7 @@ public class ScannerActivity extends AppCompatActivity {
                         CriarListaEquipamentos("Estado:", jsonObject.getString("states_id"), View.GONE);
                         CriarListaEquipamentos("Marca:", jsonObject.getString("manufacturers_id"), View.GONE);
                         CriarListaEquipamentos("Tipo:", jsonObject.getString("computertypes_id"), View.GONE);
+                        String tipo =jsonObject.getString("computertypes_id");
 
                         //Seta dados para a lista de detalhes do equipamento
                         ListAdapterEquipamentos equipamentoadapter = new ListAdapterEquipamentos(listaequipamentos, ScannerActivity.this, idequipamento);
@@ -273,9 +284,12 @@ public class ScannerActivity extends AppCompatActivity {
                             //Seta dados pata a lista de monitores
                             ListAdapterMonitores adapter = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
                             mListaMonitores.setAdapter(adapter);
-                            mLayoutMonitores.setVisibility(View.VISIBLE);
+
                         } catch (Exception e) {
                             e.printStackTrace();
+                        }
+                        if(!tipo.equals("Notebook")){
+                            mLayoutMonitores.setVisibility(View.VISIBLE);
                         }
 
                         //Pega as mudanças
@@ -334,6 +348,9 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void GetIdEquipamento() {
         mPgbProgresso.setIndeterminate(true);
+        //Limpa views
+        inicializarViews();
+        inicializarListas();
         GLPIConnect con = new GLPIConnect(this);
         con.GetArray("/apirest.php/Computer?searchText[name]=PSO-"+ mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
             @Override
@@ -524,13 +541,8 @@ public class ScannerActivity extends AppCompatActivity {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if(result != null) {
             if(result.getContents() == null) {
-                // as duas linhas seguintes devem ser descomentadas assim que seja necessário testar lendo um código
-                //Log.d("MainActivity", "Escaneamento cancelado");
-                //Toast.makeText(this, "Escaneamento cancelado", Toast.LENGTH_LONG).show();
-
-                // as linhas seguintes devem ser excluidas, são para teste
-                mTvIdEquipamento.setText("041751");
-                GetIdEquipamento();
+                Log.d("MainActivity", "Escaneamento cancelado");
+                Toast.makeText(this, "Escaneamento cancelado", Toast.LENGTH_LONG).show();
             } else {
                 Log.d("MainActivity", "Escaneado");
                 //Toast.makeText(this, "Escaneado: " + result.getContents(), Toast.LENGTH_LONG).show();
