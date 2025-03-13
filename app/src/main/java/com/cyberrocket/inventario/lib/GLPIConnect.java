@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Base64;
+import android.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +39,8 @@ public class GLPIConnect {
     public void LoginGLPI(String user, String password, final VolleyResponseListener listener){
         //login no glpi, envia usuário e senha, retorna um arraylist, no index 0 está o session_token (caso dê tudo certo), no index 1 a msg de erro (caso dê errado)
         // Codifica usuário e senha para enviar
-        final String autorizacao = "Basic " + Base64.getEncoder().encodeToString((user+":"+password).getBytes());
+        byte[] data = (user+":"+password).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        final String autorizacao = "Basic " + Base64.encodeToString(data, Base64.DEFAULT);
 
         //instancia objs
         mQueue = Volley.newRequestQueue(mContext);
