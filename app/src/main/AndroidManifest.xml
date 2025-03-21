@@ -73,7 +73,8 @@
             android:name=".CadEquipamentoActivity"
             android:label="@string/app_name"
             android:resizeableActivity="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".FinalizarMudancaActivity"
             android:label="Finalizar Manutenção"

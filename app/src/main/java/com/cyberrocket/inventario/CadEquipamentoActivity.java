@@ -1,12 +1,15 @@
 package com.cyberrocket.inventario;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
@@ -42,6 +45,20 @@ public class CadEquipamentoActivity extends AppCompatActivity {
         mListTipoEquipamento = new ArrayList<String>();
         mListLocais = new ArrayList<String>();
         mListEstados = new ArrayList<String>();
+
+        mSlTipoEquipamento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (view instanceof TextView) {
+                    ((TextView) view).setTextColor(ContextCompat.getColor(CadEquipamentoActivity.this, R.color.design_default_color_on_secondary));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         //Métodos automaticos
         PreencherListaTipoEquipamento();

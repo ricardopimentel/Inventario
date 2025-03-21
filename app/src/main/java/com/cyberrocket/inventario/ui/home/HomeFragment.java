@@ -23,6 +23,7 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     Button mBtGoScanner;
+    Button mBtGoCadastro;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -38,12 +39,20 @@ public class HomeFragment extends Fragment {
 
         //Inicialização
         mBtGoScanner = root.findViewById(R.id.BtGoScanner);
+        mBtGoCadastro = root.findViewById(R.id.BtGoCadastro);
 
         //Listeners
         mBtGoScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 IrPara(ScannerActivity.class);
+            }
+        });
+
+        mBtGoCadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IrPara(CadEquipamentoActivity.class);
             }
         });
 

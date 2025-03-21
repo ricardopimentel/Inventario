@@ -33,4 +33,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+    </style>
+
+    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">#FF0000</item> <!-- Cor do texto não selecionado -->
+        <item name="android:popupBackground">@color/md_theme_onPrimary</item> <!-- Cor de fundo do dropdown -->
+        <item name="android:dropDownSelector">@color/md_theme_primary</item> <!-- Cor de seleção do item -->
+    </style>
 </resources>

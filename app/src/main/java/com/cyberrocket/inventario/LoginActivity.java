@@ -1,7 +1,6 @@
 package com.cyberrocket.inventario;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
