@@ -1,12 +1,12 @@
 <resources>
-    <color name="md_theme_primary">@color/material_dynamic_primary70</color>
-    <color name="md_theme_onPrimary">@color/material_dynamic_primary20</color>
-    <color name="md_theme_primaryContainer">@color/material_dynamic_primary40</color>
-    <color name="md_theme_onPrimaryContainer">@color/material_dynamic_primary90</color>
-    <color name="md_theme_secondary">@color/material_dynamic_secondary80</color>
-    <color name="md_theme_onSecondary">@color/material_dynamic_secondary20</color>
-    <color name="md_theme_secondaryContainer">@color/material_dynamic_secondary30</color>
-    <color name="md_theme_onSecondaryContainer">@color/material_dynamic_secondary90</color>
+    <color name="md_theme_primary">#D3BCFD</color>
+    <color name="md_theme_onPrimary">#381E72</color>
+    <color name="md_theme_primaryContainer">#4F378A</color>
+    <color name="md_theme_onPrimaryContainer">#EBDDFF</color>
+    <color name="md_theme_secondary">#CCC2DC</color>
+    <color name="md_theme_onSecondary">#332D41</color>
+    <color name="md_theme_secondaryContainer">#4A4458</color>
+    <color name="md_theme_onSecondaryContainer">#E8DEF8</color>
     <color name="md_theme_tertiary">#F0B7C5</color>
     <color name="md_theme_onTertiary">#4A2530</color>
     <color name="md_theme_tertiaryContainer">#643B46</color>
