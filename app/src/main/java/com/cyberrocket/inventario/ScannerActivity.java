@@ -246,7 +246,7 @@ public class ScannerActivity extends AppCompatActivity {
         mTvIdEquipamento.setText(idequipamento);
         if(!idequipamento.equals("erro")) {
             GLPIConnect con = new GLPIConnect(this);
-            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true", new GLPIConnect.VolleyResponseListener() {
+            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true&with_softwares=true", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     JSONObject jsonObject = new JSONObject();
@@ -255,11 +255,27 @@ public class ScannerActivity extends AppCompatActivity {
                     } catch (JSONException err) {
                         Log.d("ParseError", err.toString());
                     }
+                    Log.e("jason", jsonObject.toString());
+
+                    //Pegar Versão do Agente do GLPI
+                    String versaoagente = "";
+                    try {
+                        JSONArray softwaresarray = jsonObject.getJSONArray("_softwares");
+                        for (int i = 0; i < softwaresarray.length(); i++) {
+                            JSONObject software = softwaresarray.getJSONObject(i);
+                            if(software.getString("softwares_id").contains("GLPI Agen")){
+                                versaoagente = software.getString("softwareversions_id");
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     try {
                         //Pega dados do equipamento
                         CriarListaEquipamentos("Nome:", jsonObject.getString("name"), View.GONE);
                         CriarListaEquipamentos("Localização:", jsonObject.getString("locations_id"), View.VISIBLE);
-                        CriarListaEquipamentos("Inventário:", jsonObject.getString("otherserial"), View.GONE);
+                        CriarListaEquipamentos("Agente:", versaoagente, View.GONE);
                         CriarListaEquipamentos("Nº Série:", jsonObject.getString("serial"), View.GONE);
                         CriarListaEquipamentos("Modificado:", jsonObject.getString("date_mod"), View.GONE);
                         CriarListaEquipamentos("Estado:", jsonObject.getString("states_id"), View.GONE);
@@ -293,7 +309,7 @@ public class ScannerActivity extends AppCompatActivity {
                             mLayoutMonitores.setVisibility(View.GONE);
                         }
 
-                        //Pega as mudanças
+                        //Pega as problemas
                         try {
                             JSONArray changesarray = jsonObject.getJSONArray("_problems");
                             for (int i = 0; i < changesarray.length(); i++) {
