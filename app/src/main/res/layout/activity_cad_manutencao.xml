@@ -147,6 +147,12 @@
                 android:layout_height="wrap_content"
                 android:text="Sistema operacional deletado"
                 android:layout_marginRight="8dp"/>
+            <Button
+                android:id="@+id/Bt4Cad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monitor com defeito"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
     </HorizontalScrollView>
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cyberrocket.inventario.ui.dashboard.DashboardFragment">
+    tools:context="com.cyberrocket.inventario.ui.tickets.TicketsFragment">
 
     <ScrollView
         android:layout_width="409dp"
@@ -83,7 +83,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
-                android:id="@+id/text_dashboard"
+                android:id="@+id/text_tickets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

@@ -46,20 +46,6 @@ public class CadEquipamentoActivity extends AppCompatActivity {
         mListLocais = new ArrayList<String>();
         mListEstados = new ArrayList<String>();
 
-        mSlTipoEquipamento.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (view instanceof TextView) {
-                    ((TextView) view).setTextColor(ContextCompat.getColor(CadEquipamentoActivity.this, R.color.design_default_color_on_secondary));
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
         //Métodos automaticos
         PreencherListaTipoEquipamento();
         PreencherListaLocais();
@@ -69,6 +55,7 @@ public class CadEquipamentoActivity extends AppCompatActivity {
     //Métodos
 
     private void PreencherListaTipoEquipamento() {
+        mListTipoEquipamento.add("Selecione o tipo de equipamento");
         GLPIConnect con = new GLPIConnect(getApplicationContext());
         con.GetArray("/apirest.php/ComputerType/", new GLPIConnect.VolleyResponseListener() {
             @Override
@@ -89,6 +76,7 @@ public class CadEquipamentoActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     e.printStackTrace();
+
                 }
             }
 
@@ -99,12 +87,11 @@ public class CadEquipamentoActivity extends AppCompatActivity {
         });
 
         //Asssocia a lista ao spinner
-        ArrayAdapter<String> adp2 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mListTipoEquipamento);
-        adp2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSlTipoEquipamento.setAdapter(adp2);
+        mSlTipoEquipamento.setAdapter(new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, mListTipoEquipamento));
     }
 
     private void PreencherListaLocais(){
+        mListLocais.add("Selecione a Localização");
         GLPIConnect con = new GLPIConnect(getApplicationContext());
         con.GetArray("/apirest.php/Location/", new GLPIConnect.VolleyResponseListener() {
             @Override
@@ -141,6 +128,7 @@ public class CadEquipamentoActivity extends AppCompatActivity {
     }
 
     private void PreencherListaEstados(){
+        mListEstados.add("Selecione estado do equipamento");
         GLPIConnect con = new GLPIConnect(getApplicationContext());
         con.GetArray("/apirest.php/State/", new GLPIConnect.VolleyResponseListener() {
             @Override

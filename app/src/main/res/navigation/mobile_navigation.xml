@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.cyberrocket.inventario.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_tickets"
+        android:name="com.cyberrocket.inventario.ui.tickets.TicketsFragment"
+        android:label="@string/title_tickets"
+        tools:layout="@layout/fragment_tickets" />
 
     <fragment
         android:id="@+id/navigation_perfil"

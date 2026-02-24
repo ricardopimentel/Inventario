@@ -91,6 +91,12 @@
             android:label="Alterar Estado"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert"/>
+        <activity
+            android:name=".ui.tickets.TicketDetailsActivity"
+            android:label="Detalhes do Chamado"
+            android:parentActivityName=".HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

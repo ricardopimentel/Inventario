@@ -1,140 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="12dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    style="?attr/materialCardViewFilledStyle">
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="20dp"
-        style="?attr/materialCardViewFilledStyle">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="500dp">
+        android:layout_height="wrap_content"
+        android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/imageView8"
-                android:layout_width="406dp"
-                android:layout_height="213dp"
-                android:background="@drawable/corner"
-                android:scaleType="centerCrop"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+        <TextView
+            android:id="@+id/TvIdMudancaScanner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#1234"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/TvTitulo"
-                android:layout_width="392dp"
-                android:layout_height="17dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:gravity="center"
-                android:text="Titulo"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/TvIdMudancaScanner"
-                app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+        <TextView
+            android:id="@+id/TvTitulo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Titulo do Chamado"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/ImgImagemStatus"
+            app:layout_constraintStart_toEndOf="@+id/TvIdMudancaScanner"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/TvUsuarioCriacao"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="Usuário Criação"
-                app:layout_constraintEnd_toStartOf="@+id/TvDataMudanca"
-                app:layout_constraintStart_toEndOf="@+id/ImgImagemStatus"
-                app:layout_constraintTop_toBottomOf="@+id/TvTitulo" />
+        <TextView
+            android:id="@+id/TvDataMudanca"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Data: 01/01/2026"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/ImgImagemStatus"
+            app:layout_constraintStart_toStartOf="@+id/TvTitulo"
+            app:layout_constraintTop_toBottomOf="@+id/TvTitulo" />
 
-            <TextView
-                android:id="@+id/TvDescricaoMudanca"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:gravity="center"
-                android:text="Descrição"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TvUsuarioFinalizacao" />
+        <ImageView
+            android:id="@+id/ImgImagemStatus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@android:drawable/presence_online" />
 
-            <Button
-                android:id="@+id/BtFinalizarManutencao"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="16dp"
-                android:layout_weight="1"
-                android:text="Finalizar Manutenção"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+        <!-- Hidden elements to keep adapter compatibility without crashing if referenced -->
+        <TextView android:id="@+id/TvUsuarioCriacao" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />
+        <TextView android:id="@+id/TvDescricaoMudanca" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />
+        <TextView android:id="@+id/TvDataFinalizacao" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />
+        <TextView android:id="@+id/TvUsuarioFinalizacao" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />
+        <Button android:id="@+id/BtFinalizarManutencao" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />
 
-            <ImageView
-                android:id="@+id/ImgImagemStatus"
-                android:layout_width="42dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/TvDescricaoMudanca"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TvTitulo"
-                app:srcCompat="@android:drawable/presence_online" />
-
-            <TextView
-                android:id="@+id/TvDataMudanca"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="TextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TvTitulo" />
-
-            <TextView
-                android:id="@+id/TvDataFinalizacao"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="TextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/TvDataMudanca" />
-
-            <TextView
-                android:id="@+id/TvUsuarioFinalizacao"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:text="Usuario Finalização"
-                app:layout_constraintEnd_toStartOf="@+id/TvDataFinalizacao"
-                app:layout_constraintStart_toEndOf="@+id/ImgImagemStatus"
-                app:layout_constraintTop_toBottomOf="@+id/TvUsuarioCriacao" />
-
-            <TextView
-                android:id="@+id/TvIdMudancaScanner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:text="ID"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

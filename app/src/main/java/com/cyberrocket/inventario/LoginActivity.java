@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onVolleyFailure(String erro) {
                     Toast.makeText(getApplicationContext(), erro, Toast.LENGTH_LONG).show();
+                    Log.d("ParseError", erro);
                 }
             });
         }
