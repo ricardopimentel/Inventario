@@ -13,6 +13,7 @@ public class Chamado {
     private String tipo;
     private String statusInfo;
     private ImageView imagemStatus;
+    private boolean isSelected;
 
     public String getId() {
         return id;
@@ -92,5 +93,13 @@ public class Chamado {
 
     public void setStatusInfo(String statusInfo) {
         this.statusInfo = statusInfo;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 }

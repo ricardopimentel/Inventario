@@ -1,0 +1,188 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+
+> Task :app:compileDebugJavaWithJavac FAILED
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+warning: [options] source value 8 is obsolete and will be removed in a future release
+warning: [options] target value 8 is obsolete and will be removed in a future release
+warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:28: error: class, interface, or enum expected
+    private ArrayList<Chamado> dados;
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:29: error: class, interface, or enum expected
+    private Context contexto;
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:30: error: class, interface, or enum expected
+    private OnChamadoInteractionListener listener;
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:32: error: class, interface, or enum expected
+    public ListAdapterChamados(ArrayList<Chamado> dados, Context contexto, OnChamadoInteractionListener listener) {
+           ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:34: error: class, interface, or enum expected
+        this.contexto = contexto;
+        ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:35: error: class, interface, or enum expected
+        this.listener = listener;
+        ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:36: error: class, interface, or enum expected
+    }
+    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:40: error: class, interface, or enum expected
+    public ListAdapterChamados.ViewHolderChamado onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+           ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:40: error: class, interface, or enum expected
+    public ListAdapterChamados.ViewHolderChamado onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                                                             ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:42: error: class, interface, or enum expected
+        View view = layoutInflater.inflate(R.layout.chamados_line_view, parent, false);
+        ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:43: error: class, interface, or enum expected
+        return new ViewHolderChamado(view);
+        ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:44: error: class, interface, or enum expected
+    }
+    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:47: error: class, interface, or enum expected
+    public void onBindViewHolder(@NonNull ListAdapterChamados.ViewHolderChamado holder, int position) {
+           ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:47: error: class, interface, or enum expected
+    public void onBindViewHolder(@NonNull ListAdapterChamados.ViewHolderChamado holder, int position) {
+                                          ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:50: error: class, interface, or enum expected
+            holder.mTvTitulo.setText(chamado.getTitulo() != null ? chamado.getTitulo() : "Sem Título");
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:51: error: class, interface, or enum expected
+            holder.mTvDataManutencao.setText(chamado.getDataCriacao() != null ? chamado.getDataCriacao() : "");
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:52: error: class, interface, or enum expected
+            holder.mTvIdMudancas.setText(chamado.getId() != null ? "#" + chamado.getId() : "");
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:54: error: class, interface, or enum expected
+            if (chamado.getImagemStatus() != null && chamado.getImagemStatus().getDrawable() != null) {
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:56: error: class, interface, or enum expected
+            }
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:59: error: class, interface, or enum expected
+            holder.mCbSelect.setChecked(chamado.isSelected());
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:61: error: class, interface, or enum expected
+            holder.mCbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:63: error: class, interface, or enum expected
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                       ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:65: error: class, interface, or enum expected
+                    if (listener != null) {
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:67: error: class, interface, or enum expected
+                    }
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:71: error: class, interface, or enum expected
+            holder.mImgDelete.setOnClickListener(new View.OnClickListener() {
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:73: error: class, interface, or enum expected
+                public void onClick(View v) {
+                       ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:76: error: class, interface, or enum expected
+                    }
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:82: error: class, interface, or enum expected
+            holder.mBtFinalizarManutencao.setVisibility(View.GONE);
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:84: error: class, interface, or enum expected
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:86: error: class, interface, or enum expected
+                public void onClick(View view) {
+                       ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:87: error: <identifier> expected
+                    Intent intent = new Intent(contexto, com.cyberrocket.inventario.ui.tickets.TicketDetailsActivity.class);
+                                                                                                                          ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:88: error: class, interface, or enum expected
+                    intent.putExtra("id", chamado.getId());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:89: error: class, interface, or enum expected
+                    intent.putExtra("title", chamado.getTitulo());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:90: error: class, interface, or enum expected
+                    intent.putExtra("description", chamado.getDescricao());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:91: error: class, interface, or enum expected
+                    intent.putExtra("creationDate", chamado.getDataCriacao());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:92: error: class, interface, or enum expected
+                    intent.putExtra("closingDate", chamado.getDataFechamento());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:93: error: class, interface, or enum expected
+                    intent.putExtra("requester", chamado.getUsuarioRequerente());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:94: error: class, interface, or enum expected
+                    intent.putExtra("assigned", chamado.getUsuarioAtribuido());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:95: error: class, interface, or enum expected
+                    intent.putExtra("type", chamado.getTipo());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:96: error: class, interface, or enum expected
+                    intent.putExtra("status", chamado.getStatusInfo());
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:97: error: class, interface, or enum expected
+                    contexto.startActivity(intent);
+                    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:98: error: class, interface, or enum expected
+                }
+                ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:100: error: class, interface, or enum expected
+        }
+        ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:104: error: class, interface, or enum expected
+    public int getItemCount() {
+           ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:106: error: class, interface, or enum expected
+    }
+    ^
+D:\Documentos\Android Projects\Inventario\app\src\main\java\com\cyberrocket\inventario\adapter\ListAdapterChamados.java:136: error: class, interface, or enum expected
+}
+^
+46 errors
+3 warnings
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugJavaWithJavac'.
+> Compilation failed; see the compiler error output for details.
+
+* Try:
+> Run with --info option to get more log output.
+> Run with --scan to get full insights.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 1s
+15 actionable tasks: 1 executed, 14 up-to-date

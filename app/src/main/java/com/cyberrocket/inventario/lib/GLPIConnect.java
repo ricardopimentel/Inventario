@@ -12,6 +12,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cyberrocket.inventario.LoginActivity;
 import org.json.JSONArray;
@@ -234,12 +235,13 @@ public class GLPIConnect {
         // pega URL no banco de dados
         Crud crud = new Crud();
         final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+ complemento;
+        final String requestBody = postparams.toString();
 
-        JsonObjectRequest request = new JsonObjectRequest(method, url, postparams, new Response.Listener<JSONObject>() {
+        StringRequest request = new StringRequest(method, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(String response) {
                 // Deu certo
-                listener.onVolleySuccess(url, response.toString());
+                listener.onVolleySuccess(url, response);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -248,7 +250,17 @@ public class GLPIConnect {
                 if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
                     SairSistema();
                 }
-                listener.onVolleyFailure(error.toString());
+                String msg = "";
+                try {
+                    if(error.networkResponse != null && error.networkResponse.data != null) {
+                        msg = new String(error.networkResponse.data, "utf-8");
+                    } else {
+                        msg = error.toString();
+                    }
+                } catch (Exception e) {
+                    msg = error.toString();
+                }
+                listener.onVolleyFailure(msg);
             }
         }){
             @Override
@@ -259,6 +271,68 @@ public class GLPIConnect {
                 params.put("Content-type", "application/json");
                 params.put("Session-Token", crud.SelectItem(mContext, "CONFIG", 1, 2));
                 return params;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody.getBytes("utf-8");
+                } catch (java.io.UnsupportedEncodingException uee) {
+                    return null;
+                }
+            }
+        };
+
+        mQueue.add(request);
+    }
+
+    public void UpdateItemRaw(String complemento, JSONObject postparams, int method, final VolleyResponseListener listener) {
+        mQueue = Volley.newRequestQueue(mContext);
+
+        Crud crud = new Crud();
+        final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+ complemento;
+        final String requestBody = postparams.toString();
+
+        StringRequest request = new StringRequest(method, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                listener.onVolleySuccess(url, response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (error instanceof AuthFailureError) {
+                    SairSistema();
+                }
+                String msg = "";
+                try {
+                    if(error.networkResponse != null && error.networkResponse.data != null) {
+                        msg = new String(error.networkResponse.data, "utf-8");
+                    } else {
+                        msg = error.toString();
+                    }
+                } catch (Exception e) {
+                    msg = error.toString();
+                }
+                listener.onVolleyFailure(msg);
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Crud crud = new Crud();
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Content-type", "application/json");
+                params.put("Session-Token", crud.SelectItem(mContext, "CONFIG", 1, 2));
+                return params;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                try {
+                    return requestBody.getBytes("utf-8");
+                } catch (java.io.UnsupportedEncodingException uee) {
+                    return null;
+                }
             }
         };
 
@@ -283,7 +357,6 @@ public class GLPIConnect {
             @Override
             public void onErrorResponse(VolleyError error) {
                 // Deu errado
-                //Deu errado
                 if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
                     SairSistema();
                 }

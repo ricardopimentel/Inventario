@@ -1,0 +1,662 @@
+﻿> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:dataBindingMergeDependencyArtifactsDebug UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesDebug UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+
+> Task :app:compileDebugJavaWithJavac FAILED
+Java compiler version 21 has deprecated support for compiling with source/target version 8.
+Try one of the following options:
+    1. [Recommended] Use Java toolchain with a lower language version
+    2. Set a higher source/target version
+    3. Use a lower version of the JDK running the build (if you're not using Java toolchain)
+For more details on how to configure these settings, see https://developer.android.com/build/jdks.
+To suppress this warning, set android.javaCompile.suppressSourceTargetDeprecationWarning=true in gradle.properties.
+.\gradlew : warning: 
+[options] source value 
+8 is obsolete and will 
+be removed in a future 
+release
+No linha:1 caractere:1
++ .\gradlew 
+assembleDebug 2>&1 | 
+Out-File -Encoding 
+utf8 build_utf8.txt
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (warning: [opt   
+ io... future relea    
+se:String) [], Rem    
+oteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+warning: [options] 
+target value 8 is 
+obsolete and will be 
+removed in a future 
+release
+warning: [options] To 
+suppress warnings 
+about obsolete 
+options, use 
+-Xlint:-options.
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:28: error: class, 
+interface, or enum 
+expected
+    private 
+ArrayList<Chamado> 
+dados;
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:29: error: class, 
+interface, or enum 
+expected
+    private Context 
+contexto;
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:30: error: class, 
+interface, or enum 
+expected
+    private OnChamadoIn
+teractionListener 
+listener;
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:32: error: class, 
+interface, or enum 
+expected
+    public ListAdapterC
+hamados(ArrayList<Chama
+do> dados, Context 
+contexto, OnChamadoInte
+ractionListener 
+listener) {
+           ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:34: error: class, 
+interface, or enum 
+expected
+        this.contexto 
+= contexto;
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:35: error: class, 
+interface, or enum 
+expected
+        this.listener 
+= listener;
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:36: error: class, 
+interface, or enum 
+expected
+    }
+    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:40: error: class, 
+interface, or enum 
+expected
+    public ListAdapterC
+hamados.ViewHolderChama
+do onCreateViewHolder(@
+NonNull ViewGroup 
+parent, int viewType) {
+           ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:40: error: class, 
+interface, or enum 
+expected
+    public ListAdapterC
+hamados.ViewHolderChama
+do onCreateViewHolder(@
+NonNull ViewGroup 
+parent, int viewType) {
+                       
+                       
+                       
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:42: error: class, 
+interface, or enum 
+expected
+        View view = lay
+outInflater.inflate(R.l
+ayout.chamados_line_vie
+w, parent, false);
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:43: error: class, 
+interface, or enum 
+expected
+        return new View
+HolderChamado(view);
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:44: error: class, 
+interface, or enum 
+expected
+    }
+    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:47: error: class, 
+interface, or enum 
+expected
+    public void onBindV
+iewHolder(@NonNull List
+AdapterChamados.ViewHol
+derChamado holder, int 
+position) {
+           ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:47: error: class, 
+interface, or enum 
+expected
+    public void onBindV
+iewHolder(@NonNull List
+AdapterChamados.ViewHol
+derChamado holder, int 
+position) {
+                       
+                   ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:50: error: class, 
+interface, or enum 
+expected
+            holder.mTvT
+itulo.setText(chamado.g
+etTitulo() != null ? 
+chamado.getTitulo() : 
+"Sem TÝtulo");
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:51: error: class, 
+interface, or enum 
+expected
+            holder.mTvD
+ataManutencao.setText(c
+hamado.getDataCriacao()
+ != null ? chamado.getD
+ataCriacao() : "");
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:52: error: class, 
+interface, or enum 
+expected
+            holder.mTvI
+dMudancas.setText(chama
+do.getId() != null ? 
+"#" + chamado.getId() 
+: "");
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:54: error: class, 
+interface, or enum 
+expected
+            if (chamado
+.getImagemStatus() != 
+null && chamado.getImag
+emStatus().getDrawable(
+) != null) {
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:56: error: class, 
+interface, or enum 
+expected
+            }
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:59: error: class, 
+interface, or enum 
+expected
+            holder.mCbS
+elect.setChecked(chamad
+o.isSelected());
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:61: error: class, 
+interface, or enum 
+expected
+            holder.mCbS
+elect.setOnCheckedChang
+eListener(new CompoundB
+utton.OnCheckedChangeLi
+stener() {
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:63: error: class, 
+interface, or enum 
+expected
+                public 
+void onCheckedChanged(C
+ompoundButton 
+buttonView, boolean 
+isChecked) {
+                       
+^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:65: error: class, 
+interface, or enum 
+expected
+                    if 
+(listener != null) {
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:67: error: class, 
+interface, or enum 
+expected
+                    }
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:71: error: class, 
+interface, or enum 
+expected
+            holder.mImg
+Delete.setOnClickListen
+er(new 
+View.OnClickListener() 
+{
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:73: error: class, 
+interface, or enum 
+expected
+                public 
+void onClick(View v) {
+                       
+^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:76: error: class, 
+interface, or enum 
+expected
+                    }
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:82: error: class, 
+interface, or enum 
+expected
+            holder.mBtF
+inalizarManutencao.setV
+isibility(View.GONE);
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:84: error: class, 
+interface, or enum 
+expected
+            holder.item
+View.setOnClickListener
+(new 
+View.OnClickListener() 
+{
+            ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:86: error: class, 
+interface, or enum 
+expected
+                public 
+void onClick(View 
+view) {
+                       
+^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:87: error: 
+<identifier> expected
+                    
+Intent intent = new 
+Intent(contexto, com.cy
+berrocket.inventario.ui
+.tickets.TicketDetailsA
+ctivity.class);
+                       
+                       
+                       
+                       
+                       
+       ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:88: error: class, 
+interface, or enum 
+expected
+                    
+intent.putExtra("id", 
+chamado.getId());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:89: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("title", 
+chamado.getTitulo());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:90: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("descripti
+on", chamado.getDescric
+ao());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:91: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("creationD
+ate", chamado.getDataCr
+iacao());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:92: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("closingDa
+te", chamado.getDataFec
+hamento());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:93: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("requester
+", chamado.getUsuarioRe
+querente());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:94: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("assigned"
+, chamado.getUsuarioAtr
+ibuido());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:95: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("type", 
+chamado.getTipo());
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:96: error: class, 
+interface, or enum 
+expected
+                    int
+ent.putExtra("status", 
+chamado.getStatusInfo()
+);
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:97: error: class, 
+interface, or enum 
+expected
+                    con
+texto.startActivity(int
+ent);
+                    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:98: error: class, 
+interface, or enum 
+expected
+                }
+                ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:100: error: 
+class, interface, or 
+enum expected
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.10.2/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+15 actionable tasks: 1 executed, 14 up-to-date
+        }
+        ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:104: error: 
+class, interface, or 
+enum expected
+    public int 
+getItemCount() {
+           ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:106: error: 
+class, interface, or 
+enum expected
+    }
+    ^
+D:\Documentos\Android P
+rojects\Inventario\app\
+src\main\java\com\cyber
+rocket\inventario\adapt
+er\ListAdapterChamados.
+java:136: error: 
+class, interface, or 
+enum expected
+}
+^
+46 errors
+3 warnings
+
+FAILURE: Build failed 
+with an exception.
+
+* What went wrong:
+Execution failed for 
+task ':app:compileDebug
+JavaWithJavac'.
+> Compilation failed; 
+see the compiler error 
+output for details.
+
+* Try:
+> Run with --info 
+option to get more log 
+output.
+> Run with --scan to 
+get full insights.
+
+BUILD FAILED in 1s

@@ -7,10 +7,10 @@
     <color name="md_theme_onSecondary">@color/material_dynamic_secondary20</color>
     <color name="md_theme_secondaryContainer">@color/material_dynamic_secondary30</color>
     <color name="md_theme_onSecondaryContainer">@color/material_dynamic_secondary90</color>
-    <color name="md_theme_tertiary">#F0B7C5</color>
-    <color name="md_theme_onTertiary">#4A2530</color>
-    <color name="md_theme_tertiaryContainer">#643B46</color>
-    <color name="md_theme_onTertiaryContainer">#FFD9E1</color>
+    <color name="md_theme_tertiary">@color/material_dynamic_tertiary80</color>
+    <color name="md_theme_onTertiary">@color/material_dynamic_tertiary20</color>
+    <color name="md_theme_tertiaryContainer">@color/material_dynamic_tertiary30</color>
+    <color name="md_theme_onTertiaryContainer">@color/material_dynamic_tertiary90</color>
     <color name="md_theme_error">#FFB4AB</color>
     <color name="md_theme_onError">#690005</color>
     <color name="md_theme_errorContainer">#93000A</color>

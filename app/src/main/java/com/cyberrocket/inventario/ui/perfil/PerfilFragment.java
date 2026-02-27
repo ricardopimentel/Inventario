@@ -41,6 +41,7 @@ public class PerfilFragment extends Fragment {
         });
         //Inicializações
         mBtSair = root.findViewById(R.id.BtSair);
+        Button mBtVaultSettings = root.findViewById(R.id.BtVaultSettings);
         mCrud = new Crud();
 
         //Listeners
@@ -48,6 +49,13 @@ public class PerfilFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 SairSistema();
+            }
+        });
+
+        mBtVaultSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IrPara(com.cyberrocket.inventario.VaultSettingsActivity.class, false);
             }
         });
 

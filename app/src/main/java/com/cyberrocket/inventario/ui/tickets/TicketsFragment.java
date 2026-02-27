@@ -11,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -40,6 +43,8 @@ public class TicketsFragment extends Fragment {
     private SearchView searchView;
     private Spinner spinnerTipo;
     private Spinner spinnerStatus;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton fabAddTicket;
+    private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabDeleteSelected;
     
     private ArrayList<Chamado> chamadosListOriginal;
     private ArrayList<Chamado> chamadosList;
@@ -47,7 +52,7 @@ public class TicketsFragment extends Fragment {
 
     private String currentQuery = "";
     private int currentTipoPos = 0;
-    private int currentStatusPos = 0;
+    private int currentStatusPos = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -59,11 +64,38 @@ public class TicketsFragment extends Fragment {
         searchView = root.findViewById(R.id.searchViewChamados);
         spinnerTipo = root.findViewById(R.id.spinnerTipo);
         spinnerStatus = root.findViewById(R.id.spinnerStatus);
+        fabAddTicket = root.findViewById(R.id.fabAddTicket);
+        fabDeleteSelected = root.findViewById(R.id.fabDeleteSelected);
+
+        fabAddTicket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), CreateTicketActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        fabDeleteSelected.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmDeleteSelected();
+            }
+        });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         chamadosListOriginal = new ArrayList<>();
         chamadosList = new ArrayList<>();
-        adapter = new ListAdapterChamados(chamadosList, getContext());
+        adapter = new ListAdapterChamados(chamadosList, getContext(), new ListAdapterChamados.OnChamadoInteractionListener() {
+            @Override
+            public void onDeleteClick(Chamado chamado) {
+                confirmDeleteSingle(chamado);
+            }
+
+            @Override
+            public void onSelectionChanged() {
+                updateDeleteFabVisibility();
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         // Configuração dos Spinners
@@ -74,6 +106,7 @@ public class TicketsFragment extends Fragment {
         String[] status = {"Todos os Status", "Novo / Em Andamento", "Pendente", "Resolvido / Fechado"};
         ArrayAdapter<String> adapterStatus = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, status);
         spinnerStatus.setAdapter(adapterStatus);
+        spinnerStatus.setSelection(1, false);
 
         // Listeners
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -133,6 +166,7 @@ public class TicketsFragment extends Fragment {
                 
                 swipeRefreshLayout.setRefreshing(false);
                 chamadosListOriginal.clear();
+                updateDeleteFabVisibility();
 
                 try {
                     JSONArray jsonArray = new JSONArray(serverResponse);
@@ -243,6 +277,97 @@ public class TicketsFragment extends Fragment {
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();
+        }
+    }
+
+    private void updateDeleteFabVisibility() {
+        boolean hasSelection = false;
+        for (Chamado c : chamadosList) {
+            if (c.isSelected()) {
+                hasSelection = true;
+                break;
+            }
+        }
+        if (hasSelection) {
+            fabDeleteSelected.setVisibility(View.VISIBLE);
+        } else {
+            fabDeleteSelected.setVisibility(View.GONE);
+        }
+    }
+
+    private void confirmDeleteSingle(Chamado chamado) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Excluir Chamado")
+                .setMessage("Tem certeza que deseja apagar o chamado #" + chamado.getId() + " - " + chamado.getTitulo() + "?")
+                .setPositiveButton("Sim, Apagar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteTickets(new ArrayList<>(Collections.singletonList(chamado)));
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void confirmDeleteSelected() {
+        ArrayList<Chamado> toDelete = new ArrayList<>();
+        for (Chamado c : chamadosList) {
+            if (c.isSelected()) {
+                toDelete.add(c);
+            }
+        }
+
+        if (toDelete.isEmpty()) return;
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Excluir Múltiplos Chamados")
+                .setMessage("Tem certeza que deseja apagar " + toDelete.size() + " chamados selecionados?")
+                .setPositiveButton("Sim, Apagar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteTickets(toDelete);
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void deleteTickets(ArrayList<Chamado> ticketsToDelete) {
+        fabDeleteSelected.setEnabled(false);
+        swipeRefreshLayout.setRefreshing(true);
+        GLPIConnect glpi = new GLPIConnect(getContext());
+        
+        final int[] remainingToDelete = {ticketsToDelete.size()};
+        final boolean[] successFlag = {true};
+
+        for (Chamado c : ticketsToDelete) {
+            glpi.DeleteItem("/apirest.php/Ticket/" + c.getId() + "?force_purge=true", new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String serverResponse) {
+                    remainingToDelete[0]--;
+                    checkDeleteCompletion(remainingToDelete[0], successFlag[0]);
+                }
+
+                @Override
+                public void onVolleyFailure(String error) {
+                    successFlag[0] = false;
+                    remainingToDelete[0]--;
+                    checkDeleteCompletion(remainingToDelete[0], successFlag[0]);
+                }
+            });
+        }
+    }
+
+    private void checkDeleteCompletion(int remaining, boolean success) {
+        if (remaining <= 0) {
+            if (!isAdded() || getContext() == null) return;
+            fabDeleteSelected.setEnabled(true);
+            if (success) {
+                Toast.makeText(getContext(), "Chamado(s) apagado(s) com sucesso!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Alguns chamados não puderam ser apagados.", Toast.LENGTH_SHORT).show();
+            }
+            loadChamados();
         }
     }
 }

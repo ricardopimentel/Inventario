@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,12 +21,19 @@ import com.cyberrocket.inventario.models.Chamado;
 import java.util.ArrayList;
 
 public class ListAdapterChamados extends RecyclerView.Adapter<ListAdapterChamados.ViewHolderChamado> {
+    public interface OnChamadoInteractionListener {
+        void onDeleteClick(Chamado chamado);
+        void onSelectionChanged();
+    }
+
     private ArrayList<Chamado> dados;
     private Context contexto;
+    private OnChamadoInteractionListener listener;
 
-    public ListAdapterChamados(ArrayList<Chamado> dados, Context contexto) {
+    public ListAdapterChamados(ArrayList<Chamado> dados, Context contexto, OnChamadoInteractionListener listener) {
         this.dados = dados;
         this.contexto = contexto;
+        this.listener = listener;
     }
 
     @NonNull
@@ -46,6 +55,28 @@ public class ListAdapterChamados extends RecyclerView.Adapter<ListAdapterChamado
             if (chamado.getImagemStatus() != null && chamado.getImagemStatus().getDrawable() != null) {
                 holder.mImvStatus.setImageDrawable(chamado.getImagemStatus().getDrawable());
             }
+
+            holder.mCbSelect.setOnCheckedChangeListener(null);
+            holder.mCbSelect.setChecked(chamado.isSelected());
+            
+            holder.mCbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    chamado.setSelected(isChecked);
+                    if (listener != null) {
+                        listener.onSelectionChanged();
+                    }
+                }
+            });
+
+            holder.mImgDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onDeleteClick(chamado);
+                    }
+                }
+            });
 
             // Ocultar o botão "Finalizar Manutenção" no adapter de chamados, pois não foi solicitado e 
             // a interface de chamados não precisa desse botão inicialmente.
@@ -84,6 +115,8 @@ public class ListAdapterChamados extends RecyclerView.Adapter<ListAdapterChamado
         public TextView mTvUsuarioFinalizacao;
         public TextView mTvIdMudancas;
         public ImageView mImvStatus;
+        public ImageView mImgDelete;
+        public CheckBox mCbSelect;
         public Button mBtFinalizarManutencao;
 
         public ViewHolderChamado(final View itemView) {
@@ -96,6 +129,8 @@ public class ListAdapterChamados extends RecyclerView.Adapter<ListAdapterChamado
             mTvUsuarioFinalizacao = itemView.findViewById(R.id.TvUsuarioFinalizacao);
             mTvIdMudancas = itemView.findViewById(R.id.TvIdMudancaScanner);
             mImvStatus = itemView.findViewById(R.id.ImgImagemStatus);
+            mImgDelete = itemView.findViewById(R.id.imgDelete);
+            mCbSelect = itemView.findViewById(R.id.cbSelect);
             mBtFinalizarManutencao = itemView.findViewById(R.id.BtFinalizarManutencao);
         }
     }

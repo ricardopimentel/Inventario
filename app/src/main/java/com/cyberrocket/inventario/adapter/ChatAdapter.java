@@ -75,6 +75,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ticketHolder.tvContent.setText("");
             }
 
+            ticketHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (longClickListener != null) {
+                        longClickListener.onMessageLongClick(message);
+                    }
+                    return true;
+                }
+            });
+
         } else if (holder instanceof ReplyViewHolder) {
             ReplyViewHolder replyHolder = (ReplyViewHolder) holder;
             replyHolder.tvAuthor.setText(message.getAuthorName() != null ? message.getAuthorName() : "Desconhecido");

@@ -10,6 +10,7 @@ import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
+import com.cyberrocket.inventario.lib.InfisicalConnect;
 import com.cyberrocket.inventario.models.EquipamentoLine;
 import com.cyberrocket.inventario.models.MonitorLine;
 import com.cyberrocket.inventario.models.MudancasLine;
@@ -42,6 +43,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 
+import com.cyberrocket.inventario.adapter.ListAdapterSenhas;
+import com.cyberrocket.inventario.lib.PasswordManager;
+import com.cyberrocket.inventario.models.SenhaItem;
+import android.widget.LinearLayout;
+import android.app.AlertDialog;
+
 public class ScannerActivity extends AppCompatActivity {
     TextView mTvIdEquipamento;
     CoordinatorLayout mCLayout;
@@ -53,6 +60,10 @@ public class ScannerActivity extends AppCompatActivity {
     Button mBtNovaManutencao;
     ImageButton mBtAddMonitorScanner;
     ImageView mImvSyncDevice;
+
+    Button mBtSenhasComputador;
+    Button mBtSenhasLocal;
+    LinearLayout mLayoutCofreBotoes;
 
     FloatingActionButton mBtLerEquipamento;
     LinearLayoutManager linearLayoutManagerEquipamento;
@@ -128,6 +139,16 @@ public class ScannerActivity extends AppCompatActivity {
                 IrPara(ScannerActivity.class, true);
             }
         });
+
+        // Check for direct actions from Home
+        boolean autoScan = getIntent().getBooleanExtra("auto_scan", false);
+        boolean autoType = getIntent().getBooleanExtra("auto_type", false);
+
+        if (autoScan) {
+            mBtLerEquipamento.performClick();
+        } else if (autoType) {
+            DigitarManualmente();
+        }
     }
 
     //Sobrescreve a ação de voltar, redirecionando direto para a activity home
@@ -215,6 +236,50 @@ public class ScannerActivity extends AppCompatActivity {
 
         mBtLerEquipamento = findViewById(R.id.BtLerEquipamentoScanner);
         mSwipeRefreshListEquipamento = findViewById(R.id.RefreshEquipamentosScanner);
+        
+        mLayoutCofreBotoes = findViewById(R.id.LayoutCofreBotoes);
+        mBtSenhasComputador = findViewById(R.id.BtSenhasComputador);
+        mBtSenhasLocal = findViewById(R.id.BtSenhasLocal);
+        
+        mBtSenhasComputador.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AbrirCofreSenhas("Computer", mTvIdEquipamento.getText().toString());
+            }
+        });
+
+        mBtSenhasLocal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Fetch Computer without expand_dropdown to get raw Location ID
+                mPgbProgresso.setIndeterminate(true);
+                GLPIConnect tempCon = new GLPIConnect(ScannerActivity.this);
+                tempCon.GetItem("/apirest.php/Computer/" + mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
+                    @Override
+                    public void onVolleySuccess(String url, String response) {
+                        mPgbProgresso.setIndeterminate(false);
+                        try {
+                            JSONObject rawComp = new JSONObject(response);
+                            String rawLocId = rawComp.optString("locations_id", "0");
+                            if (rawLocId.equals("0") || rawLocId.isEmpty()) {
+                                Toast.makeText(ScannerActivity.this, "Este computador não possui um Local definido.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                AbrirCofreSenhas("Location", rawLocId);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onVolleyFailure(String error) {
+                        mPgbProgresso.setIndeterminate(false);
+                        Toast.makeText(ScannerActivity.this, "Erro ao consultar a localização", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
         mCrud = new Crud();
     }
 
@@ -287,6 +352,8 @@ public class ScannerActivity extends AppCompatActivity {
                         ListAdapterEquipamentos equipamentoadapter = new ListAdapterEquipamentos(listaequipamentos, ScannerActivity.this, idequipamento);
                         mListaEquipamentos.setAdapter(equipamentoadapter);
                         mLayoutEquipamentos.setVisibility(View.VISIBLE);
+                        
+                        if (mLayoutCofreBotoes != null) mLayoutCofreBotoes.setVisibility(View.VISIBLE);
 
                         //Pega Monitores
                         try {
@@ -572,4 +639,357 @@ public class ScannerActivity extends AppCompatActivity {
         }
     }
 
+    private void AbrirCofreSenhas(String itemtype, String itemId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_gerenciar_senhas, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+
+        RecyclerView rvSenhas = dialogView.findViewById(R.id.RvSenhas);
+        TextView tvSenhasEmpty = dialogView.findViewById(R.id.TvSenhasEmpty);
+        TextInputEditText edtDesc = dialogView.findViewById(R.id.EdtDescricaoSenha);
+        TextInputEditText edtValor = dialogView.findViewById(R.id.EdtValorSenha);
+        ImageButton btnAdd = dialogView.findViewById(R.id.BtnAddSenha);
+        Button btnFechar = dialogView.findViewById(R.id.BtnFecharSenhas);
+        TextView tvTitle = dialogView.findViewById(R.id.TvDialogTitle);
+        
+        edtDesc.setHint("Usuário / Identificador");
+
+        tvTitle.setText(itemtype.equals("Computer") ? "Senhas da Máquina" : "Senhas do Local");
+
+        rvSenhas.setLayoutManager(new LinearLayoutManager(this));
+        
+        final ArrayList<SenhaItem> currentPasswords = new ArrayList<>();
+
+        ListAdapterSenhas adapter = new ListAdapterSenhas(currentPasswords, this, new ListAdapterSenhas.OnSenhaInteractionListener() {
+            @Override
+            public void onDeleteClick(int position, SenhaItem item) {
+                currentPasswords.remove(position);
+                if(rvSenhas.getAdapter() != null) rvSenhas.getAdapter().notifyDataSetChanged();
+                if (currentPasswords.isEmpty()) tvSenhasEmpty.setVisibility(View.VISIBLE);
+            }
+        });
+        rvSenhas.setAdapter(adapter);
+
+        GLPIConnect con = new GLPIConnect(this);
+        InfisicalConnect infisical = new InfisicalConnect(this);
+        mPgbProgresso.setIndeterminate(true);
+
+        if (!infisical.isConfigured()) {
+            Toast.makeText(this, "Aviso: Credenciais Infisical Vault não configuradas em Perfil > Cofre", Toast.LENGTH_LONG).show();
+        }
+
+        String fieldsEndpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/?searchText[items_id]=" + itemId;
+        
+        final String[] existingSecretId = {null};
+        final String[] existingFieldsItemId = {null};
+        final String[] containerId = {null};
+
+        con.GetArray(fieldsEndpoint, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    if (jsonArray.length() > 0) {
+                        JSONObject row = jsonArray.getJSONObject(0);
+                        existingFieldsItemId[0] = row.optString("id");
+                        containerId[0] = row.optString("plugin_fields_containers_id");
+                        String vaultId = row.optString("vault_secret_id", "");
+                        
+                        // Treat generic 0 IDs from generic unassigned forms as null so we can POST/PUT properly
+                        if(existingFieldsItemId[0].equals("0")) { existingFieldsItemId[0] = null; }
+                        
+                        if (!vaultId.isEmpty() && !vaultId.equals("null")) {
+                            existingSecretId[0] = vaultId;
+                            infisical.GetSecret(vaultId, new InfisicalConnect.VolleyResponseListener() {
+                                @Override
+                                public void onVolleySuccess(String infResponse) {
+                                    mPgbProgresso.setIndeterminate(false);
+                                    try {
+                                        JSONObject respObj = new JSONObject(infResponse);
+                                        JSONObject secretObj = respObj.getJSONObject("secret");
+                                        String secretValue = secretObj.getString("secretValue");
+                                        
+                                        JSONArray secretsArray = new JSONArray(secretValue);
+                                        for (int i = 0; i < secretsArray.length(); i++) {
+                                            JSONObject s = secretsArray.getJSONObject(i);
+                                            currentPasswords.add(new SenhaItem(s.optString("descricao"), s.optString("senha")));
+                                        }
+                                        
+                                        if (currentPasswords.isEmpty()) tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                        else tvSenhasEmpty.setVisibility(View.GONE);
+                                        
+                                        adapter.notifyDataSetChanged();
+                                        dialog.show();
+                                        
+                                    } catch (JSONException e) {
+                                        tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                        dialog.show();
+                                    }
+                                }
+                                @Override
+                                public void onVolleyFailure(String error) {
+                                    mPgbProgresso.setIndeterminate(false);
+                                    Toast.makeText(ScannerActivity.this, "Erro Infisical: " + error, Toast.LENGTH_SHORT).show();
+                                    tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                    dialog.show();
+                                }
+                            });
+                            return;
+                        } else {
+                            mPgbProgresso.setIndeterminate(false);
+                            tvSenhasEmpty.setVisibility(View.VISIBLE);
+                            dialog.show();
+                            return;
+                        }
+                    } else {
+                        con.GetArray("/apirest.php/PluginFieldsContainer/", new GLPIConnect.VolleyResponseListener() {
+                            @Override
+                            public void onVolleySuccess(String url, String response) {
+                                try {
+                                    JSONArray containers = new JSONArray(response);
+                                    if(containers.length() > 0) {
+                                        for(int i=0; i<containers.length(); i++) {
+                                            JSONObject c = containers.getJSONObject(i);
+                                            String catName = c.optString("name", "").toLowerCase();
+                                            String sysName = c.optString("system_name", "").toLowerCase();
+                                            // Procura por algum container que seja relacionado a cofre
+                                            if (catName.contains("cofre") || sysName.contains("cofre")) {
+                                                if (c.optString("itemtypes").contains(itemtype)) {
+                                                    containerId[0] = c.optString("id");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        // Fallback se não bater o itemtype perfeitamente
+                                        if (containerId[0] == null) {
+                                            for(int i=0; i<containers.length(); i++) {
+                                                JSONObject c = containers.getJSONObject(i);
+                                                String catName = c.optString("name", "").toLowerCase();
+                                                String sysName = c.optString("system_name", "").toLowerCase();
+                                                if (catName.contains("cofre") || sysName.contains("cofre")) {
+                                                    containerId[0] = c.optString("id");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (JSONException e) { e.printStackTrace(); }
+                                mPgbProgresso.setIndeterminate(false);
+                                tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                dialog.show();
+                            }
+                            @Override
+                            public void onVolleyFailure(String error) {
+                                mPgbProgresso.setIndeterminate(false);
+                                tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                dialog.show();
+                            }
+                        });
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                
+                mPgbProgresso.setIndeterminate(false);
+                tvSenhasEmpty.setVisibility(View.VISIBLE);
+                dialog.show();
+            }
+
+            @Override
+            public void onVolleyFailure(String error) {
+                mPgbProgresso.setIndeterminate(false);
+                tvSenhasEmpty.setVisibility(View.VISIBLE);
+                dialog.show();
+            }
+        });
+
+        btnAdd.setOnClickListener(v -> {
+            String d = edtDesc.getText().toString().trim();
+            String s = edtValor.getText().toString().trim();
+            if (d.isEmpty() || s.isEmpty()) {
+                Toast.makeText(ScannerActivity.this, "Preencha usuário e senha.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            SenhaItem newItem = new SenhaItem(d, s);
+            currentPasswords.add(newItem);
+
+            adapter.notifyDataSetChanged();
+            tvSenhasEmpty.setVisibility(View.GONE);
+            edtDesc.setText("");
+            edtValor.setText("");
+        });
+
+        btnFechar.setOnClickListener(v -> {
+            if (!infisical.isConfigured()) {
+                Toast.makeText(ScannerActivity.this, "Configure o Infisical primeiro.", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                return;
+            }
+
+            mPgbProgresso.setIndeterminate(true);
+
+            JSONArray arrayToSave = new JSONArray();
+            try {
+                for (SenhaItem item : currentPasswords) {
+                    JSONObject o = new JSONObject();
+                    o.put("descricao", item.getDescricao());
+                    o.put("senha", item.getSenha());
+                    arrayToSave.put(o);
+                }
+            } catch (JSONException e) { e.printStackTrace(); }
+            
+            String jsonPayload = arrayToSave.toString();
+            
+            if (currentPasswords.isEmpty() && existingSecretId[0] != null) {
+                infisical.DeleteSecret(existingSecretId[0], new InfisicalConnect.VolleyResponseListener() {
+                    @Override
+                    public void onVolleySuccess(String response) {
+                        limparCustomFieldGLPI(con, itemtype, existingFieldsItemId[0], dialog);
+                    }
+                    @Override
+                    public void onVolleyFailure(String error) {
+                        mPgbProgresso.setIndeterminate(false);
+                        Toast.makeText(ScannerActivity.this, "Erro apagando secret", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+
+            if (currentPasswords.isEmpty()) {
+                mPgbProgresso.setIndeterminate(false);
+                dialog.dismiss();
+                return;
+            }
+
+            if (existingSecretId[0] != null) {
+                infisical.UpdateSecret(existingSecretId[0], jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                    @Override
+                    public void onVolleySuccess(String response) {
+                        mPgbProgresso.setIndeterminate(false);
+                        Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                    @Override
+                    public void onVolleyFailure(String error) {
+                        mPgbProgresso.setIndeterminate(false);
+                        Toast.makeText(ScannerActivity.this, "Erro atualizando secret", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                String newKey = "GLPI_" + itemtype.toUpperCase() + "_" + itemId + "_CRED";
+                infisical.CreateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                    @Override
+                    public void onVolleySuccess(String response) {
+                        existingSecretId[0] = newKey; // Salva o estado para a próxima vez que o usuário clicar em Salvar sem fechar a janela
+                        atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog);
+                    }
+                    @Override
+                    public void onVolleyFailure(String error) {
+                        if (error.contains("already exists") || error.contains("Secret already exists")) {
+                            // Fallback to update if it exists in Infisical but GLPI lost the reference
+                            existingSecretId[0] = newKey; // Recupera o ID também no fallback
+                            infisical.UpdateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                                @Override
+                                public void onVolleySuccess(String updateResponse) {
+                                    atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog);
+                                }
+                                @Override
+                                public void onVolleyFailure(String updateError) {
+                                    mPgbProgresso.setIndeterminate(false);
+                                    Toast.makeText(ScannerActivity.this, "Erro forçando update do secret: " + updateError, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else {
+                            mPgbProgresso.setIndeterminate(false);
+                            Toast.makeText(ScannerActivity.this, "Erro criando secret: " + error, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void atualizarCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, String containerId, String newKey, AlertDialog dialog) {
+        if (existingRowId == null && containerId == null) {
+            mPgbProgresso.setIndeterminate(false);
+            Toast.makeText(ScannerActivity.this, "Erro: Não foi possível obter o ID do Container GLPI para salvar o campo.", Toast.LENGTH_LONG).show();
+            dialog.dismiss();
+            return;
+        }
+
+        String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/";
+        int method = Request.Method.POST;
+        
+        if (existingRowId != null && !existingRowId.isEmpty()) {
+             endpoint += existingRowId;
+             method = Request.Method.PUT;
+        }
+
+        JSONObject payload = new JSONObject();
+        JSONObject input = new JSONObject();
+        try {
+            if (method == Request.Method.POST) {
+                input.put("items_id", Integer.parseInt(itemId));
+                input.put("itemtype", itemtype);
+                input.put("plugin_fields_containers_id", Integer.parseInt(containerId));
+            } else {
+                input.put("id", Integer.parseInt(existingRowId));
+            }
+            
+            input.put("vault_secret_id", newKey);
+            payload.put("input", input);
+            
+            con.UpdateItemRaw(endpoint, payload, method, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String u, String r) {
+                    mPgbProgresso.setIndeterminate(false);
+                    Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
+                @Override
+                public void onVolleyFailure(String e) {
+                    mPgbProgresso.setIndeterminate(false);
+                    Toast.makeText(ScannerActivity.this, "Erro Atualizando GLPI: " + e, Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                }
+            });
+            
+        } catch (JSONException | NumberFormatException e) {
+            e.printStackTrace();
+            mPgbProgresso.setIndeterminate(false);
+            Toast.makeText(ScannerActivity.this, "Erro montando JSON GLPI: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            dialog.dismiss();
+        }
+    }
+
+    private void limparCustomFieldGLPI(GLPIConnect con, String itemtype, String existingRowId, AlertDialog dialog) {
+         if (existingRowId == null) {
+              mPgbProgresso.setIndeterminate(false); dialog.dismiss(); return;
+         }
+         try {
+             String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/" + existingRowId;
+             JSONObject payload = new JSONObject();
+             JSONObject input = new JSONObject();
+             input.put("id", Integer.parseInt(existingRowId));
+             input.put("vault_secret_id", "");
+             payload.put("input", input);
+             con.UpdateItemRaw(endpoint, payload, Request.Method.PUT, new GLPIConnect.VolleyResponseListener(){
+                  @Override
+                  public void onVolleySuccess(String url, String response) {
+                       mPgbProgresso.setIndeterminate(false);
+                       Toast.makeText(ScannerActivity.this, "Senha removida.", Toast.LENGTH_SHORT).show();
+                       dialog.dismiss();
+                  }
+                  @Override
+                  public void onVolleyFailure(String error) {
+                       mPgbProgresso.setIndeterminate(false); 
+                       Toast.makeText(ScannerActivity.this, "Erro Removendo no GLPI: " + error, Toast.LENGTH_LONG).show();
+                       dialog.dismiss();
+                  }
+             });
+         } catch(JSONException e){ e.printStackTrace(); mPgbProgresso.setIndeterminate(false); dialog.dismiss(); }
+    }
 }

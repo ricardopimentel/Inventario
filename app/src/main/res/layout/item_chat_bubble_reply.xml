@@ -45,13 +45,15 @@
                 android:layout_height="wrap_content"
                 android:text="Criado em: 00/00/0000"
                 android:textSize="12sp"
-                android:layout_marginEnd="4dp"/>
+                android:layout_marginEnd="4dp"
+                android:textColor="@color/md_theme_onPrimary"/>
             
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="por "
-                android:textSize="12sp"/>
+                android:textSize="12sp"
+                android:textColor="@color/md_theme_onPrimary"/>
                 
             <TextView
                 android:id="@+id/tvAuthor"
@@ -59,7 +61,8 @@
                 android:layout_height="wrap_content"
                 android:text="Nome"
                 android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textColor="@color/md_theme_onPrimary"/>
         </LinearLayout>
 
         <TextView
@@ -67,8 +70,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Conteúdo do acompanhamento..."
-            android:textColor="#333333"
             android:textSize="14sp"
+            android:textColor="@color/md_theme_onSecondary"
             android:lineSpacingExtra="4dp"/>
             
         <TextView

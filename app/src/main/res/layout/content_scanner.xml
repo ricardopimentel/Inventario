@@ -80,6 +80,31 @@
             tools:listitem="@layout/equipamento_line_view">
         </androidx.recyclerview.widget.RecyclerView>
 
+        <LinearLayout
+            android:id="@+id/LayoutCofreBotoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone">
+            
+            <Button
+                android:id="@+id/BtSenhasComputador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cofre: Senhas da Máquina"
+                app:icon="@android:drawable/ic_lock_lock" />
+
+            <Button
+                android:id="@+id/BtSenhasLocal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cofre: Senhas do Local"
+                app:icon="@android:drawable/ic_lock_idle_lock"
+                android:layout_marginTop="8dp" />
+                
+        </LinearLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="65dp"

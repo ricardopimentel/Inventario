@@ -7,6 +7,16 @@
     tools:context="com.cyberrocket.inventario.ui.perfil.PerfilFragment">
 
     <Button
+        android:id="@+id/BtVaultSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Configurações do Cofre"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_perfil"
+        android:layout_marginTop="16dp" />
+
+    <Button
         android:id="@+id/BtSair"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,7 +25,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_perfil" />
+        app:layout_constraintTop_toBottomOf="@+id/BtVaultSettings" />
 
     <ImageView
         android:id="@+id/imageView2"

@@ -49,14 +49,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Criado em: 00/00/0000"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/md_theme_onSecondary"/>
                 <TextView
                     android:id="@+id/tvAuthor"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="por Nome"
                     android:textSize="12sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_onSecondary"/>
             </LinearLayout>
             
             <!-- Update info omitted for simplicity if not always present, but we leave space -->
@@ -78,14 +80,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Atualização: 00/00/0000"
-                    android:textSize="12sp"/>
+                    android:textSize="12sp"
+                    android:textColor="@color/md_theme_onSecondary"/>
                 <TextView
                     android:id="@+id/tvUpdater"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="por Nome"
                     android:textSize="12sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_onSecondary"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -100,7 +104,8 @@
             android:layout_height="wrap_content"
             android:text="Conteúdo do chamado..."
             android:textSize="14sp"
-            android:lineSpacingExtra="4dp"/>
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/md_theme_onPrimary"/>
 
     </LinearLayout>
 
