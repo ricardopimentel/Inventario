@@ -26,7 +26,7 @@ public class Crud {
 
     public Boolean UpdateItem(Context contexto, String tabela, int id, ContentValues values){
         CriarBanco mDbHelper = new CriarBanco(contexto);
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
         String selection =  "_ID = ?";
         String[] selectionArgs = { id+"" };
         try{

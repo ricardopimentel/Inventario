@@ -18,8 +18,15 @@
         tools:layout="@layout/fragment_tickets" />
 
     <fragment
+        android:id="@+id/navigation_knowledge_base"
+        android:name="com.cyberrocket.inventario.ui.knowledgebase.KnowledgeBaseFragment"
+        android:label="@string/title_knowledge_base"
+        tools:layout="@layout/fragment_knowledge_base" />
+
+    <fragment
         android:id="@+id/navigation_perfil"
         android:name="com.cyberrocket.inventario.ui.perfil.PerfilFragment"
         android:label="@string/title_perfil"
         tools:layout="@layout/fragment_perfil" />
 </navigation>
+

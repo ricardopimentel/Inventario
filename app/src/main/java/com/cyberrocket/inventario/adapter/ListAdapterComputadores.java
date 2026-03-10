@@ -54,6 +54,19 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             
             holder.mTvLocalComputador.setText(computador.getLocalizacao() != null ? computador.getLocalizacao() : "");
             
+            // Dynamic Icon Selection based on Tipo
+            String tipoLower = (computador.getTipo() != null ? computador.getTipo() : "").toLowerCase();
+            if (tipoLower.contains("notebook") || tipoLower.contains("laptop")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.ic_laptop_24dp);
+            } else if (tipoLower.contains("servidor") || tipoLower.contains("server")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.ic_dns_24dp);
+            } else if (tipoLower.contains("virtual") || tipoLower.contains("vmware") || tipoLower.contains("vm")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.ic_virtual_machine_24dp);
+            } else {
+                // Default to desktop for Mini PC, Low Profile, etc.
+                holder.mImgIconComputador.setImageResource(R.drawable.ic_computer_24dp);
+            }
+
             if (computador.getImagemStatus() != null && computador.getImagemStatus().getDrawable() != null) {
                 holder.mImgStatusComputador.setImageDrawable(computador.getImagemStatus().getDrawable());
             }
@@ -80,6 +93,7 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
         public TextView mTvInfoComputador;
         public TextView mTvLocalComputador;
         public ImageView mImgStatusComputador;
+        public ImageView mImgIconComputador;
 
         public ViewHolderComputador(final View itemView) {
             super(itemView);
@@ -88,6 +102,7 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             mTvInfoComputador = itemView.findViewById(R.id.TvInfoComputador);
             mTvLocalComputador = itemView.findViewById(R.id.TvLocalComputador);
             mImgStatusComputador = itemView.findViewById(R.id.ImgStatusComputador);
+            mImgIconComputador = itemView.findViewById(R.id.ImgIconComputador);
         }
     }
 }

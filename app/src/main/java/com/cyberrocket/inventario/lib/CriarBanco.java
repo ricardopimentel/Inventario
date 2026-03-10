@@ -10,11 +10,11 @@ public class CriarBanco extends SQLiteOpenHelper {
     private static final String SQL_CREATE_CONFIG =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     "_ID INTEGER PRIMARY KEY," +
-                    "URL TEXT, SESSION_TOKEN TEXT )";
+                    "URL TEXT, SESSION_TOKEN TEXT, USUARIO TEXT, SENHA TEXT )";
 
     private static final String SQL_DELETE_CONFIG =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "config.db";
 
     public CriarBanco(Context context) {
@@ -22,10 +22,20 @@ public class CriarBanco extends SQLiteOpenHelper {
     }
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_CONFIG);
+        // Insere a linha inicial se não existir
+        db.execSQL("INSERT OR IGNORE INTO " + TABLE_NAME + " (_ID, URL, SESSION_TOKEN) VALUES (1, '', '')");
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_CONFIG);
-        onCreate(db);
+        if (oldVersion < 3) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN USUARIO TEXT");
+                db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN SENHA TEXT");
+            } catch (Exception e) {
+                // Se falhar (ex: colunas já existem), deleta e recria para garantir integridade
+                db.execSQL(SQL_DELETE_CONFIG);
+                onCreate(db);
+            }
+        }
     }
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);

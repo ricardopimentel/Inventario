@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,8 @@ public class TicketsFragment extends Fragment {
     private Spinner spinnerStatus;
     private com.google.android.material.floatingactionbutton.FloatingActionButton fabAddTicket;
     private com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton fabDeleteSelected;
+    private LinearLayout linearLayoutForms;
+    private HorizontalScrollView hsvForms;
     
     private ArrayList<Chamado> chamadosListOriginal;
     private ArrayList<Chamado> chamadosList;
@@ -66,6 +70,8 @@ public class TicketsFragment extends Fragment {
         spinnerStatus = root.findViewById(R.id.spinnerStatus);
         fabAddTicket = root.findViewById(R.id.fabAddTicket);
         fabDeleteSelected = root.findViewById(R.id.fabDeleteSelected);
+        linearLayoutForms = root.findViewById(R.id.linearLayoutForms);
+        hsvForms = root.findViewById(R.id.hsvForms);
 
         fabAddTicket.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,9 +156,202 @@ public class TicketsFragment extends Fragment {
         // Carregar a primeira vez
         swipeRefreshLayout.setRefreshing(true);
         loadChamados();
+        loadForms();
 
         return root;
     }
+
+    private void loadForms() {
+        android.content.SharedPreferences prefs = getContext().getSharedPreferences("GLPI_PREFS", android.content.Context.MODE_PRIVATE);
+        String host = prefs.getString("glpi_host", "");
+        String token = prefs.getString("session_token", "");
+        
+        // Algumas versoes do BD interno salvam os dados em "CONFIG". Usaremos o GLPIConnect pra pegar o host e token
+        com.cyberrocket.inventario.lib.Crud crud = new com.cyberrocket.inventario.lib.Crud();
+        String dbHost = crud.SelectItem(getContext(), "CONFIG", 1, 1);
+        String dbToken = crud.SelectItem(getContext(), "CONFIG", 1, 2);
+        
+        final String baseUrl = (dbHost != null && !dbHost.isEmpty()) ? dbHost : host;
+        final String sessionToken = (dbToken != null && !dbToken.isEmpty()) ? dbToken : token;
+        final String usuarioFinal = crud.SelectItem(getContext(), "CONFIG", 1, 3);
+        final String senhaFinal = crud.SelectItem(getContext(), "CONFIG", 1, 4);
+
+        if (baseUrl.isEmpty() || sessionToken.isEmpty()) {
+            hsvForms.setVisibility(View.GONE);
+            return;
+        }
+
+        // GLPI 11 usa ItemType com namespace: Glpi\Form\Form (encoded as %5C)
+        String url = baseUrl + "/apirest.php/Glpi%5CForm%5CForm/";
+        Log.d("TicketsFragment", "Carregando formulários GLPI 11: " + url);
+        
+        com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(getContext());
+        com.android.volley.toolbox.StringRequest stringRequest = new com.android.volley.toolbox.StringRequest(
+                com.android.volley.Request.Method.GET, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (!isAdded() || getContext() == null) return;
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            linearLayoutForms.removeAllViews();
+                            
+                            if(jsonArray.length() == 0) {
+                                tryFallbackForms(baseUrl, sessionToken, 1); // Tenta PluginFormcreatorForm
+                                return;
+                            } else {
+                                hsvForms.setVisibility(View.VISIBLE);
+                            }
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject obj = jsonArray.getJSONObject(i);
+                                String formId = obj.optString("id"); 
+                                String formName = obj.optString("name");
+                                
+                                if (formId.isEmpty() || formName.isEmpty()) continue;
+                                
+                                android.widget.Button btn = new android.widget.Button(getContext());
+                                btn.setText(formName);
+                                btn.setAllCaps(false);
+                                
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                );
+                                params.setMargins(0, 0, 16, 0);
+                                btn.setLayoutParams(params);
+                                
+                                android.util.TypedValue typedValue = new android.util.TypedValue();
+                                getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+                                int colorPrimary = typedValue.data;
+                                getContext().getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true);
+                                int colorBackground = typedValue.data;
+                                
+                                btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colorPrimary));
+                                btn.setTextColor(colorBackground);
+
+                                btn.setOnClickListener(v -> {
+                                    Intent intent = new Intent(getContext(), FormActivity.class);
+                                    intent.putExtra("url", baseUrl + "/Form/Render/" + formId);
+                                    intent.putExtra("session_token", sessionToken);
+                                    intent.putExtra("usuario", usuarioFinal);
+                                    intent.putExtra("senha", senhaFinal);
+                                    startActivity(intent);
+                                });
+                                
+                                linearLayoutForms.addView(btn);
+                            }
+                            if(linearLayoutForms.getChildCount() == 0) {
+                                hsvForms.setVisibility(View.GONE);
+                            }
+                        } catch (JSONException e) {
+                            tryFallbackForms(baseUrl, sessionToken, 1);
+                        }
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(com.android.volley.VolleyError error) {
+                        tryFallbackForms(baseUrl, sessionToken, 1);
+                    }
+                }) {
+            @Override
+            public java.util.Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
+                java.util.Map<String, String> params = new java.util.HashMap<>();
+                params.put("Content-type", "application/json");
+                params.put("Session-Token", sessionToken);
+                return params;
+            }
+        };
+
+        queue.add(stringRequest);
+    }
+    
+    /**
+     * Tenta carregar formulários de ItemTypes alternativos caso o padrão do GLPI 11 falhe.
+     * step 1: PluginFormcreatorForm
+     * step 2: Form
+     */
+    private void tryFallbackForms(final String baseUrl, final String sessionToken, final int step) {
+        final com.cyberrocket.inventario.lib.Crud crud = new com.cyberrocket.inventario.lib.Crud();
+        String itemType = (step == 1) ? "PluginFormcreatorForm" : "Form";
+        String url = baseUrl + "/apirest.php/" + itemType + "/";
+        
+        Log.d("TicketsFragment", "Tentando fallback (step " + step + "): " + url);
+        
+        com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(getContext());
+        com.android.volley.toolbox.StringRequest stringRequest = new com.android.volley.toolbox.StringRequest(
+                com.android.volley.Request.Method.GET, url,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if (!isAdded() || getContext() == null) return;
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            if(jsonArray.length() == 0) {
+                                if(step == 1) tryFallbackForms(baseUrl, sessionToken, 2);
+                                else hsvForms.setVisibility(View.GONE);
+                                return;
+                            }
+                            
+                            hsvForms.setVisibility(View.VISIBLE);
+                            linearLayoutForms.removeAllViews();
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject obj = jsonArray.getJSONObject(i);
+                                String formId = obj.optString("id"); 
+                                String formName = obj.optString("name");
+                                if (formId.isEmpty() || formName.isEmpty()) continue;
+                                
+                                android.widget.Button btn = new android.widget.Button(getContext());
+                                btn.setText(formName);
+                                btn.setAllCaps(false);
+                                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                );
+                                params.setMargins(0, 0, 16, 0);
+                                btn.setLayoutParams(params);
+                                
+                                android.util.TypedValue typedValue = new android.util.TypedValue();
+                                getContext().getTheme().resolveAttribute(android.R.attr.colorPrimary, typedValue, true);
+                                btn.setBackgroundTintList(android.content.res.ColorStateList.valueOf(typedValue.data));
+                                getContext().getTheme().resolveAttribute(android.R.attr.colorBackground, typedValue, true);
+                                btn.setTextColor(typedValue.data);
+
+                                btn.setOnClickListener(v -> {
+                                    Intent intent = new Intent(getContext(), FormActivity.class);
+                                    intent.putExtra("url", baseUrl + "/Form/Render/" + formId);
+                                    intent.putExtra("session_token", sessionToken);
+                                    intent.putExtra("usuario", crud.SelectItem(getContext(), "CONFIG", 1, 3));
+                                    intent.putExtra("senha", crud.SelectItem(getContext(), "CONFIG", 1, 4));
+                                    startActivity(intent);
+                                });
+                                linearLayoutForms.addView(btn);
+                            }
+                        } catch (Exception e) {
+                            if(step == 1) tryFallbackForms(baseUrl, sessionToken, 2);
+                            else hsvForms.setVisibility(View.GONE);
+                        }
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(com.android.volley.VolleyError error) {
+                        if(step == 1) tryFallbackForms(baseUrl, sessionToken, 2);
+                        else hsvForms.setVisibility(View.GONE);
+                    }
+                }) {
+            @Override
+            public java.util.Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
+                java.util.Map<String, String> params = new java.util.HashMap<>();
+                params.put("Content-type", "application/json");
+                params.put("Session-Token", sessionToken);
+                return params;
+            }
+        };
+        queue.add(stringRequest);
+    }
+
 
     private void loadChamados() {
         GLPIConnect glpi = new GLPIConnect(getContext());

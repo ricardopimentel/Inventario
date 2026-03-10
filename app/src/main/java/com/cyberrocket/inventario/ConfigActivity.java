@@ -41,23 +41,12 @@ public class ConfigActivity extends AppCompatActivity {
         mBtSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(salvar){
-                    ContentValues values = new ContentValues();
-                    values.put("URL", mCpURL.getText().toString());
-                    if(mCrud.InsertItem(getApplication(), "CONFIG", values)){ //Verifica se salvou
-                        Toast.makeText(ConfigActivity.this, "Sucesso", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(ConfigActivity.this, "Erro", Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    // Editar Configuração da url
-                    ContentValues values = new ContentValues();
-                    values.put("URL", mCpURL.getText().toString());
-                    if(mCrud.UpdateItem(getApplication(), "CONFIG", 1, values)){ //verifica se alterou
-                        Toast.makeText(ConfigActivity.this, "Sucesso", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(ConfigActivity.this, "Erro", Toast.LENGTH_SHORT).show();
-                    }
+                ContentValues values = new ContentValues();
+                values.put("URL", mCpURL.getText().toString());
+                if (mCrud.UpdateItem(getApplication(), "CONFIG", 1, values)) { // Sempre atualiza o ID 1
+                    Toast.makeText(ConfigActivity.this, "Sucesso", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ConfigActivity.this, "Erro", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -67,11 +56,6 @@ public class ConfigActivity extends AppCompatActivity {
 
     private void GetURL() {
         mCpURL.setText(mCrud.SelectItem(getApplication(), "CONFIG", 1, 1));
-        if(mCpURL.getText().toString().length() > 0){
-            salvar = false;
-        }else{
-            salvar = true;
-        }
     }
 
 }

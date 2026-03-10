@@ -109,6 +109,17 @@
             android:parentActivityName=".HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".ui.tickets.FormActivity"
+            android:label="Formulário GLPI"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.cyberrocket.inventario.ui.knowledgebase.KnowbaseDetailsActivity"
+            android:label="Detalhes da Base"
+            android:parentActivityName=".HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

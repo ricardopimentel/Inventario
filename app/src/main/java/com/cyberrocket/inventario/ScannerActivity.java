@@ -676,28 +676,35 @@ public class ScannerActivity extends AppCompatActivity {
         mPgbProgresso.setIndeterminate(true);
 
         if (!infisical.isConfigured()) {
-            Toast.makeText(this, "Aviso: Credenciais Infisical Vault não configuradas em Perfil > Cofre", Toast.LENGTH_LONG).show();
+            RedirecionarParaConfigsCofre("Credenciais do Cofre não configuradas.");
+            return;
         }
 
-        String fieldsEndpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/?searchText[items_id]=" + itemId;
+        String fieldsEndpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenha/?searchText[items_id]=" + itemId;
         
         final String[] existingSecretId = {null};
         final String[] existingFieldsItemId = {null};
-        final String[] containerId = {null};
+        final String[] containerId = {"1"};
 
         con.GetArray(fieldsEndpoint, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 try {
-                    JSONArray jsonArray = new JSONArray(response);
-                    if (jsonArray.length() > 0) {
-                        JSONObject row = jsonArray.getJSONObject(0);
-                        existingFieldsItemId[0] = row.optString("id");
-                        containerId[0] = row.optString("plugin_fields_containers_id");
-                        String vaultId = row.optString("vault_secret_id", "");
+                    JSONArray results = new JSONArray(response);
+                    
+                    if (results.length() > 0) {
+                        JSONObject row = results.getJSONObject(0);
                         
-                        // Treat generic 0 IDs from generic unassigned forms as null so we can POST/PUT properly
-                        if(existingFieldsItemId[0].equals("0")) { existingFieldsItemId[0] = null; }
+                        existingFieldsItemId[0] = row.optString("id");
+                        String cId = row.optString("plugin_fields_containers_id");
+                        if(cId != null && !cId.isEmpty() && !cId.equals("null")) {
+                            containerId[0] = cId;
+                        }
+                        
+                        String vaultId = row.optString("vaultsecretidfield", "");
+                        
+                        // Treat generic 0 IDs from generic unassigned forms as null so we can POST
+                        if(existingFieldsItemId[0] != null && existingFieldsItemId[0].equals("0")) { existingFieldsItemId[0] = null; }
                         
                         if (!vaultId.isEmpty() && !vaultId.equals("null")) {
                             existingSecretId[0] = vaultId;
@@ -727,74 +734,36 @@ public class ScannerActivity extends AppCompatActivity {
                                         dialog.show();
                                     }
                                 }
-                                @Override
-                                public void onVolleyFailure(String error) {
-                                    mPgbProgresso.setIndeterminate(false);
-                                    Toast.makeText(ScannerActivity.this, "Erro Infisical: " + error, Toast.LENGTH_SHORT).show();
-                                    tvSenhasEmpty.setVisibility(View.VISIBLE);
-                                    dialog.show();
-                                }
+                                 @Override
+                                 public void onVolleyFailure(String error) {
+                                     mPgbProgresso.setIndeterminate(false);
+                                     Log.e("ScannerActivity", "Erro Infisical: " + error);
+                                     
+                                     if (error != null && error.contains("401")) {
+                                         RedirecionarParaConfigsCofre("Erro de Autenticação (401). Verifique suas chaves.");
+                                     } else {
+                                         Toast.makeText(ScannerActivity.this, "Erro Infisical: " + error, Toast.LENGTH_SHORT).show();
+                                         tvSenhasEmpty.setVisibility(View.VISIBLE);
+                                         dialog.show();
+                                     }
+                                 }
                             });
-                            return;
-                        } else {
-                            mPgbProgresso.setIndeterminate(false);
-                            tvSenhasEmpty.setVisibility(View.VISIBLE);
-                            dialog.show();
-                            return;
+                            return; // Se encontrou, interrompe o fluxo para esperar a assincronicidade do Volley
                         }
-                    } else {
-                        con.GetArray("/apirest.php/PluginFieldsContainer/", new GLPIConnect.VolleyResponseListener() {
-                            @Override
-                            public void onVolleySuccess(String url, String response) {
-                                try {
-                                    JSONArray containers = new JSONArray(response);
-                                    if(containers.length() > 0) {
-                                        for(int i=0; i<containers.length(); i++) {
-                                            JSONObject c = containers.getJSONObject(i);
-                                            String catName = c.optString("name", "").toLowerCase();
-                                            String sysName = c.optString("system_name", "").toLowerCase();
-                                            // Procura por algum container que seja relacionado a cofre
-                                            if (catName.contains("cofre") || sysName.contains("cofre")) {
-                                                if (c.optString("itemtypes").contains(itemtype)) {
-                                                    containerId[0] = c.optString("id");
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        // Fallback se não bater o itemtype perfeitamente
-                                        if (containerId[0] == null) {
-                                            for(int i=0; i<containers.length(); i++) {
-                                                JSONObject c = containers.getJSONObject(i);
-                                                String catName = c.optString("name", "").toLowerCase();
-                                                String sysName = c.optString("system_name", "").toLowerCase();
-                                                if (catName.contains("cofre") || sysName.contains("cofre")) {
-                                                    containerId[0] = c.optString("id");
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                } catch (JSONException e) { e.printStackTrace(); }
-                                mPgbProgresso.setIndeterminate(false);
-                                tvSenhasEmpty.setVisibility(View.VISIBLE);
-                                dialog.show();
-                            }
-                            @Override
-                            public void onVolleyFailure(String error) {
-                                mPgbProgresso.setIndeterminate(false);
-                                tvSenhasEmpty.setVisibility(View.VISIBLE);
-                                dialog.show();
-                            }
-                        });
-                        return;
                     }
+                    
+                    // Se o item não tem_plugin_fields, o campo está vazio no servidor
+                    // Segue normal para exibir lista vazia
+                    mPgbProgresso.setIndeterminate(false);
+                    tvSenhasEmpty.setVisibility(View.VISIBLE);
+                    dialog.show();
+                    
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    mPgbProgresso.setIndeterminate(false);
+                    tvSenhasEmpty.setVisibility(View.VISIBLE);
+                    dialog.show();
                 }
-                
-                mPgbProgresso.setIndeterminate(false);
-                tvSenhasEmpty.setVisibility(View.VISIBLE);
-                dialog.show();
             }
 
             @Override
@@ -847,7 +816,7 @@ public class ScannerActivity extends AppCompatActivity {
                 infisical.DeleteSecret(existingSecretId[0], new InfisicalConnect.VolleyResponseListener() {
                     @Override
                     public void onVolleySuccess(String response) {
-                        limparCustomFieldGLPI(con, itemtype, existingFieldsItemId[0], dialog);
+                        limparCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], dialog);
                     }
                     @Override
                     public void onVolleyFailure(String error) {
@@ -913,45 +882,42 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     private void atualizarCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, String containerId, String newKey, AlertDialog dialog) {
-        if (existingRowId == null && containerId == null) {
-            mPgbProgresso.setIndeterminate(false);
-            Toast.makeText(ScannerActivity.this, "Erro: Não foi possível obter o ID do Container GLPI para salvar o campo.", Toast.LENGTH_LONG).show();
-            dialog.dismiss();
-            return;
-        }
-
-        String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/";
+        String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenha/";
         int method = Request.Method.POST;
         
         if (existingRowId != null && !existingRowId.isEmpty()) {
-             endpoint += existingRowId;
-             method = Request.Method.PUT;
+            endpoint += existingRowId;
+            method = Request.Method.PUT;
         }
 
         JSONObject payload = new JSONObject();
         JSONObject input = new JSONObject();
         try {
-            if (method == Request.Method.POST) {
-                input.put("items_id", Integer.parseInt(itemId));
-                input.put("itemtype", itemtype);
-                input.put("plugin_fields_containers_id", Integer.parseInt(containerId));
-            } else {
+            if (method == Request.Method.PUT) {
                 input.put("id", Integer.parseInt(existingRowId));
             }
+            input.put("items_id", Integer.parseInt(itemId));
+            input.put("itemtype", itemtype);
+            input.put("plugin_fields_containers_id", 1);
+            input.put("vaultsecretidfield", newKey);
             
-            input.put("vault_secret_id", newKey);
             payload.put("input", input);
+            Log.d("GLPI_FIELDS_MAIN", "Iniciando update no GLPI.");
+            Log.d("GLPI_FIELDS_MAIN", "URL: " + endpoint);
+            Log.d("GLPI_FIELDS_MAIN", "Payload enviado: " + payload.toString());
             
             con.UpdateItemRaw(endpoint, payload, method, new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String u, String r) {
                     mPgbProgresso.setIndeterminate(false);
+                    Log.d("GLPI_FIELDS_MAIN", "Sucesso no update GLPI! Resposta: " + r);
                     Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
                 @Override
                 public void onVolleyFailure(String e) {
                     mPgbProgresso.setIndeterminate(false);
+                    Log.e("GLPI_FIELDS_MAIN", "Falha no update GLPI. Erro: " + e);
                     Toast.makeText(ScannerActivity.this, "Erro Atualizando GLPI: " + e, Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
@@ -960,36 +926,61 @@ public class ScannerActivity extends AppCompatActivity {
         } catch (JSONException | NumberFormatException e) {
             e.printStackTrace();
             mPgbProgresso.setIndeterminate(false);
-            Toast.makeText(ScannerActivity.this, "Erro montando JSON GLPI: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e("GLPI_FIELDS_MAIN", "Erro montando JSON _plugin_fields: " + e.getMessage());
+            Toast.makeText(ScannerActivity.this, "Erro montando JSON _plugin_fields: " + e.getMessage(), Toast.LENGTH_LONG).show();
             dialog.dismiss();
         }
     }
 
-    private void limparCustomFieldGLPI(GLPIConnect con, String itemtype, String existingRowId, AlertDialog dialog) {
-         if (existingRowId == null) {
-              mPgbProgresso.setIndeterminate(false); dialog.dismiss(); return;
+    private void limparCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, AlertDialog dialog) {
+         if (existingRowId == null || existingRowId.isEmpty()) {
+             mPgbProgresso.setIndeterminate(false);
+             Toast.makeText(ScannerActivity.this, "Senha removida.", Toast.LENGTH_SHORT).show();
+             dialog.dismiss();
+             return;
          }
          try {
-             String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenhas/" + existingRowId;
+             String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenha/" + existingRowId;
              JSONObject payload = new JSONObject();
              JSONObject input = new JSONObject();
+             
              input.put("id", Integer.parseInt(existingRowId));
-             input.put("vault_secret_id", "");
+             input.put("items_id", Integer.parseInt(itemId));
+             input.put("itemtype", itemtype);
+             input.put("plugin_fields_containers_id", 1);
+             input.put("vaultsecretidfield", "");
+             
              payload.put("input", input);
+             Log.d("GLPI_FIELDS_MAIN", "Iniciando clean up no GLPI.");
+             Log.d("GLPI_FIELDS_MAIN", "URL: " + endpoint);
+             Log.d("GLPI_FIELDS_MAIN", "Payload enviado: " + payload.toString());
              con.UpdateItemRaw(endpoint, payload, Request.Method.PUT, new GLPIConnect.VolleyResponseListener(){
                   @Override
                   public void onVolleySuccess(String url, String response) {
                        mPgbProgresso.setIndeterminate(false);
+                       Log.d("GLPI_FIELDS_MAIN", "Sucesso no clean GLPI! Resposta: " + response);
                        Toast.makeText(ScannerActivity.this, "Senha removida.", Toast.LENGTH_SHORT).show();
                        dialog.dismiss();
                   }
                   @Override
                   public void onVolleyFailure(String error) {
                        mPgbProgresso.setIndeterminate(false); 
+                       Log.e("GLPI_FIELDS_MAIN", "Falha no clean GLPI. Erro: " + error);
                        Toast.makeText(ScannerActivity.this, "Erro Removendo no GLPI: " + error, Toast.LENGTH_LONG).show();
                        dialog.dismiss();
                   }
              });
-         } catch(JSONException e){ e.printStackTrace(); mPgbProgresso.setIndeterminate(false); dialog.dismiss(); }
+         } catch(JSONException e){ 
+             e.printStackTrace(); 
+             Log.e("GLPI_FIELDS_MAIN", "Erro montando JSON _plugin_fields: " + e.getMessage());
+             mPgbProgresso.setIndeterminate(false); 
+             dialog.dismiss(); 
+         }
+    }
+
+    private void RedirecionarParaConfigsCofre(String mensagem) {
+        Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, VaultSettingsActivity.class);
+        startActivity(intent);
     }
 }

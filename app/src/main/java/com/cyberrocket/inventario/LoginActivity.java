@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("SessionToken", token);
 
                         //Alterar no banco de dados
-                        if(SalvarToken(token)){
+                        if(SalvarToken(token, usuario, senha)){
                             IrPara(HomeActivity.class, true);
                         }
                     } catch (JSONException e) {
@@ -99,15 +99,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private Boolean SalvarToken(String token) {
+    private Boolean SalvarToken(String token, String usuario, String senha) {
         ContentValues values = new ContentValues();
         values.put("SESSION_TOKEN", token);
+        values.put("USUARIO", usuario);
+        values.put("SENHA", senha);
         Crud crud = new Crud();
         if(crud.UpdateItem(getApplicationContext(), "CONFIG", 1, values)){
             Toast.makeText(getApplicationContext(), "Sucesso", Toast.LENGTH_LONG).show();
             return true;
         }else{
-            Toast.makeText(getApplicationContext(), "Erro", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Erro ao salvar credenciais", Toast.LENGTH_LONG).show();
             return false;
         }
     }

@@ -10,11 +10,19 @@ import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Intent;
+import android.util.Log;
 
 public class VaultSettingsActivity extends AppCompatActivity {
 
     private TextInputEditText edtClientId, edtClientSecret, edtWorkspaceId, edtEnvironment;
-    private Button btnSalvar;
+    private Button btnSalvar, btnScanQR;
 
     public static final String PREF_FILE_NAME = "secret_vault_prefs";
     public static final String KEY_CLIENT_ID = "infisical_client_id";
@@ -37,10 +45,56 @@ public class VaultSettingsActivity extends AppCompatActivity {
         edtWorkspaceId = findViewById(R.id.EdtWorkspaceId);
         edtEnvironment = findViewById(R.id.EdtEnvironment);
         btnSalvar = findViewById(R.id.BtnSalvarVault);
+        btnScanQR = findViewById(R.id.BtnScanVaultQR);
 
         loadPreferences();
 
         btnSalvar.setOnClickListener(v -> savePreferences());
+        
+        btnScanQR.setOnClickListener(v -> {
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+            integrator.setPrompt("Aponte para o QR Code de Configuração");
+            integrator.setCameraId(0);
+            integrator.setBeepEnabled(true);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.setOrientationLocked(false);
+            integrator.initiateScan();
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Escaneamento cancelado", Toast.LENGTH_LONG).show();
+            } else {
+                try {
+                    JSONObject json = new JSONObject(result.getContents());
+                    String clientId = json.optString("clientId", "");
+                    String clientSecret = json.optString("clientSecret", "");
+                    String workspaceId = json.optString("workspaceId", "");
+                    String environment = json.optString("environment", "prod");
+
+                    if (clientId.isEmpty() || clientSecret.isEmpty() || workspaceId.isEmpty()) {
+                        Toast.makeText(this, "QR Code inválido ou incompleto.", Toast.LENGTH_LONG).show();
+                    } else {
+                        edtClientId.setText(clientId);
+                        edtClientSecret.setText(clientSecret);
+                        edtWorkspaceId.setText(workspaceId);
+                        edtEnvironment.setText(environment);
+                        
+                        Toast.makeText(this, "Configurações importadas! Clique em Salvar.", Toast.LENGTH_SHORT).show();
+                        // Opcional: chamar savePreferences() automaticamente aqui
+                    }
+                } catch (JSONException e) {
+                    Log.e("VaultQR", "Erro ao processar QR: " + e.getMessage());
+                    Toast.makeText(this, "Erro: QR Code não contém um JSON válido.", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 
     private SharedPreferences getEncryptedSharedPreferences() throws Exception {
