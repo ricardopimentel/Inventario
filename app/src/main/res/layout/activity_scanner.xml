@@ -64,7 +64,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:indeterminateTint="@color/md_theme_error"
+        android:indeterminateTint="@color/md_theme_secondary"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />
 

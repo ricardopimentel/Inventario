@@ -26,7 +26,8 @@ public class KnowbaseDetailsActivity extends AppCompatActivity {
 
         TextView tvTitle = findViewById(R.id.detailsTitleKB);
         TextView tvDate = findViewById(R.id.detailsDateKB);
-        TextView tvContent = findViewById(R.id.detailsContentKB);
+        android.webkit.WebView webView = findViewById(R.id.detailsWebKB);
+        webView.setBackgroundColor(0); // Transparent
 
         String title = getIntent().getStringExtra("name");
         String date = getIntent().getStringExtra("date_mod");
@@ -36,11 +37,19 @@ public class KnowbaseDetailsActivity extends AppCompatActivity {
         tvDate.setText("Modificado em: " + date);
         
         if (content != null) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                tvContent.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_COMPACT));
-            } else {
-                tvContent.setText(Html.fromHtml(content));
-            }
+            String styledHtml = "<html><head>" +
+                "<style>" +
+                "body { font-family: sans-serif; font-size: 16px; line-height: 1.6; color: #333333; margin: 0; padding: 0; }" +
+                "img { max-width: 100%; height: auto; display: block; margin: 10px 0; }" +
+                "table { border-collapse: collapse; width: 100%; margin: 10px 0; }" +
+                "th, td { border: 1px solid #dddddd; text-align: left; padding: 8px; }" +
+                "tr:nth-child(even) { background-color: #f9f9f9; }" +
+                "pre, code { background-color: #f4f4f4; padding: 4px; border-radius: 4px; overflow-x: auto; }" +
+                "blockquote { border-left: 4px solid #cccccc; margin: 0; padding-left: 16px; color: #666666; }" +
+                "</style></head><body>" + content + "</body></html>";
+            
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.loadDataWithBaseURL(null, styledHtml, "text/html", "UTF-8", null);
         }
     }
 

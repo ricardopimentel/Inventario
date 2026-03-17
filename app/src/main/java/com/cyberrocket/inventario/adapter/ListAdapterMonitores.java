@@ -201,7 +201,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
         private void DesvincularMonitor() {
             //Faz a conexão
             GLPIConnect con = new GLPIConnect(contexto);
-            con.GetArray("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/", new GLPIConnect.VolleyResponseListener() {
+            con.GetArray("/apirest.php/Computer/"+ mIdEquipamento +"/Computer_Item/?range=0-2000", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     JSONArray jsonArray = new JSONArray();
@@ -211,11 +211,21 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
                         Log.d("ParseError", err.toString());
                     }
                     try {
-                        //Pega id da conexao
-                        for (int i = 0; i < jsonArray.length(); i++) {
+                        boolean found = false;
+                        for (int i = jsonArray.length() - 1; i >= 0; i--) {
                             JSONObject local = jsonArray.getJSONObject(i);
-                            mIdConexao = local.getString("id");
-                            showDialog();
+                            String itemTypeStr = local.optString("itemtype", "");
+                            String itemsIdStr = local.optString("items_id", "");
+                            if (itemTypeStr.equalsIgnoreCase("Monitor") && itemsIdStr.equals(mTvId.getText().toString().trim())) {
+                                mIdConexao = local.getString("id");
+                                showDialog();
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            Log.d("MonitorLookup", "Computer_Item array from server: " + response);
+                            Toast.makeText(contexto, "Conexão do monitor não encontrada no servidor", Toast.LENGTH_LONG).show();
                         }
 
                     } catch (JSONException e) {
@@ -235,33 +245,64 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             con.DeleteItem(url, new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
+                    Toast.makeText(contexto, "Conexão deletada com sucesso!", Toast.LENGTH_SHORT).show();
+                    LimparStatusMonitor();
+                }
+                @Override
+                public void onVolleyFailure(String errorMsg) {
+                    Log.d("DesvincularErro", errorMsg);
+                    Toast.makeText(contexto, "Erro ao deletar conexão: "+ errorMsg, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+
+        private void LimparStatusMonitor() {
+            JSONObject postparams = new JSONObject();
+            JSONObject finalarray = new JSONObject();
+            try {
+                postparams.put("id", mTvId.getText().toString());
+                postparams.put("states_id", "0");
+                finalarray.put("input", postparams);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.UpdateItem("/apirest.php/Monitor/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    Toast.makeText(contexto, "Status do monitor atualizado para disponível!", Toast.LENGTH_SHORT).show();
                     Intent it = new Intent(contexto, ScannerActivity.class);
                     it.putExtra("id", mIdEquipamento);
                     IrPara(it);
                 }
+
                 @Override
-                public void onVolleyFailure(String url) {
-                    Log.d("Desvincular", url);
-                    Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
+                public void onVolleyFailure(String errorMsg) {
+                    Log.d("LimparStatusErro", errorMsg);
+                    Toast.makeText(contexto, "Falha ao limpar o status do monitor: " + errorMsg, Toast.LENGTH_LONG).show();
+                    Intent it = new Intent(contexto, ScannerActivity.class);
+                    it.putExtra("id", mIdEquipamento);
+                    IrPara(it);
                 }
             });
         }
 
         private void showDialog(){
             MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto)
-                .setTitle("Desvincular o Monitor?")
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //Deslincular monitor
-                        DeleteConexao("/apirest.php/Monitor/"+ mTvId.getText().toString()+"/Computer_Item/"+mIdConexao+"?force_purge=true");
-                    }
-                }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                });
+                    .setTitle("Desvincular o Monitor?")
+                    .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //Desvincular monitor
+                            DeleteConexao("/apirest.php/Computer_Item/"+mIdConexao+"?force_purge=true");
+                        }
+                    }).setNegativeButton("Não", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
             dialog.create();
             dialog.show();
         }

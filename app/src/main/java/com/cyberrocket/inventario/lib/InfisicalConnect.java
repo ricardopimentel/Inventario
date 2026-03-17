@@ -237,38 +237,30 @@ public class InfisicalConnect {
 
     public void DeleteSecret(String secretName, final VolleyResponseListener listener) {
         runWithAuth(() -> {
-            String url = BASE_URL + "/api/v3/secrets/raw/" + secretName;
+            String url = BASE_URL + "/api/v3/secrets/raw/" + secretName 
+                + "?workspaceId=" + workspaceId 
+                + "&environment=" + environment 
+                + "&secretPath=%2F" 
+                + "&type=shared";
 
-            try {
-                JSONObject payload = new JSONObject();
-                payload.put("workspaceId", workspaceId);
-                payload.put("environment", environment);
-                payload.put("secretPath", "/");
-                payload.put("type", "shared");
-
-                String jsonPayload = payload.toString();
-                
-                StringRequest request = new StringRequest(Request.Method.DELETE, url,
-                        listener::onVolleySuccess,
-                        error -> listener.onVolleyFailure(extractError(error, "Erro DELETE Secret"))
-                ) {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> headers = new HashMap<>();
-                        headers.put("Authorization", "Bearer " + currentAccessToken);
-                        headers.put("Content-Type", "application/json");
-                        return headers;
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, url, null,
+                    response -> listener.onVolleySuccess(response.toString()),
+                    error -> {
+                        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+                            listener.onVolleySuccess("Secret already deleted (404)");
+                        } else {
+                            listener.onVolleyFailure(extractError(error, "Erro DELETE Secret"));
+                        }
                     }
-
-                    @Override
-                    public byte[] getBody() throws AuthFailureError {
-                        return jsonPayload.getBytes(StandardCharsets.UTF_8);
-                    }
-                };
-                queue.add(request);
-            } catch (JSONException e) {
-                listener.onVolleyFailure("JSON Error: " + e.getMessage());
-            }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + currentAccessToken);
+                    return headers;
+                }
+            };
+            queue.add(request);
         }, listener);
     }
 }

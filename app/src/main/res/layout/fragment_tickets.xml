@@ -14,7 +14,8 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/barra_pesquisa">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchViewChamados"
@@ -99,9 +100,9 @@
         android:id="@+id/fabDeleteSelected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="85dp"
         android:text="Excluir Selecionados"
-        app:icon="@android:drawable/ic_menu_delete"
+        app:icon="@drawable/delete24"
         app:iconTint="@android:color/white"
         android:textColor="@android:color/white"
         app:backgroundTint="@color/md_theme_error"
@@ -119,7 +120,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@android:drawable/ic_input_add"
-        app:tint="@android:color/white"
         android:contentDescription="Criar Novo Chamado" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

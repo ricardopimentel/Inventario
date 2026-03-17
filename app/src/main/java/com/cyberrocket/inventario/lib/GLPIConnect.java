@@ -347,11 +347,11 @@ public class GLPIConnect {
         Crud crud = new Crud();
         final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+ complemento;
 
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.DELETE, url, null, new Response.Listener<JSONArray>() {
+        StringRequest request = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONArray response) {
+            public void onResponse(String response) {
                 // Deu certo
-                listener.onVolleySuccess(url, response.toString());
+                listener.onVolleySuccess(url, response);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -360,7 +360,17 @@ public class GLPIConnect {
                 if (error instanceof AuthFailureError) { //Se O erro for de autenticação, redireciona para a tela de login
                     SairSistema();
                 }
-                listener.onVolleyFailure(error.toString());
+                String msg = "";
+                try {
+                    if(error.networkResponse != null && error.networkResponse.data != null) {
+                        msg = new String(error.networkResponse.data, "utf-8");
+                    } else {
+                        msg = error.toString();
+                    }
+                } catch (Exception e) {
+                    msg = error.toString();
+                }
+                listener.onVolleyFailure(msg);
             }
         }){
             @Override

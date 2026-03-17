@@ -1,0 +1,24 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- Camada da Borda (Cor da linha) -->
+<item>
+    <shape android:shape="rectangle">
+        <solid android:color="?attr/colorPrimary" /> <!-- Cor da borda -->
+        <corners android:topLeftRadius="25dp"
+            android:topRightRadius="25dp"
+            android:bottomLeftRadius="0dp"
+            android:bottomRightRadius="0dp" />
+    </shape>
+</item>
+
+<!-- Camada do Fundo (Esconde as outras bordas) -->
+<!-- O 'bottom' define a espessura da linha (ex: 2dp) -->
+<item android:top="2dp">
+    <shape android:shape="rectangle">
+        <solid android:color="@color/md_theme_surfaceContainer" /> <!-- Cor de fundo do layout -->
+        <corners android:topLeftRadius="25dp"
+            android:topRightRadius="25dp"
+            android:bottomLeftRadius="0dp"
+            android:bottomRightRadius="0dp" />
+    </shape>
+</item>
+</layer-list>

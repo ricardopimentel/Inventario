@@ -34,55 +34,65 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp" />
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        android:gravity="center_vertical">
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="?attr/colorPrimary">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Descrição (ex: BIOS)"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/EdtDescricaoSenha"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:singleLine="true" />
+                android:layout_weight="1"
+                android:hint="Descrição (ex: BIOS)"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/EdtDescricaoSenha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:hint="Senha"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/EdtValorSenha"
-                android:layout_width="match_parent"
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:singleLine="true" />
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:hint="Senha"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/EdtValorSenha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true" />
 
-        <ImageButton
-            android:id="@+id/BtnAddSenha"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            app:srcCompat="@android:drawable/ic_input_add"
-            app:tint="?attr/colorPrimary"
-            android:contentDescription="Adicionar Senha" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/BtnAddSenha"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                app:srcCompat="@android:drawable/ic_input_add"
+                app:tint="?attr/colorPrimary"
+                android:contentDescription="Adicionar Senha" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <Button
         android:id="@+id/BtnFecharSenhas"

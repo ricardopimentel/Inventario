@@ -247,13 +247,13 @@ public class HomeFragment extends Fragment {
                         // Simple placeholder status mapping based on assumed names
                         String st = comp.getStatusInfo().toLowerCase();
                         if (st.contains("em uso") || st.contains("produção") || st.isEmpty() || st.equals("0")) {
-                            imgStatus.setImageResource(android.R.drawable.presence_online);
+                            imgStatus.setImageResource(R.drawable.checkcircle24);
                         } else if (st.contains("estoque") || st.contains("reserva")) {
-                            imgStatus.setImageResource(android.R.drawable.presence_away);
+                            imgStatus.setImageResource(R.drawable.uncheckcircle24);
                         } else if (st.contains("descarte") || st.contains("defeito")) {
-                            imgStatus.setImageResource(android.R.drawable.presence_busy);
+                            imgStatus.setImageResource(R.drawable.uncheckcircle24);
                         } else {
-                            imgStatus.setImageResource(android.R.drawable.presence_offline);
+                            imgStatus.setImageResource(R.drawable.uncheckcircle24);
                         }
                         comp.setImagemStatus(imgStatus);
 

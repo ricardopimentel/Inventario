@@ -27,6 +27,7 @@ public class ListAdapterSenhas extends RecyclerView.Adapter<ListAdapterSenhas.Vi
 
     public interface OnSenhaInteractionListener {
         void onDeleteClick(int position, SenhaItem item);
+        void onEditClick(int position, SenhaItem item);
     }
 
     public ListAdapterSenhas(ArrayList<SenhaItem> dados, Context contexto, OnSenhaInteractionListener listener) {
@@ -61,9 +62,11 @@ public class ListAdapterSenhas extends RecyclerView.Adapter<ListAdapterSenhas.Vi
                     if (holder.senhaVisivel) {
                         holder.mTvValorSenha.setTransformationMethod(PasswordTransformationMethod.getInstance());
                         holder.senhaVisivel = false;
+                        holder.mBtnCopiarSenha.setVisibility(View.GONE);
                     } else {
                         holder.mTvValorSenha.setTransformationMethod(null);
                         holder.senhaVisivel = true;
+                        holder.mBtnCopiarSenha.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -76,6 +79,15 @@ public class ListAdapterSenhas extends RecyclerView.Adapter<ListAdapterSenhas.Vi
                     if (clipboard != null) {
                         clipboard.setPrimaryClip(clip);
                         Toast.makeText(contexto, "Senha copiada para a área de transferência", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            holder.mBtnEditarSenha.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onEditClick(position, senhaItem);
                     }
                 }
             });
@@ -99,6 +111,7 @@ public class ListAdapterSenhas extends RecyclerView.Adapter<ListAdapterSenhas.Vi
     public class ViewHolderSenha extends RecyclerView.ViewHolder {
         public TextView mTvDescricaoSenha;
         public TextView mTvValorSenha;
+        public ImageButton mBtnEditarSenha;
         public ImageButton mBtnCopiarSenha;
         public ImageButton mBtnVerSenha;
         public ImageButton mBtnRemoverSenha;
@@ -108,6 +121,7 @@ public class ListAdapterSenhas extends RecyclerView.Adapter<ListAdapterSenhas.Vi
             super(itemView);
             mTvDescricaoSenha = itemView.findViewById(R.id.TvDescricaoSenha);
             mTvValorSenha = itemView.findViewById(R.id.TvValorSenha);
+            mBtnEditarSenha = itemView.findViewById(R.id.BtnEditarSenha);
             mBtnCopiarSenha = itemView.findViewById(R.id.BtnCopiarSenha);
             mBtnVerSenha = itemView.findViewById(R.id.BtnVerSenha);
             mBtnRemoverSenha = itemView.findViewById(R.id.BtnRemoverSenha);

@@ -29,14 +29,27 @@
         app:layout_constraintTop_toBottomOf="@+id/TvDescricaoSenha" />
 
     <ImageButton
-        android:id="@+id/BtnCopiarSenha"
+        android:id="@+id/BtnEditarSenha"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/BtnCopiarSenha"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/edit24"
+        app:tint="?attr/colorPrimary"
+        android:contentDescription="Editar" />
+
+    <ImageButton
+        android:id="@+id/BtnCopiarSenha"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/BtnVerSenha"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_edit"
+        app:srcCompat="@drawable/copy18"
         app:tint="?attr/colorPrimary"
         android:contentDescription="Copiar" />
 
@@ -48,7 +61,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/BtnRemoverSenha"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_view"
+        app:srcCompat="@drawable/eye24"
         app:tint="?attr/colorPrimary"
         android:contentDescription="Visualizar" />
 
@@ -60,7 +73,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_delete"
+        app:srcCompat="@drawable/delete24"
         app:tint="@color/md_theme_error"
         android:contentDescription="Remover" />
 

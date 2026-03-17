@@ -14,41 +14,47 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/barra_pesquisa">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchViewComputadores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:queryHint="Pesquisar por nome ou ID"
-            app:iconifiedByDefault="false" />
+            app:iconifiedByDefault="false"
+            android:textColor="?attr/colorPrimary"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:textColor="?attr/colorPrimary">
 
             <Spinner
                 android:id="@+id/spinnerMarca"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:textColor="?attr/colorPrimary"/>
 
             <Spinner
                 android:id="@+id/spinnerTipo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:textColor="?attr/colorPrimary"/>
             
             <Spinner
                 android:id="@+id/spinnerLocal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minHeight="48dp" />
+                android:minHeight="48dp"
+                android:textColor="?attr/colorPrimary"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -89,7 +95,6 @@
         android:layout_marginBottom="85dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white"
         app:srcCompat="@drawable/qr_code"
         android:contentDescription="Ler QR Code" />
 

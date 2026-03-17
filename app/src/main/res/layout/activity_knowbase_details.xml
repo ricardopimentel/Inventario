@@ -56,13 +56,12 @@
                 android:layout_marginBottom="16dp"
                 android:background="@android:color/darker_gray" />
 
-            <TextView
-                android:id="@+id/detailsContentKB"
+            <WebView
+                android:id="@+id/detailsWebKB"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
-                android:textIsSelectable="true"
-                android:text="Conteúdo do Item" />
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

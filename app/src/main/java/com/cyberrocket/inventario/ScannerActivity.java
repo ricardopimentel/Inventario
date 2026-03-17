@@ -41,8 +41,11 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.text.TextWatcher;
+import android.text.Editable;
 import java.util.ArrayList;
 
+import android.widget.ArrayAdapter;
 import com.cyberrocket.inventario.adapter.ListAdapterSenhas;
 import com.cyberrocket.inventario.lib.PasswordManager;
 import com.cyberrocket.inventario.models.SenhaItem;
@@ -82,6 +85,11 @@ public class ScannerActivity extends AppCompatActivity {
     ConstraintLayout mLayoutManutencoes;
     String mIdMonitor;
     SwipeRefreshLayout mSwipeRefreshListEquipamento;
+
+    // Autocomplete for Monitor
+    ArrayList<String> mMonitorNamesList;
+    ArrayList<String> mMonitorIdsList;
+    ArrayAdapter<String> mMonitorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,7 +137,7 @@ public class ScannerActivity extends AppCompatActivity {
         mBtAddMonitorScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                VincularMonitorDialog();
+                PreencherListaMonitores();
             }
         });
 
@@ -527,17 +535,61 @@ public class ScannerActivity extends AppCompatActivity {
         //listaplacaswifi.add(wifi);
     }
 
+    private void PreencherListaMonitores() {
+        mPgbProgresso.setIndeterminate(true);
+        mMonitorNamesList = new ArrayList<>();
+        mMonitorIdsList = new ArrayList<>();
+        mMonitorAdapter = new ArrayAdapter<>(ScannerActivity.this, android.R.layout.simple_dropdown_item_1line, mMonitorNamesList);
+
+        GLPIConnect con = new GLPIConnect(this);
+        con.GetArray("/apirest.php/Monitor?range=0-1000", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                mPgbProgresso.setIndeterminate(false);
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject monitor = jsonArray.getJSONObject(i);
+                        mMonitorNamesList.add(monitor.getString("name"));
+                        mMonitorIdsList.add(monitor.getString("id"));
+                    }
+                    mMonitorAdapter.notifyDataSetChanged();
+                    VincularMonitorDialog();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(ScannerActivity.this, "Erro ao processar monitores.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                mPgbProgresso.setIndeterminate(false);
+                Toast.makeText(ScannerActivity.this, "Erro de conexão ao buscar monitores:\n" + url, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void VincularMonitorDialog(){
         View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.activity_vincular_monitor, null);
-        TextInputEditText edittext = view.findViewById(R.id.TvNomeMonitorVincularMonitor);
+        android.widget.AutoCompleteTextView edittext = view.findViewById(R.id.TvNomeMonitorVincularMonitor);
+        
+        edittext.setAdapter(mMonitorAdapter);
+        edittext.setThreshold(1); // Show suggestions after 1 character
+
         MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(ScannerActivity.this)
             .setTitle("Nome do Monitor")
             .setView(view)
             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    // Pega o ID do
-                    GetIdMonitor(edittext.getText().toString());
+                    String nomeDigitado = edittext.getText().toString();
+                    int index = mMonitorNamesList.indexOf(nomeDigitado);
+                    if (index != -1) {
+                        String idMonitorSelecionado = mMonitorIdsList.get(index);
+                        AddConexao("/apirest.php/Computer_Item/", idMonitorSelecionado);
+                    } else {
+                        Toast.makeText(ScannerActivity.this, "Selecione um monitor válido da lista.", Toast.LENGTH_LONG).show();
+                    }
                 }
             }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                 @Override
@@ -554,7 +606,7 @@ public class ScannerActivity extends AppCompatActivity {
         JSONObject finalarray = new JSONObject();
         try {
             postparams.put("items_id", idmonitor);
-            postparams.put("computers_id", mTvIdEquipamento.getText());
+            postparams.put("computers_id", mTvIdEquipamento.getText().toString());
             postparams.put("itemtype", "Monitor");
             postparams.put("is_deleted", "0");
             postparams.put("is_dynamic", "1");
@@ -573,9 +625,13 @@ public class ScannerActivity extends AppCompatActivity {
                 IrPara(ScannerActivity.class, true);
             }
             @Override
-            public void onVolleyFailure(String url) {
-                Log.d("sessiontoken", url);
-                Toast.makeText(ScannerActivity.this, "Erro: "+ url, Toast.LENGTH_LONG).show();
+            public void onVolleyFailure(String errorMsg) {
+                Log.d("sessiontoken", errorMsg);
+                if(errorMsg != null && errorMsg.contains("ERROR_GLPI_ADD")) {
+                    Toast.makeText(ScannerActivity.this, "Erro: Monitor já está vinculado a outro equipamento.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(ScannerActivity.this, "Erro: " + errorMsg, Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -594,13 +650,17 @@ public class ScannerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 try {
-                    JSONObject jsonObject = jsonArray.getJSONObject(0);
-                    //Pega dados do equipamento
-                    String idmonitor = jsonObject.getString("id");
-                    if (!idmonitor.equals("")) {
-                        //Vincular monitor
-                        AddConexao("/apirest.php/Computer_Item/", idmonitor);
-                    }else{
+                    if (jsonArray.length() > 0) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        //Pega dados do equipamento
+                        String idmonitor = jsonObject.getString("id");
+                        if (!idmonitor.equals("")) {
+                            //Vincular monitor
+                            AddConexao("/apirest.php/Computer_Item/", idmonitor);
+                        }else{
+                            Toast.makeText(ScannerActivity.this, "Monitor não encontrado", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
                         Toast.makeText(ScannerActivity.this, "Monitor não encontrado", Toast.LENGTH_LONG).show();
                     }
                 } catch (JSONException e) {
@@ -650,8 +710,11 @@ public class ScannerActivity extends AppCompatActivity {
         TextInputEditText edtDesc = dialogView.findViewById(R.id.EdtDescricaoSenha);
         TextInputEditText edtValor = dialogView.findViewById(R.id.EdtValorSenha);
         ImageButton btnAdd = dialogView.findViewById(R.id.BtnAddSenha);
-        Button btnFechar = dialogView.findViewById(R.id.BtnFecharSenhas);
+        final Button btnFechar = dialogView.findViewById(R.id.BtnFecharSenhas);
         TextView tvTitle = dialogView.findViewById(R.id.TvDialogTitle);
+
+        btnFechar.setVisibility(View.GONE);
+        btnFechar.setText("Salvar no Servidor e Fechar");
         
         edtDesc.setHint("Usuário / Identificador");
 
@@ -660,6 +723,34 @@ public class ScannerActivity extends AppCompatActivity {
         rvSenhas.setLayoutManager(new LinearLayoutManager(this));
         
         final ArrayList<SenhaItem> currentPasswords = new ArrayList<>();
+        final int[] editingPosition = {-1};
+
+        final String[] existingSecretId = {null};
+        final String[] existingFieldsItemId = {null};
+        final String[] containerId = {"1"};
+
+        GLPIConnect con = new GLPIConnect(this);
+        InfisicalConnect infisical = new InfisicalConnect(this);
+
+        final boolean[] isDirty = {false};
+
+        Runnable updateButtonVisibility = () -> {
+            String d = edtDesc.getText().toString().trim();
+            String s = edtValor.getText().toString().trim();
+            if (!d.isEmpty() || !s.isEmpty() || editingPosition[0] != -1 || isDirty[0]) {
+                btnFechar.setVisibility(View.VISIBLE);
+            } else {
+                btnFechar.setVisibility(View.GONE);
+            }
+        };
+
+        TextWatcher watcher = new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { updateButtonVisibility.run(); }
+            @Override public void afterTextChanged(Editable s) {}
+        };
+        edtDesc.addTextChangedListener(watcher);
+        edtValor.addTextChangedListener(watcher);
 
         ListAdapterSenhas adapter = new ListAdapterSenhas(currentPasswords, this, new ListAdapterSenhas.OnSenhaInteractionListener() {
             @Override
@@ -667,12 +758,35 @@ public class ScannerActivity extends AppCompatActivity {
                 currentPasswords.remove(position);
                 if(rvSenhas.getAdapter() != null) rvSenhas.getAdapter().notifyDataSetChanged();
                 if (currentPasswords.isEmpty()) tvSenhasEmpty.setVisibility(View.VISIBLE);
+                
+                // Exclusão Instantânea no Servidor
+                // Exclusão Instantânea no Servidor
+                persistirAlteracoesNoVault(infisical, con, currentPasswords, itemtype, itemId, existingSecretId, existingFieldsItemId, containerId, null, false, isDirty, updateButtonVisibility);
+
+                // Se o item deletado era o que estava sendo editado, reseta
+                if (editingPosition[0] == position) {
+                    editingPosition[0] = -1;
+                    edtDesc.setText("");
+                    edtValor.setText("");
+                    btnAdd.setImageResource(android.R.drawable.ic_input_add);
+                } else if (editingPosition[0] > position) {
+                    editingPosition[0]--;
+                }
+                updateButtonVisibility.run();
+            }
+
+            @Override
+            public void onEditClick(int position, SenhaItem item) {
+                edtDesc.setText(item.getDescricao());
+                edtValor.setText(item.getSenha());
+                editingPosition[0] = position;
+                btnAdd.setImageResource(android.R.drawable.ic_menu_save);
+                updateButtonVisibility.run();
+                Toast.makeText(ScannerActivity.this, "Editando: " + item.getDescricao(), Toast.LENGTH_SHORT).show();
             }
         });
         rvSenhas.setAdapter(adapter);
 
-        GLPIConnect con = new GLPIConnect(this);
-        InfisicalConnect infisical = new InfisicalConnect(this);
         mPgbProgresso.setIndeterminate(true);
 
         if (!infisical.isConfigured()) {
@@ -682,10 +796,6 @@ public class ScannerActivity extends AppCompatActivity {
 
         String fieldsEndpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenha/?searchText[items_id]=" + itemId;
         
-        final String[] existingSecretId = {null};
-        final String[] existingFieldsItemId = {null};
-        final String[] containerId = {"1"};
-
         con.GetArray(fieldsEndpoint, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
@@ -774,6 +884,30 @@ public class ScannerActivity extends AppCompatActivity {
             }
         });
 
+        Runnable addOrUpdateAction = () -> {
+            String d = edtDesc.getText().toString().trim();
+            String s = edtValor.getText().toString().trim();
+            if (d.isEmpty() || s.isEmpty()) return;
+
+            if (editingPosition[0] != -1) {
+                SenhaItem item = currentPasswords.get(editingPosition[0]);
+                item.setDescricao(d);
+                item.setSenha(s);
+                editingPosition[0] = -1;
+                isDirty[0] = true;
+                btnAdd.setImageResource(android.R.drawable.ic_input_add);
+            } else {
+                SenhaItem newItem = new SenhaItem(d, s);
+                currentPasswords.add(newItem);
+                isDirty[0] = true;
+            }
+            adapter.notifyDataSetChanged();
+            tvSenhasEmpty.setVisibility(View.GONE);
+            edtDesc.setText("");
+            edtValor.setText("");
+            updateButtonVisibility.run();
+        };
+
         btnAdd.setOnClickListener(v -> {
             String d = edtDesc.getText().toString().trim();
             String s = edtValor.getText().toString().trim();
@@ -781,107 +915,110 @@ public class ScannerActivity extends AppCompatActivity {
                 Toast.makeText(ScannerActivity.this, "Preencha usuário e senha.", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            SenhaItem newItem = new SenhaItem(d, s);
-            currentPasswords.add(newItem);
-
-            adapter.notifyDataSetChanged();
-            tvSenhasEmpty.setVisibility(View.GONE);
-            edtDesc.setText("");
-            edtValor.setText("");
+            addOrUpdateAction.run();
         });
 
         btnFechar.setOnClickListener(v -> {
-            if (!infisical.isConfigured()) {
-                Toast.makeText(ScannerActivity.this, "Configure o Infisical primeiro.", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                return;
-            }
-
-            mPgbProgresso.setIndeterminate(true);
-
-            JSONArray arrayToSave = new JSONArray();
-            try {
-                for (SenhaItem item : currentPasswords) {
-                    JSONObject o = new JSONObject();
-                    o.put("descricao", item.getDescricao());
-                    o.put("senha", item.getSenha());
-                    arrayToSave.put(o);
-                }
-            } catch (JSONException e) { e.printStackTrace(); }
-            
-            String jsonPayload = arrayToSave.toString();
-            
-            if (currentPasswords.isEmpty() && existingSecretId[0] != null) {
-                infisical.DeleteSecret(existingSecretId[0], new InfisicalConnect.VolleyResponseListener() {
-                    @Override
-                    public void onVolleySuccess(String response) {
-                        limparCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], dialog);
-                    }
-                    @Override
-                    public void onVolleyFailure(String error) {
-                        mPgbProgresso.setIndeterminate(false);
-                        Toast.makeText(ScannerActivity.this, "Erro apagando secret", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return;
-            }
-
-            if (currentPasswords.isEmpty()) {
-                mPgbProgresso.setIndeterminate(false);
-                dialog.dismiss();
-                return;
-            }
-
-            if (existingSecretId[0] != null) {
-                infisical.UpdateSecret(existingSecretId[0], jsonPayload, new InfisicalConnect.VolleyResponseListener() {
-                    @Override
-                    public void onVolleySuccess(String response) {
-                        mPgbProgresso.setIndeterminate(false);
-                        Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
-                        dialog.dismiss();
-                    }
-                    @Override
-                    public void onVolleyFailure(String error) {
-                        mPgbProgresso.setIndeterminate(false);
-                        Toast.makeText(ScannerActivity.this, "Erro atualizando secret", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                String newKey = "GLPI_" + itemtype.toUpperCase() + "_" + itemId + "_CRED";
-                infisical.CreateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
-                    @Override
-                    public void onVolleySuccess(String response) {
-                        existingSecretId[0] = newKey; // Salva o estado para a próxima vez que o usuário clicar em Salvar sem fechar a janela
-                        atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog);
-                    }
-                    @Override
-                    public void onVolleyFailure(String error) {
-                        if (error.contains("already exists") || error.contains("Secret already exists")) {
-                            // Fallback to update if it exists in Infisical but GLPI lost the reference
-                            existingSecretId[0] = newKey; // Recupera o ID também no fallback
-                            infisical.UpdateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
-                                @Override
-                                public void onVolleySuccess(String updateResponse) {
-                                    atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog);
-                                }
-                                @Override
-                                public void onVolleyFailure(String updateError) {
-                                    mPgbProgresso.setIndeterminate(false);
-                                    Toast.makeText(ScannerActivity.this, "Erro forçando update do secret: " + updateError, Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        } else {
-                            mPgbProgresso.setIndeterminate(false);
-                            Toast.makeText(ScannerActivity.this, "Erro criando secret: " + error, Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
+            // Auto-Adicionar se houver algo digitado
+            addOrUpdateAction.run();
+            persistirAlteracoesNoVault(infisical, con, currentPasswords, itemtype, itemId, existingSecretId, existingFieldsItemId, containerId, dialog, true, isDirty, updateButtonVisibility);
         });
     }
 
-    private void atualizarCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, String containerId, String newKey, AlertDialog dialog) {
+    private void persistirAlteracoesNoVault(InfisicalConnect infisical, GLPIConnect con, ArrayList<SenhaItem> currentPasswords, String itemtype, String itemId, String[] existingSecretId, String[] existingFieldsItemId, String[] containerId, AlertDialog dialog, boolean closeAfter, boolean[] isDirty, Runnable updateButtonVisibility) {
+        if (!infisical.isConfigured()) {
+            if (dialog != null) Toast.makeText(ScannerActivity.this, "Configure o Infisical primeiro.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mPgbProgresso.setIndeterminate(true);
+
+        JSONArray arrayToSave = new JSONArray();
+        try {
+            for (SenhaItem item : currentPasswords) {
+                JSONObject o = new JSONObject();
+                o.put("descricao", item.getDescricao());
+                o.put("senha", item.getSenha());
+                arrayToSave.put(o);
+            }
+        } catch (JSONException e) { e.printStackTrace(); }
+        
+        String jsonPayload = arrayToSave.toString();
+        
+        if (currentPasswords.isEmpty() && existingSecretId[0] != null) {
+            infisical.UpdateSecret(existingSecretId[0], "[]", new InfisicalConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String response) {
+                    existingSecretId[0] = null;
+                    limparCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], dialog, closeAfter, isDirty, updateButtonVisibility);
+                }
+                @Override
+                public void onVolleyFailure(String error) {
+                    mPgbProgresso.setIndeterminate(false);
+                    Toast.makeText(ScannerActivity.this, "Erro apagando secret (update []): " + error, Toast.LENGTH_LONG).show();
+                }
+            });
+            return;
+        }
+
+        if (currentPasswords.isEmpty()) {
+            mPgbProgresso.setIndeterminate(false);
+            if (closeAfter && dialog != null) dialog.dismiss();
+            return;
+        }
+
+        if (existingSecretId[0] != null) {
+            infisical.UpdateSecret(existingSecretId[0], jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String response) {
+                    mPgbProgresso.setIndeterminate(false);
+                    isDirty[0] = false;
+                    if (closeAfter) {
+                        Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
+                        if (dialog != null) dialog.dismiss();
+                    } else {
+                        updateButtonVisibility.run();
+                    }
+                }
+                @Override
+                public void onVolleyFailure(String error) {
+                    mPgbProgresso.setIndeterminate(false);
+                    Toast.makeText(ScannerActivity.this, "Erro atualizando secret", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            String newKey = "GLPI_" + itemtype.toUpperCase() + "_" + itemId + "_CRED";
+            infisical.CreateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String response) {
+                    existingSecretId[0] = newKey; 
+                    atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog, closeAfter, isDirty, updateButtonVisibility);
+                }
+                @Override
+                public void onVolleyFailure(String error) {
+                    if (error.contains("already exists") || error.contains("Secret already exists")) {
+                        existingSecretId[0] = newKey;
+                        infisical.UpdateSecret(newKey, jsonPayload, new InfisicalConnect.VolleyResponseListener() {
+                            @Override
+                            public void onVolleySuccess(String updateResponse) {
+                                atualizarCustomFieldGLPI(con, itemtype, itemId, existingFieldsItemId[0], containerId[0], newKey, dialog, closeAfter, isDirty, updateButtonVisibility);
+                            }
+                            @Override
+                            public void onVolleyFailure(String updateError) {
+                                mPgbProgresso.setIndeterminate(false);
+                                Toast.makeText(ScannerActivity.this, "Erro atualizando secret: " + updateError, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } else {
+                        mPgbProgresso.setIndeterminate(false);
+                        Toast.makeText(ScannerActivity.this, "Erro criando secret: " + error, Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+    }
+
+    private void atualizarCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, String containerId, String newKey, AlertDialog dialog, boolean closeAfter, boolean[] isDirty, Runnable updateButtonVisibility) {
         String endpoint = "/apirest.php/PluginFields" + itemtype + "cofredesenha/";
         int method = Request.Method.POST;
         
@@ -910,16 +1047,21 @@ public class ScannerActivity extends AppCompatActivity {
                 @Override
                 public void onVolleySuccess(String u, String r) {
                     mPgbProgresso.setIndeterminate(false);
+                    isDirty[0] = false;
                     Log.d("GLPI_FIELDS_MAIN", "Sucesso no update GLPI! Resposta: " + r);
-                    Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
+                    if (closeAfter) {
+                        Toast.makeText(ScannerActivity.this, "Senhas salvas no Vault!", Toast.LENGTH_SHORT).show();
+                        if (dialog != null) dialog.dismiss();
+                    } else {
+                        updateButtonVisibility.run();
+                    }
                 }
                 @Override
                 public void onVolleyFailure(String e) {
                     mPgbProgresso.setIndeterminate(false);
                     Log.e("GLPI_FIELDS_MAIN", "Falha no update GLPI. Erro: " + e);
                     Toast.makeText(ScannerActivity.this, "Erro Atualizando GLPI: " + e, Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
+                    if (closeAfter && dialog != null) dialog.dismiss();
                 }
             });
             
@@ -932,11 +1074,13 @@ public class ScannerActivity extends AppCompatActivity {
         }
     }
 
-    private void limparCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, AlertDialog dialog) {
+    private void limparCustomFieldGLPI(GLPIConnect con, String itemtype, String itemId, String existingRowId, AlertDialog dialog, boolean closeAfter, boolean[] isDirty, Runnable updateButtonVisibility) {
          if (existingRowId == null || existingRowId.isEmpty()) {
              mPgbProgresso.setIndeterminate(false);
+             isDirty[0] = false;
              Toast.makeText(ScannerActivity.this, "Senha removida.", Toast.LENGTH_SHORT).show();
-             dialog.dismiss();
+             if (closeAfter && dialog != null) dialog.dismiss();
+             else updateButtonVisibility.run();
              return;
          }
          try {
@@ -958,23 +1102,28 @@ public class ScannerActivity extends AppCompatActivity {
                   @Override
                   public void onVolleySuccess(String url, String response) {
                        mPgbProgresso.setIndeterminate(false);
+                       isDirty[0] = false;
                        Log.d("GLPI_FIELDS_MAIN", "Sucesso no clean GLPI! Resposta: " + response);
                        Toast.makeText(ScannerActivity.this, "Senha removida.", Toast.LENGTH_SHORT).show();
-                       dialog.dismiss();
+                       if (closeAfter) {
+                           if (dialog != null) dialog.dismiss();
+                       } else {
+                           updateButtonVisibility.run();
+                       }
                   }
                   @Override
                   public void onVolleyFailure(String error) {
                        mPgbProgresso.setIndeterminate(false); 
                        Log.e("GLPI_FIELDS_MAIN", "Falha no clean GLPI. Erro: " + error);
                        Toast.makeText(ScannerActivity.this, "Erro Removendo no GLPI: " + error, Toast.LENGTH_LONG).show();
-                       dialog.dismiss();
+                       if (closeAfter && dialog != null) dialog.dismiss();
                   }
              });
          } catch(JSONException e){ 
              e.printStackTrace(); 
              Log.e("GLPI_FIELDS_MAIN", "Erro montando JSON _plugin_fields: " + e.getMessage());
              mPgbProgresso.setIndeterminate(false); 
-             dialog.dismiss(); 
+             if (closeAfter && dialog != null) dialog.dismiss(); 
          }
     }
 

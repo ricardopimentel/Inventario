@@ -1,90 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="32dp"
-    android:paddingEnd="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="55dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:clipToPadding="false">
 
     <!-- Avatar circle -->
+
+    <!-- Chat bubble background for reply -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:shapeAppearanceOverlay="@style/CustomCardCornersRight"
+        android:layout_marginEnd="8dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/md_theme_primary"
+        app:cardBackgroundColor="?attr/colorSurface">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp"
+                android:padding="8dp"
+                android:background="@drawable/bubble_header_bg_gray"
+                android:backgroundTint="@color/md_theme_surfaceBright">
+
+                <TextView
+                    android:id="@+id/tvCreationDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Criado em: 00/00/0000"
+                    android:textSize="12sp"
+                    android:layout_marginEnd="4dp"
+                    android:textColor="@color/md_theme_onSurface"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="por "
+                    android:textSize="12sp"
+                    android:textColor="@color/md_theme_onSurface"/>
+
+                <TextView
+                    android:id="@+id/tvAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nome"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/md_theme_onSurface"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Conteúdo do acompanhamento..."
+                android:textSize="14sp"
+                android:textColor="@color/md_theme_onSurface"
+                android:lineSpacingExtra="4dp"/>
+                
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="✉️ Helpdesk"
+                android:textSize="10sp"
+                android:background="@color/md_theme_surfaceBright"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="4dp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <TextView
         android:id="@+id/tvAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/avatar_bg_blue"
         android:gravity="center"
         android:text="KB"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:textStyle="bold" />
-
-    <!-- Chat bubble background for reply -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bubble_gray"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp"
-            android:padding="8dp"
-            android:background="@drawable/bubble_header_bg_gray">
-            
-            <TextView
-                android:id="@+id/tvCreationDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Criado em: 00/00/0000"
-                android:textSize="12sp"
-                android:layout_marginEnd="4dp"
-                android:textColor="@color/md_theme_onPrimary"/>
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="por "
-                android:textSize="12sp"
-                android:textColor="@color/md_theme_onPrimary"/>
-                
-            <TextView
-                android:id="@+id/tvAuthor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nome"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_onPrimary"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvContent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Conteúdo do acompanhamento..."
-            android:textSize="14sp"
-            android:textColor="@color/md_theme_onSecondary"
-            android:lineSpacingExtra="4dp"/>
-            
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="✉️ Helpdesk"
-            android:textSize="10sp"
-            android:background="#E0EBF5"
-            android:paddingHorizontal="6dp"
-            android:paddingVertical="4dp"
-            android:textStyle="bold"/>
-
-    </LinearLayout>
 
 </LinearLayout>

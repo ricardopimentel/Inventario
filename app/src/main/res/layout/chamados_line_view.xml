@@ -8,7 +8,10 @@
     android:layout_marginTop="4dp"
     android:layout_marginEnd="12dp"
     android:layout_marginBottom="8dp"
-    style="?attr/materialCardViewFilledStyle">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="6dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?attr/colorPrimary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,7 +24,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:buttonTint="?attr/colorPrimary"/>
 
         <TextView
             android:id="@+id/TvIdMudancaScanner"
@@ -29,8 +33,9 @@
             android:layout_height="wrap_content"
             android:text="#1234"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@+id/cbSelect"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@+id/TvUsuarioCriacao"
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/TvTitulo"
@@ -41,7 +46,7 @@
             android:text="Titulo do Chamado"
             android:textSize="16sp"
             app:layout_constraintEnd_toStartOf="@+id/ImgImagemStatus"
-            app:layout_constraintStart_toEndOf="@+id/TvIdMudancaScanner"
+            app:layout_constraintStart_toEndOf="@+id/cbSelect"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -63,7 +68,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imgDelete"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/presence_online" />
+            app:srcCompat="@drawable/circle24" />
 
         <ImageView
             android:id="@+id/imgDelete"
@@ -74,7 +79,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@android:drawable/ic_menu_delete" />
+            app:srcCompat="@drawable/delete24"
+            android:tint="@color/md_theme_error"/>
 
         <!-- Hidden elements to keep adapter compatibility without crashing if referenced -->
         <TextView android:id="@+id/TvUsuarioCriacao" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" tools:ignore="MissingConstraints" />

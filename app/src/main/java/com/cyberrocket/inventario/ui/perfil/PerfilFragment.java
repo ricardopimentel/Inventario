@@ -42,9 +42,37 @@ public class PerfilFragment extends Fragment {
         //Inicializações
         mBtSair = root.findViewById(R.id.BtSair);
         Button mBtVaultSettings = root.findViewById(R.id.BtVaultSettings);
+        com.google.android.material.button.MaterialButtonToggleGroup toggleGroupTheme = root.findViewById(R.id.toggleGroupTheme);
         mCrud = new Crud();
 
+        // Configura estado inicial do tema
+        int currentTheme = com.cyberrocket.inventario.lib.ThemeUtils.getSelectedTheme(getContext());
+        if (currentTheme == com.cyberrocket.inventario.lib.ThemeUtils.THEME_LIGHT) {
+            toggleGroupTheme.check(R.id.btnThemeLight);
+        } else if (currentTheme == com.cyberrocket.inventario.lib.ThemeUtils.THEME_DARK) {
+            toggleGroupTheme.check(R.id.btnThemeDark);
+        } else {
+            toggleGroupTheme.check(R.id.btnThemeSystem);
+        }
+
         //Listeners
+        toggleGroupTheme.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                int selectedTheme;
+                if (checkedId == R.id.btnThemeLight) {
+                    selectedTheme = com.cyberrocket.inventario.lib.ThemeUtils.THEME_LIGHT;
+                } else if (checkedId == R.id.btnThemeDark) {
+                    selectedTheme = com.cyberrocket.inventario.lib.ThemeUtils.THEME_DARK;
+                } else {
+                    selectedTheme = com.cyberrocket.inventario.lib.ThemeUtils.THEME_SYSTEM;
+                }
+                
+                if (selectedTheme != com.cyberrocket.inventario.lib.ThemeUtils.getSelectedTheme(getContext())) {
+                    com.cyberrocket.inventario.lib.ThemeUtils.saveAndApplyTheme(getContext(), selectedTheme);
+                }
+            }
+        });
+
         mBtSair.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -390,11 +390,11 @@ public class TicketsFragment extends Fragment {
                         // Tenta definir o ícone baseando-se no status
                         ImageView imgStatus = new ImageView(getContext());
                         if (status == 1 || status == 2 || status == 3) { // Novo ou em atendimento
-                            imgStatus.setImageResource(android.R.drawable.presence_online);
+                            imgStatus.setImageResource(R.drawable.circle24);
                         } else if (status == 5 || status == 6) { // Resolvido ou Fechado
-                            imgStatus.setImageResource(android.R.drawable.presence_offline);
+                            imgStatus.setImageResource(R.drawable.checkcircle24);
                         } else {
-                            imgStatus.setImageResource(android.R.drawable.presence_away);
+                            imgStatus.setImageResource(R.drawable.checkcircle24);
                         }
                         chamado.setImagemStatus(imgStatus);
 
