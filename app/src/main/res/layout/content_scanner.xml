@@ -40,13 +40,12 @@
 
                 <ImageView
                     android:id="@+id/imageView4"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="50dp"  android:layout_height="50dp" android:layout_marginStart="8dp"
+                    android:scaleType="fitCenter" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/informacao" />
+                    app:tint="@color/md_theme_onPrimary"
+                    app:srcCompat="@drawable/devices_other_24" />
 
                 <TextView
                     android:id="@+id/textView"
@@ -113,13 +112,13 @@
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="50dp"  android:layout_height="50dp" android:layout_marginStart="8dp"
+                    android:scaleType="fitCenter" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/monitor_icone" />
+                    app:tint="@color/md_theme_onPrimary"
+                    app:srcCompat="@drawable/monitor_24"/>
+
 
                 <TextView
                     android:id="@+id/textView3"
@@ -183,13 +182,12 @@
 
                 <ImageView
                     android:id="@+id/imgViewArmazenamento"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="50dp"  android:layout_height="50dp" android:layout_marginStart="8dp"
+                    android:scaleType="fitCenter" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/armazenamento"/>
+                    app:tint="@color/md_theme_onPrimary"
+                    app:srcCompat="@drawable/hard_disk_24"/>
 
                 <TextView
                     android:id="@+id/tvTitleArmazenamento"
@@ -255,13 +253,12 @@
 
                 <ImageView
                     android:id="@+id/imageView9"
-                    android:layout_width="70dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="50dp"  android:layout_height="50dp" android:layout_marginStart="8dp"
+                    android:scaleType="fitCenter" app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/manutencao" />
+                    app:tint="@color/md_theme_onPrimary"
+                    app:srcCompat="@drawable/build_circle_24"/>
 
                 <TextView
                     android:id="@+id/textView2"
