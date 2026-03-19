@@ -8,9 +8,11 @@ import com.android.volley.Request;
 import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
 import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
+import com.cyberrocket.inventario.adapter.ListAdapterArmazenamento;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.lib.InfisicalConnect;
+import com.cyberrocket.inventario.models.ArmazenamentoLine;
 import com.cyberrocket.inventario.models.EquipamentoLine;
 import com.cyberrocket.inventario.models.MonitorLine;
 import com.cyberrocket.inventario.models.MudancasLine;
@@ -44,6 +46,7 @@ import org.json.JSONObject;
 import android.text.TextWatcher;
 import android.text.Editable;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.widget.ArrayAdapter;
 import com.cyberrocket.inventario.adapter.ListAdapterSenhas;
@@ -60,14 +63,11 @@ public class ScannerActivity extends AppCompatActivity {
     RecyclerView mListaEquipamentos;
     RecyclerView mListaMudancas;
     RecyclerView mListaMonitores;
+    RecyclerView mListaArmazenamento;
+    RecyclerView mListaArmazenamentoFisico;
     Button mBtNovaManutencao;
     ImageButton mBtAddMonitorScanner;
     ImageView mImvSyncDevice;
-
-    Button mBtSenhasComputador;
-    Button mBtSenhasLocal;
-    LinearLayout mLayoutCofreBotoes;
-
     FloatingActionButton mBtLerEquipamento;
     LinearLayoutManager linearLayoutManagerEquipamento;
     StaggeredGridLayoutManager gridLayoutManagerEquipamento;
@@ -79,12 +79,16 @@ public class ScannerActivity extends AppCompatActivity {
     ArrayList<EquipamentoLine> listaequipamentos;
     ArrayList<MudancasLine> listamudancas;
     ArrayList<MonitorLine> listamonitores;
+    ArrayList<ArmazenamentoLine> listaarmazenamento;
+    ArrayList<ArmazenamentoLine> listaarmazenamentofisico;
     Boolean existemanutencaoaberta = false;
     ConstraintLayout mLayoutEquipamentos;
     ConstraintLayout mLayoutMonitores;
     ConstraintLayout mLayoutManutencoes;
+    ConstraintLayout mLayoutArmazenamento;
     String mIdMonitor;
     SwipeRefreshLayout mSwipeRefreshListEquipamento;
+    String mItemType = "Computer"; // Default
 
     // Autocomplete for Monitor
     ArrayList<String> mMonitorNamesList;
@@ -159,12 +163,6 @@ public class ScannerActivity extends AppCompatActivity {
         }
     }
 
-    //Sobrescreve a ação de voltar, redirecionando direto para a activity home
-    public void onBackPressed() { //Botão BACK padrão do android
-        startActivity(new Intent(this, HomeActivity.class)); //O efeito ao ser pressionado do botão (no caso abre a activity)
-        finishAffinity(); //Método para matar a activity e não deixa-lá indexada na pilhagem
-        return;
-    }
 
     private void DigitarManualmente() {
         View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.dialog_input, null);
@@ -204,6 +202,19 @@ public class ScannerActivity extends AppCompatActivity {
     private void getParametros() { //Se a activity for chamada atribuindo como parametro um id de equipamento, realiza a busca pelo equipamento, sem a necessidade de fazer a leitura do qr code
         Intent it = getIntent();
         String id = it.getStringExtra("id");
+        String type = it.getStringExtra("item_type");
+        if (type != null) {
+            mItemType = type;
+        }
+        
+        if (getSupportActionBar() != null) {
+            if (mItemType.equals("Monitor")) {
+                getSupportActionBar().setTitle("Detalhes do Monitor");
+            } else {
+                getSupportActionBar().setTitle("Detalhes do Computador");
+            }
+        }
+
         if (id != null) {
             mTvIdEquipamento.setText(id);
             inicializarListas();
@@ -222,6 +233,8 @@ public class ScannerActivity extends AppCompatActivity {
         mListaEquipamentos = findViewById(R.id.RvDetalhesEquipamentoScanner);
         mListaMudancas = findViewById(R.id.RvMudancasScanner);
         mListaMonitores = findViewById(R.id.RvMonitoresScanner);
+        mListaArmazenamento = findViewById(R.id.RvArmazenamentoScanner);
+        mListaArmazenamentoFisico = findViewById(R.id.RvArmazenamentoScannerFisico);
 
         linearLayoutManagerEquipamento = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         gridLayoutManagerEquipamento = new StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL);
@@ -235,59 +248,20 @@ public class ScannerActivity extends AppCompatActivity {
         mListaEquipamentos.setLayoutManager(gridLayoutManagerEquipamento);
         mListaMonitores.setLayoutManager(linearLayoutManagerMonitores);
         mListaMudancas.setLayoutManager(gridLayoutManagerMudancas);
+        mListaArmazenamento.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+        mListaArmazenamentoFisico.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         mLayoutEquipamentos = findViewById(R.id.LayoutEquipamentosScanner);
         mLayoutMonitores = findViewById(R.id.LayoutMonitoresScanner);
         mLayoutManutencoes = findViewById(R.id.LayoutManutencoesScanner);
+        mLayoutArmazenamento = findViewById(R.id.LayoutArmazenamentoScanner);
 
         mImvSyncDevice = findViewById(R.id.ImvSyncDevice);
 
         mBtLerEquipamento = findViewById(R.id.BtLerEquipamentoScanner);
         mSwipeRefreshListEquipamento = findViewById(R.id.RefreshEquipamentosScanner);
+        mSwipeRefreshListEquipamento = findViewById(R.id.RefreshEquipamentosScanner);
         
-        mLayoutCofreBotoes = findViewById(R.id.LayoutCofreBotoes);
-        mBtSenhasComputador = findViewById(R.id.BtSenhasComputador);
-        mBtSenhasLocal = findViewById(R.id.BtSenhasLocal);
-        
-        mBtSenhasComputador.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AbrirCofreSenhas("Computer", mTvIdEquipamento.getText().toString());
-            }
-        });
-
-        mBtSenhasLocal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Fetch Computer without expand_dropdown to get raw Location ID
-                mPgbProgresso.setIndeterminate(true);
-                GLPIConnect tempCon = new GLPIConnect(ScannerActivity.this);
-                tempCon.GetItem("/apirest.php/Computer/" + mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
-                    @Override
-                    public void onVolleySuccess(String url, String response) {
-                        mPgbProgresso.setIndeterminate(false);
-                        try {
-                            JSONObject rawComp = new JSONObject(response);
-                            String rawLocId = rawComp.optString("locations_id", "0");
-                            if (rawLocId.equals("0") || rawLocId.isEmpty()) {
-                                Toast.makeText(ScannerActivity.this, "Este computador não possui um Local definido.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                AbrirCofreSenhas("Location", rawLocId);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onVolleyFailure(String error) {
-                        mPgbProgresso.setIndeterminate(false);
-                        Toast.makeText(ScannerActivity.this, "Erro ao consultar a localização", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-
         mCrud = new Crud();
     }
 
@@ -313,13 +287,16 @@ public class ScannerActivity extends AppCompatActivity {
         listamudancas = new ArrayList<MudancasLine>();
         listamonitores = new ArrayList<MonitorLine>();
         listaequipamentos = new ArrayList<EquipamentoLine>();
+        listaarmazenamento = new ArrayList<ArmazenamentoLine>();
+        listaarmazenamentofisico = new ArrayList<ArmazenamentoLine>();
     }
 
     private void BuscarListaEquipamentos(String idequipamento) {
         mTvIdEquipamento.setText(idequipamento);
         if(!idequipamento.equals("erro")) {
             GLPIConnect con = new GLPIConnect(this);
-            con.GetItem("/apirest.php/Computer/" + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true&with_softwares=true", new GLPIConnect.VolleyResponseListener() {
+            String endpoint = mItemType.equals("Monitor") ? "/apirest.php/Monitor/" : "/apirest.php/Computer/";
+            con.GetItem(endpoint + idequipamento + "?expand_dropdowns=true&with_connections=true&with_problems=true&with_softwares=true&with_disks=true&with_devices=true&with_networkports=true&with_networknames=true", new GLPIConnect.VolleyResponseListener() {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     JSONObject jsonObject = new JSONObject();
@@ -346,42 +323,267 @@ public class ScannerActivity extends AppCompatActivity {
 
                     try {
                         //Pega dados do equipamento
-                        CriarListaEquipamentos("Nome:", jsonObject.getString("name"), View.GONE);
-                        CriarListaEquipamentos("Localização:", jsonObject.getString("locations_id"), View.VISIBLE);
-                        CriarListaEquipamentos("Agente:", versaoagente, View.GONE);
-                        CriarListaEquipamentos("Nº Série:", jsonObject.getString("serial"), View.GONE);
-                        CriarListaEquipamentos("Modificado:", jsonObject.getString("date_mod"), View.GONE);
-                        CriarListaEquipamentos("Estado:", jsonObject.getString("states_id"), View.GONE);
-                        CriarListaEquipamentos("Marca:", jsonObject.getString("manufacturers_id"), View.GONE);
-                        CriarListaEquipamentos("Tipo:", jsonObject.getString("computertypes_id"), View.GONE);
-                        String tipo =jsonObject.getString("computertypes_id");
+                        int nameVaultType = mItemType.equals("Monitor") ? 0 : 1;
+                        int locVaultType = mItemType.equals("Monitor") ? 0 : 2;
+
+                        CriarListaEquipamentos("Nome:", jsonObject.optString("name"), View.GONE, nameVaultType);
+                        CriarListaEquipamentos("Localização:", jsonObject.optString("locations_id"), View.VISIBLE, locVaultType);
+                        
+                        if (mItemType.equals("Computer")) {
+                            CriarListaEquipamentos("Agente:", versaoagente, View.GONE, 0);
+                        }
+                        
+                        CriarListaEquipamentos("Nº Série:", jsonObject.optString("serial"), View.GONE, 0);
+                        CriarListaEquipamentos("Modificado:", jsonObject.optString("date_mod"), View.GONE, 0);
+                        CriarListaEquipamentos("Estado:", jsonObject.optString("states_id"), View.VISIBLE, 0);
+                        CriarListaEquipamentos("Marca:", jsonObject.optString("manufacturers_id"), View.GONE, 0);
+                        
+                        String tipoLabel = "Tipo:";
+                        String tipoValue = "";
+                        if (mItemType.equals("Monitor")) {
+                            tipoValue = jsonObject.optString("monitortypes_id");
+                        } else {
+                            tipoValue = jsonObject.optString("computertypes_id");
+                        }
+                        CriarListaEquipamentos(tipoLabel, tipoValue, View.GONE, 0);
+                        
+                        // Pegar Endereço IP do computador (Busca profunda e recursiva)
+                        try {
+                            ArrayList<String> ips = new ArrayList<>();
+                            // Função anônima recursiva não é simples em Java 8 sem declarar uma interface ou usar um helper
+                            // Vou usar uma abordagem iterativa com uma pilha para busca profunda
+                            java.util.Stack<Object> stack = new java.util.Stack<>();
+                            stack.push(jsonObject);
+                            
+                            while (!stack.isEmpty()) {
+                                Object current = stack.pop();
+                                if (current instanceof JSONObject) {
+                                    JSONObject obj = (JSONObject) current;
+                                    Iterator<String> keys = obj.keys();
+                                    while (keys.hasNext()) {
+                                        String key = keys.next();
+                                        Object val = obj.opt(key);
+                                        if (val instanceof String) {
+                                            String s = (String) val;
+                                            // Regex para PV4
+                                            if (s.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
+                                                if (!s.equals("0.0.0.0") && !s.equals("127.0.0.1") && !ips.contains(s)) {
+                                                    ips.add(s);
+                                                }
+                                            }
+                                        } else if (val instanceof JSONObject || val instanceof JSONArray) {
+                                            stack.push(val);
+                                        }
+                                    }
+                                } else if (current instanceof JSONArray) {
+                                    JSONArray arr = (JSONArray) current;
+                                    for (int i = 0; i < arr.length(); i++) {
+                                        Object val = arr.opt(i);
+                                        if (val instanceof JSONObject || val instanceof JSONArray) {
+                                            stack.push(val);
+                                        } else if (val instanceof String) {
+                                            String s = (String) val;
+                                            if (s.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
+                                                if (!s.equals("0.0.0.0") && !s.equals("127.0.0.1") && !ips.contains(s)) {
+                                                    ips.add(s);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (!ips.isEmpty()) {
+                                // Ordenar IPs para ficarem bonitos (opcional)
+                                java.util.Collections.sort(ips);
+                                String ipList = android.text.TextUtils.join(", ", ips);
+                                CriarListaEquipamentos("Endereço IP:", ipList, View.GONE, 0);
+                            }
+                        } catch (Exception e) {
+                            Log.e("IPDebug", "Erro na busca profunda de IP: " + e.getMessage());
+                        }
 
                         //Seta dados para a lista de detalhes do equipamento
                         ListAdapterEquipamentos equipamentoadapter = new ListAdapterEquipamentos(listaequipamentos, ScannerActivity.this, idequipamento);
                         mListaEquipamentos.setAdapter(equipamentoadapter);
                         mLayoutEquipamentos.setVisibility(View.VISIBLE);
-                        
-                        if (mLayoutCofreBotoes != null) mLayoutCofreBotoes.setVisibility(View.VISIBLE);
 
-                        //Pega Monitores
+                        if (mItemType.equals("Computer")) {
+                            //Pega Monitores vinculados ao computador
+                            try {
+                                JSONArray monitoresarray = jsonObject.getJSONObject("_connections").getJSONArray("Monitor");
+                                for (int i = 0; i < monitoresarray.length(); i++) {
+                                    JSONObject monitor = monitoresarray.getJSONObject(i);
+                                    CriarListaMonitores(monitor.optString("name"), monitor.optString("manufacturers_id"), monitor.optString("monitormodels_id"), monitor.optString("states_id"), monitor.optString("id"), monitor.optString("serial"));
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            //Seta dados para a lista de monitores
+                            ListAdapterMonitores adaptermonitores = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
+                            mListaMonitores.setAdapter(adaptermonitores);
+
+                            if (!tipoValue.equals("Notebook")) {
+                                mLayoutMonitores.setVisibility(View.VISIBLE);
+                            } else {
+                                mLayoutMonitores.setVisibility(View.GONE);
+                            }
+                        } else {
+                            // É um monitor, esconde a lista de monitores (ele não tem monitores vinculados a ele da mesma forma)
+                            mLayoutMonitores.setVisibility(View.GONE);
+                            mLayoutArmazenamento.setVisibility(View.GONE);
+                        }
+
+                        // Debug keys for storage and partitions finding  
+                        Iterator<String> jsonKeys = jsonObject.keys();
+                        while(jsonKeys.hasNext()) {
+                             String k = jsonKeys.next();
+                             Log.d("DiskVolumeDebug", "Main Key in Computer: " + k);
+                        }
+                        if(jsonObject.has("Item_Disk")) {
+                             Log.d("DiskVolumeDebug", "Item_Disk struct: " + jsonObject.opt("Item_Disk").toString());
+                        }
+
+                        //Pega Armazenamento
                         try {
-                            JSONArray monitoresarray = jsonObject.getJSONObject("_connections").getJSONArray("Monitor");
-                            for (int i = 0; i < monitoresarray.length(); i++) {
-                                JSONObject monitor = monitoresarray.getJSONObject(i);
-                                CriarListaMonitores(monitor.getString("name"), monitor.getString("manufacturers_id"), monitor.getString("monitormodels_id"), monitor.getString("states_id"), monitor.getString("id"), monitor.getString("serial"));
+                            boolean hasDisks = false;
+                            
+                            // Em vez de _devices, vamos usar a relação oficial de volumes/discos lógicos (_disks)
+                            JSONArray disksArray = jsonObject.optJSONArray("_disks");
+                            
+                            if (disksArray != null && disksArray.length() > 0) {
+                                for (int i = 0; i < disksArray.length(); i++) {
+                                    JSONObject diskObj = disksArray.getJSONObject(i);
+                                    
+                                    // Bizarre GLPI bug: sometimes it returns the actual disk JSON stringIFIED inside the 'name' field
+                                    String rawName = diskObj.optString("name", "");
+                                    if (rawName.startsWith("{") && rawName.contains("\"id\"")) {
+                                        try {
+                                            diskObj = new JSONObject(rawName);
+                                        } catch (Exception err) {
+                                            err.printStackTrace();
+                                        }
+                                    }
+                                    
+                                    String name = diskObj.optString("name", "Volume Desconhecido"); // Ex: C:, /home
+                                    String type = diskObj.optString("filesystems_id", "Drive"); // Ex: NTFS, ext4
+                                    if (type.equals("0") || type.equals("null")) {
+                                        type = "Drive";
+                                    }
+                                    
+                                    // Pega tamanho em MB
+                                    long totalSize = diskObj.optLong("totalsize", 0);
+                                    
+                                    // Filtro para não mostrar as partições que tem menos de 1gb
+                                    if (totalSize < 1024) {
+                                        continue;
+                                    }
+                                    
+                                    long freeSize  = diskObj.optLong("freesize", 0);
+                                    long usedSize  = totalSize - freeSize;
+                                    
+                                    // Calcula progresso (evita divisão por zero)
+                                    int progress = 0;
+                                    String capacityLabel;
+                                    
+                                    if (totalSize > 0) {
+                                        progress = (int) (((double) usedSize / totalSize) * 100);
+                                        long totalGb = totalSize / 1024;
+                                        long usedGb  = usedSize / 1024;
+                                        capacityLabel = String.format("%d GB / %d GB", usedGb, totalGb);
+                                    } else {
+                                        capacityLabel = "Capacidade Indisponível no GLPI";
+                                    }
+
+                                    ArmazenamentoLine arm = new ArmazenamentoLine();
+                                    arm.setNome(name);
+                                    arm.setCapacidade(capacityLabel);
+                                    arm.setTipo(type);
+                                    // Custom properties pra podermos usar na UI nova:
+                                    arm.setUsagePercentage(progress);
+                                    
+                                    listaarmazenamento.add(arm);
+                                    hasDisks = true;
+                                }
+                            }
+                            
+                            if (hasDisks) {
+                                ListAdapterArmazenamento adapterArmazenamento = new ListAdapterArmazenamento(listaarmazenamento, ScannerActivity.this, idequipamento);
+                                mListaArmazenamento.setAdapter(adapterArmazenamento);
+                                mListaArmazenamento.setVisibility(View.VISIBLE);
+                            } else {
+                                mListaArmazenamento.setVisibility(View.GONE);
+                            }
+                            
+                            // Agora processa Discos Físicos (Hardware chips)
+                            boolean hasPhysicalDisks = false;
+                            
+                            if (jsonObject.has("_devices") && jsonObject.getJSONObject("_devices").has("Item_DeviceHardDrive")) {
+                                JSONObject disksObject = jsonObject.getJSONObject("_devices").getJSONObject("Item_DeviceHardDrive");
+                                Iterator<String> diskKeys = disksObject.keys();
+                                
+                                while (diskKeys.hasNext()) {
+                                    String key = diskKeys.next();
+                                    JSONObject diskObj = disksObject.getJSONObject(key);
+                                    
+                                    String designacao = diskObj.optString("designation");
+                                    String name = diskObj.optString("deviceharddrives_id", "Drive"); 
+                                    long sizeMB = diskObj.optLong("capacity", 0);
+                                    
+                                    String diskTypeUpper = name.toUpperCase() + designacao.toUpperCase();
+                                    String tipoFormatado = "HDD"; // Padrão pessimista
+
+                                    // Heurísticas poderosas para adivinhar SSD/NVMe a partir do código do modelo
+                                    if (diskTypeUpper.contains("NVME") || diskTypeUpper.contains("M.2") || 
+                                        diskTypeUpper.contains("SSSTC") || diskTypeUpper.contains("SAMSUNG MZ") || 
+                                        diskTypeUpper.contains("KINGSTON OM") || diskTypeUpper.contains("KINGSTON SN") ||
+                                        diskTypeUpper.startsWith("MZ") || diskTypeUpper.contains("UMIS")) {
+                                        tipoFormatado = "NVMe";
+                                    } else if (diskTypeUpper.contains("SSD") || diskTypeUpper.contains("FLASH") || 
+                                               diskTypeUpper.contains("KINGSTON SA") || diskTypeUpper.contains("WDC WDS") ||
+                                               diskTypeUpper.startsWith("CT") || diskTypeUpper.contains("ADATA") || 
+                                               diskTypeUpper.contains("CORSAIR") || diskTypeUpper.contains("CRUCIAL")) {
+                                        tipoFormatado = "SSD";
+                                    }
+                                    
+                                    // Limpar nomes de modelo muito feios para caber no card
+                                    String nomeCurto = name;
+                                    if (nomeCurto.length() > 18) {
+                                        nomeCurto = nomeCurto.substring(0, 18).trim() + "...";
+                                    }
+                                    
+                                    long totalGb = sizeMB / 1024;
+                                    String sizeFormatted = (totalGb > 0) ? (totalGb + " GB") : (sizeMB + " MB");
+
+                                    ArmazenamentoLine armFisico = new ArmazenamentoLine();
+                                    armFisico.setNome(nomeCurto);
+                                    armFisico.setCapacidade(sizeFormatted);
+                                    armFisico.setTipo(tipoFormatado);
+                                    listaarmazenamentofisico.add(armFisico);
+                                    hasPhysicalDisks = true;
+                                }
+                            }
+                            
+                            if (hasPhysicalDisks) {
+                                com.cyberrocket.inventario.adapter.ListAdapterArmazenamentoFisico adapterFisico = new com.cyberrocket.inventario.adapter.ListAdapterArmazenamentoFisico(listaarmazenamentofisico, ScannerActivity.this);
+                                mListaArmazenamentoFisico.setAdapter(adapterFisico);
+                                mListaArmazenamentoFisico.setVisibility(View.VISIBLE);
+                            } else {
+                                mListaArmazenamentoFisico.setVisibility(View.GONE);
+                            }
+                            
+                            if (hasDisks || hasPhysicalDisks) {
+                                mLayoutArmazenamento.setVisibility(View.VISIBLE);
+                                if (!hasDisks) mListaArmazenamento.setVisibility(View.GONE);
+                            } else {
+                                mLayoutArmazenamento.setVisibility(View.GONE);
+                                Log.d("ArmazenamentoDebug", "No logical volumes found in _disks array");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
-
-                        //Seta dados pata a lista de monitores
-                        ListAdapterMonitores adaptermonitores = new ListAdapterMonitores(listamonitores, ScannerActivity.this, idequipamento);
-                        mListaMonitores.setAdapter(adaptermonitores);
-
-                        if(!tipo.equals("Notebook")){
-                            mLayoutMonitores.setVisibility(View.VISIBLE);
-                        }else{
-                            mLayoutMonitores.setVisibility(View.GONE);
+                            mLayoutArmazenamento.setVisibility(View.GONE);
+                            Log.e("ArmazenamentoDebug", "Error parsing logical disks: " + e.toString());
                         }
 
                         //Pega as problemas
@@ -418,7 +620,7 @@ public class ScannerActivity extends AppCompatActivity {
 
                         //mPgbProgresso.setIndeterminate(false);
 
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -445,7 +647,16 @@ public class ScannerActivity extends AppCompatActivity {
         //Limpa listas
         inicializarListas();
         GLPIConnect con = new GLPIConnect(this);
-        con.GetArray("/apirest.php/Computer?searchText[name]=PSO-"+ mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
+        String endpoint = mItemType.equals("Monitor") ? "/apirest.php/Monitor" : "/apirest.php/Computer";
+        
+        // Busca o prefixo configurado (coluna 5 da tabela CONFIG)
+        Crud crud = new Crud();
+        String prefixo = crud.SelectItem(this, "CONFIG", 1, 5);
+        if (prefixo == null) {
+            prefixo = ""; // Sem prefixo por padrão se for nulo
+        }
+        
+        con.GetArray(endpoint + "?searchText[name]=" + prefixo + mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 JSONArray jsonArray = new JSONArray();
@@ -480,11 +691,12 @@ public class ScannerActivity extends AppCompatActivity {
 
     }
 
-    public void CriarListaEquipamentos(String desc, String cont, Integer img){
+    public void CriarListaEquipamentos(String desc, String cont, Integer img, Integer vaultType){
         EquipamentoLine equip = new EquipamentoLine();
         equip.setDescricao(desc);
         equip.setConteudo(cont);
         equip.setBtEditar(img);
+        equip.setVaultType(vaultType);
         listaequipamentos.add(equip);
     }
 
@@ -699,7 +911,39 @@ public class ScannerActivity extends AppCompatActivity {
         }
     }
 
-    private void AbrirCofreSenhas(String itemtype, String itemId) {
+    public void AbrirCofreComputador() {
+        AbrirCofreSenhas("Computer", mTvIdEquipamento.getText().toString());
+    }
+
+    public void AbrirCofreLocal() {
+        mPgbProgresso.setIndeterminate(true);
+        GLPIConnect tempCon = new GLPIConnect(ScannerActivity.this);
+        tempCon.GetItem("/apirest.php/Computer/" + mTvIdEquipamento.getText().toString(), new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                mPgbProgresso.setIndeterminate(false);
+                try {
+                    JSONObject rawComp = new JSONObject(response);
+                    String rawLocId = rawComp.optString("locations_id", "0");
+                    if (rawLocId.equals("0") || rawLocId.isEmpty()) {
+                        Toast.makeText(ScannerActivity.this, "Este computador não possui um Local definido.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        AbrirCofreSenhas("Location", rawLocId);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String error) {
+                mPgbProgresso.setIndeterminate(false);
+                Toast.makeText(ScannerActivity.this, "Erro ao consultar a localização", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void AbrirCofreSenhas(String itemtype, String itemId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_gerenciar_senhas, null);
         builder.setView(dialogView);

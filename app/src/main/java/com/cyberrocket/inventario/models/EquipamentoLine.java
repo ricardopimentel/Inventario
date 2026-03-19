@@ -6,6 +6,15 @@ public class EquipamentoLine {
     private String Descricao;
     private String Conteudo;
     private Integer BtEditar;
+    private Integer vaultType = 0; // 0: None, 1: Computer, 2: Location
+
+    public Integer getVaultType() {
+        return vaultType;
+    }
+
+    public void setVaultType(Integer vaultType) {
+        this.vaultType = vaultType;
+    }
 
     public String getDescricao() {
         return Descricao;

@@ -56,7 +56,9 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             
             // Dynamic Icon Selection based on Tipo
             String tipoLower = (computador.getTipo() != null ? computador.getTipo() : "").toLowerCase();
-            if (tipoLower.contains("notebook") || tipoLower.contains("laptop")) {
+            if (tipoLower.contains("monitor")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.monitor_icone2);
+            } else if (tipoLower.contains("notebook") || tipoLower.contains("laptop")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_laptop_24dp);
             } else if (tipoLower.contains("servidor") || tipoLower.contains("server")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_dns_24dp);
@@ -76,6 +78,8 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
                 public void onClick(View view) {
                     Intent intent = new Intent(contexto, ScannerActivity.class);
                     intent.putExtra("id", computador.getId());
+                    String itemType = tipoLower.contains("monitor") ? "Monitor" : "Computer";
+                    intent.putExtra("item_type", itemType);
                     contexto.startActivity(intent);
                 }
             });

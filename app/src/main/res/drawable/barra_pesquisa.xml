@@ -1,24 +1,24 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-<!-- Camada da Borda (Cor da linha) -->
-<item>
-    <shape android:shape="rectangle">
-        <solid android:color="?attr/colorPrimary" /> <!-- Cor da borda -->
-        <corners android:topLeftRadius="0dp"
-            android:topRightRadius="0dp"
-            android:bottomLeftRadius="25dp"
-            android:bottomRightRadius="25dp" />
-    </shape>
-</item>
+    <!-- Camada da Borda (Cor da linha) -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorPrimary" /> <!-- Cor da borda -->
+            <corners android:topLeftRadius="0dp"
+                android:topRightRadius="0dp"
+                android:bottomLeftRadius="25dp"
+                android:bottomRightRadius="25dp" />
+        </shape>
+    </item>
 
-<!-- Camada do Fundo (Esconde as outras bordas) -->
-<!-- O 'bottom' define a espessura da linha (ex: 2dp) -->
-<item android:bottom="2dp">
-    <shape android:shape="rectangle">
-        <solid android:color="@color/md_theme_surfaceContainer" /> <!-- Cor de fundo do layout -->
-        <corners android:topLeftRadius="0dp"
-            android:topRightRadius="0dp"
-            android:bottomLeftRadius="25dp"
-            android:bottomRightRadius="25dp" />
-    </shape>
-</item>
+    <!-- Camada do Fundo (Esconde as outras bordas) -->
+    <!-- O 'bottom' define a espessura da linha (ex: 2dp) -->
+    <item android:bottom="3dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/md_theme_surfaceContainer" /> <!-- Cor de fundo do layout -->
+            <corners android:topLeftRadius="0dp"
+                android:topRightRadius="0dp"
+                android:bottomLeftRadius="25dp"
+                android:bottomRightRadius="25dp" />
+        </shape>
+    </item>
 </layer-list>

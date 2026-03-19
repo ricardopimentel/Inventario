@@ -4,87 +4,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="12dp"
+    android:layout_marginStart="4dp"
     android:layout_marginTop="4dp"
-    android:layout_marginEnd="12dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginBottom="4dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="6dp"
-    app:strokeWidth="1dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="0dp"
     app:strokeColor="?attr/colorPrimary"
     app:cardBackgroundColor="?attr/colorSurface">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="403dp"
+        android:layout_height="4dp"
+        android:background="@color/md_theme_primary"
+        android:orientation="vertical"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="8dp">
 
         <ImageView
             android:id="@+id/ImgIconComputador"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_dashboard_black_24dp"
             app:tint="?attr/colorPrimary" />
 
-        <TextView
-            android:id="@+id/TvIdComputador"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="#1234"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+        <ImageView
+            android:id="@+id/ImgStatusComputador"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"/>
+            app:srcCompat="@drawable/checkcircle24"
+            app:tint="?attr/colorPrimary"/>
 
         <TextView
             android:id="@+id/TvNomeComputador"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="4dp"
             android:text="Nome do PC"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@+id/ImgStatusComputador"
-            app:layout_constraintStart_toEndOf="@+id/ImgIconComputador"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ImgIconComputador" />
 
         <TextView
             android:id="@+id/TvInfoComputador"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:text="Marca | Tipo"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/ImgStatusComputador"
-            app:layout_constraintStart_toStartOf="@+id/TvNomeComputador"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/TvNomeComputador" />
 
         <TextView
             android:id="@+id/TvLocalComputador"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="1dp"
             android:text="Localização Atual"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="italic"
-            app:layout_constraintEnd_toStartOf="@+id/ImgStatusComputador"
-            app:layout_constraintStart_toStartOf="@+id/TvNomeComputador"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/TvInfoComputador" />
 
-        <ImageView
-            android:id="@+id/ImgStatusComputador"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+        <TextView
+            android:id="@+id/TvIdComputador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#1234"
+            android:textSize="8sp"
+            android:alpha="0.5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/checkcircle24"
-            app:tint="?attr/colorPrimary"/>
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

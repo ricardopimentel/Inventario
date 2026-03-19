@@ -60,7 +60,23 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             EquipamentoLine equip = dados.get(position);
             holder.mTvDescricao.setText(equip.getDescricao());
             holder.mTvConteudo.setText(Html.fromHtml(equip.getConteudo()));
-            holder.mBtEditar.setVisibility(equip.getBtEditar());
+            
+            if (equip.getVaultType() == 1) { // Computer Vault
+                holder.mBtEditar.setVisibility(View.GONE);
+                holder.mBtCopiar.setVisibility(View.VISIBLE);
+                holder.mBtSenhasComputador.setVisibility(View.VISIBLE);
+                holder.mBtSenhasLocal.setVisibility(View.GONE);
+            } else if (equip.getVaultType() == 2) { // Location Vault
+                holder.mBtEditar.setVisibility(equip.getBtEditar());
+                holder.mBtCopiar.setVisibility(View.VISIBLE);
+                holder.mBtSenhasComputador.setVisibility(View.GONE);
+                holder.mBtSenhasLocal.setVisibility(View.VISIBLE);
+            } else { // Normal
+                holder.mBtEditar.setVisibility(equip.getBtEditar());
+                holder.mBtCopiar.setVisibility(View.VISIBLE);
+                holder.mBtSenhasComputador.setVisibility(View.GONE);
+                holder.mBtSenhasLocal.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -75,6 +91,8 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
         public TextView mTvConteudo;
         public ImageButton mBtEditar;
         public ImageButton mBtCopiar;
+        public ImageButton mBtSenhasComputador;
+        public ImageButton mBtSenhasLocal;
 
         public ViewHolderEquip(final View itemView) {
             super(itemView);
@@ -83,12 +101,14 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             mTvConteudo = itemView.findViewById(R.id.tvConteudo);
             mBtEditar = itemView.findViewById(R.id.BtEditarEquipamentoLine);
             mBtCopiar = itemView.findViewById(R.id.BtCopiarEquipamentoLine);
+            mBtSenhasComputador = itemView.findViewById(R.id.BtSenhasComputadorEquipamentoLine);
+            mBtSenhasLocal = itemView.findViewById(R.id.BtSenhasLocalEquipamentoLine);
 
             //Listeners
             mBtEditar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ShowDialog();
+                    ShowDialog(mTvDescricao.getText().toString().trim());
                 }
             });
 
@@ -100,11 +120,29 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
                     Toast.makeText(contexto, mTvConteudo.getText().toString()+" copiado", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            mBtSenhasComputador.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (contexto instanceof ScannerActivity) {
+                        ((ScannerActivity) contexto).AbrirCofreComputador();
+                    }
+                }
+            });
+
+            mBtSenhasLocal.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (contexto instanceof ScannerActivity) {
+                        ((ScannerActivity) contexto).AbrirCofreLocal();
+                    }
+                }
+            });
         }
 
         //Métodos
 
-        private void ShowDialog(){
+        private void ShowDialog(String tipo){
             AutoCompleteTextView mListaLocais;
             ArrayAdapter<String> mAdapter;
             ArrayList<String> mList;
@@ -122,17 +160,32 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             mListaId = new ArrayList();
             mListaNomes = new ArrayList();
 
-            PreencherListaLocais(mAdapter, mListaNomes, mListaId);
-            mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String nome = mAdapter.getItem(position).toString();
-                    AlterarLocalizacao(mListaId.get(mListaNomes.indexOf(nome)).toString());
-                }
-            });
-            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto)
-                    .setTitle("Digite o nome")
-                    .setView(view);
+            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto).setView(view);
+
+            if (tipo.equalsIgnoreCase("Estado:")) {
+                PreencherListaStatus(mAdapter, mListaNomes, mListaId);
+                mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String nome = mAdapter.getItem(position).toString();
+                        AlterarStatus(mListaId.get(mListaNomes.indexOf(nome)).toString());
+                    }
+                });
+                mListaLocais.setHint("Digite o novo estado");
+                dialog.setTitle("Escolher o Estado");
+            } else {
+                PreencherListaLocais(mAdapter, mListaNomes, mListaId);
+                mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String nome = mAdapter.getItem(position).toString();
+                        AlterarLocalizacao(mListaId.get(mListaNomes.indexOf(nome)).toString());
+                    }
+                });
+                mListaLocais.setHint("Digite o novo local");
+                dialog.setTitle("Escolher o Local");
+            }
+
             dialog.create();
             dialog.show();
         }
@@ -195,6 +248,63 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             @Override
             public void onVolleyFailure(String url) {
                 Toast.makeText(contexto, "Erro: "+ url, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void PreencherListaStatus(ArrayAdapter<String> mAdapter, ArrayList mListaNomes, ArrayList mListaId) {
+        GLPIConnect con = new GLPIConnect(contexto);
+        con.GetArray("/apirest.php/State?range=0-1000", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                JSONArray jsonArray = new JSONArray();
+                try {
+                    jsonArray = new JSONArray(response);
+                }catch (JSONException err){
+                    Log.d("ParseError", err.toString());
+                }
+                try {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject local = jsonArray.getJSONObject(i);
+                        mAdapter.add(local.getString("name"));
+                        mListaNomes.add(local.getString("name"));
+                        mListaId.add(local.getString("id"));
+                    }
+                    mAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                Toast.makeText(contexto, "Erro de conexão\n"+url, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void AlterarStatus(String statusId) {
+        JSONObject postparams = new JSONObject();
+        JSONObject finalarray = new JSONObject();
+        try {
+            postparams.put("id", mIdEquipamento);
+            postparams.put("states_id", statusId);
+            finalarray.put("input", postparams);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        GLPIConnect con = new GLPIConnect(contexto);
+        con.UpdateItem("/apirest.php/Computer/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                Toast.makeText(contexto, "Estado atualizado gravado no servidor!", Toast.LENGTH_SHORT).show();
+                IrPara(ScannerActivity.class);
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                Toast.makeText(contexto, "Erro ao alterar estado: "+ url, Toast.LENGTH_LONG).show();
             }
         });
     }

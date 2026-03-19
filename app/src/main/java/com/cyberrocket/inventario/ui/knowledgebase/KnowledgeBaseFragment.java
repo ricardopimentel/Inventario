@@ -110,6 +110,7 @@ public class KnowledgeBaseFragment extends Fragment {
             }
         });
 
+
         // First Load
         swipeRefreshLayout.setRefreshing(true);
         loadCategories();

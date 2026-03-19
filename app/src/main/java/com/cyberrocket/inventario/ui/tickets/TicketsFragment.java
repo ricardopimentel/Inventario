@@ -153,6 +153,7 @@ public class TicketsFragment extends Fragment {
             }
         });
 
+
         // Carregar a primeira vez
         swipeRefreshLayout.setRefreshing(true);
         loadChamados();

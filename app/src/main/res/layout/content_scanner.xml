@@ -82,30 +82,7 @@
             tools:listitem="@layout/equipamento_line_view">
         </androidx.recyclerview.widget.RecyclerView>
 
-        <LinearLayout
-            android:id="@+id/LayoutCofreBotoes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp"
-            android:visibility="gone">
-            
-            <Button
-                android:id="@+id/BtSenhasComputador"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Cofre: Senhas da Máquina"
-                app:icon="@android:drawable/ic_lock_lock" />
 
-            <Button
-                android:id="@+id/BtSenhasLocal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Cofre: Senhas do Local"
-                app:icon="@android:drawable/ic_lock_idle_lock"
-                android:layout_marginTop="8dp" />
-                
-        </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/CardMonitoresScanner"
@@ -176,6 +153,78 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/monitores_line_view"/>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/CardArmazenamentoScanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorPrimary">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/LayoutArmazenamentoScanner"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/imgViewArmazenamento"
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/armazenamento"/>
+
+                <TextView
+                    android:id="@+id/tvTitleArmazenamento"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:text="Disco Rígido / Armazenamento"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="@color/md_theme_onPrimary"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imgArrowArmazenamento"
+                    app:layout_constraintStart_toEndOf="@+id/imgViewArmazenamento"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imgArrowArmazenamento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/baseline_arrow_downward_24"
+                    app:tint="@color/md_theme_onPrimary" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RvArmazenamentoScannerFisico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/armazenamento_fisico_item"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RvArmazenamentoScanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            tools:listitem="@layout/armazenamento_line_view"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/CardManutencoesScanner"

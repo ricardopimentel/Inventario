@@ -30,7 +30,7 @@ public class PerfilFragment extends Fragment {
     Crud mCrud;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        perfilViewModel = ViewModelProviders.of(this).get(PerfilViewModel.class);
+        perfilViewModel = new androidx.lifecycle.ViewModelProvider(this).get(PerfilViewModel.class);
         View root = inflater.inflate(R.layout.fragment_perfil, container, false);
         final TextView textView = root.findViewById(R.id.text_perfil);
         perfilViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
@@ -43,7 +43,15 @@ public class PerfilFragment extends Fragment {
         mBtSair = root.findViewById(R.id.BtSair);
         Button mBtVaultSettings = root.findViewById(R.id.BtVaultSettings);
         com.google.android.material.button.MaterialButtonToggleGroup toggleGroupTheme = root.findViewById(R.id.toggleGroupTheme);
+        com.google.android.material.textfield.TextInputLayout tilPrefix = root.findViewById(R.id.tilPrefix);
+        com.google.android.material.textfield.TextInputEditText etPrefix = root.findViewById(R.id.etPrefix);
         mCrud = new Crud();
+
+        // Carrega prefixo atual (coluna 5 da tabela CONFIG)
+        String currentPrefix = mCrud.SelectItem(getContext(), "CONFIG", 1, 5);
+        if (currentPrefix != null && !currentPrefix.isEmpty()) {
+            etPrefix.setText(currentPrefix);
+        }
 
         // Configura estado inicial do tema
         int currentTheme = com.cyberrocket.inventario.lib.ThemeUtils.getSelectedTheme(getContext());
@@ -84,6 +92,19 @@ public class PerfilFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 IrPara(com.cyberrocket.inventario.VaultSettingsActivity.class, false);
+            }
+        });
+
+        // Salvar prefixo ao clicar no ícone
+        tilPrefix.setEndIconOnClickListener(v -> {
+            String newPrefix = etPrefix.getText().toString().trim();
+            ContentValues values = new ContentValues();
+            values.put("PREFIXO", newPrefix);
+            if (mCrud.UpdateItem(getContext(), "CONFIG", 1, values)) {
+                Toast.makeText(getContext(), "Prefixo salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                etPrefix.clearFocus();
+            } else {
+                Toast.makeText(getContext(), "Erro ao salvar prefixo", Toast.LENGTH_SHORT).show();
             }
         });
 

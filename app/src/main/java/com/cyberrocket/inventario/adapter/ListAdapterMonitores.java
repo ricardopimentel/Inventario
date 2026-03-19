@@ -132,6 +132,16 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
                     DesvincularMonitor();
                 }
             });
+
+            mLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(contexto, ScannerActivity.class);
+                    intent.putExtra("id", mTvId.getText().toString());
+                    intent.putExtra("item_type", "Monitor");
+                    contexto.startActivity(intent);
+                }
+            });
         }
 
 

@@ -18,7 +18,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        style="?attr/materialCardViewElevatedStyle">
+        style="?attr/materialCardViewElevatedStyle"
+        app:cardElevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -53,6 +54,28 @@
                     android:layout_margin="8dp"
                     android:background="#00FFFFFF"
                     app:srcCompat="@drawable/copy18" />
+
+                <ImageButton
+                    android:id="@+id/BtSenhasComputadorEquipamentoLine"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@android:drawable/ic_lock_lock"
+                    app:tint="?attr/colorPrimary"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/BtSenhasLocalEquipamentoLine"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:src="@android:drawable/ic_lock_idle_lock"
+                    app:tint="?attr/colorPrimary"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout
@@ -87,6 +110,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 android:text="Conteudo"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

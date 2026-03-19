@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshHome"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterContainer">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewComputadores"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <LinearLayout
         android:id="@+id/filterContainer"
         android:layout_width="match_parent"
@@ -17,13 +35,31 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/barra_pesquisa">
 
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchViewComputadores"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:queryHint="Pesquisar por nome ou ID"
-            app:iconifiedByDefault="false"
-            android:textColor="?attr/colorPrimary"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchViewComputadores"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:queryHint="Pesquisar por nome ou ID"
+                app:iconifiedByDefault="false"
+                android:textColor="?attr/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/tvItemCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="(0)"
+                android:textSize="12sp"
+                android:textColor="?attr/colorPrimary"
+                android:alpha="0.7"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,14 +77,6 @@
                 android:textColor="?attr/colorPrimary"/>
 
             <Spinner
-                android:id="@+id/spinnerTipo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minHeight="48dp"
-                android:textColor="?attr/colorPrimary"/>
-            
-            <Spinner
                 android:id="@+id/spinnerLocal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -57,24 +85,6 @@
                 android:textColor="?attr/colorPrimary"/>
         </LinearLayout>
     </LinearLayout>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshHome"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filterContainer">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewComputadores"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="80dp" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <TextView
         android:id="@+id/text_home_empty"
