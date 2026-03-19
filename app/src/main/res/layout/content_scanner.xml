@@ -76,9 +76,20 @@
         </com.google.android.material.card.MaterialCardView>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RvIPsScanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/ip_item_view"/>
+
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/RvDetalhesEquipamentoScanner"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/equipamento_line_view">
         </androidx.recyclerview.widget.RecyclerView>
 

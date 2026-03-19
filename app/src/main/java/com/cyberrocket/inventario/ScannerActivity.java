@@ -17,6 +17,8 @@ import com.cyberrocket.inventario.models.EquipamentoLine;
 import com.cyberrocket.inventario.models.MonitorLine;
 import com.cyberrocket.inventario.models.MudancasLine;
 import com.cyberrocket.inventario.models.PlacasRedeLine;
+import com.cyberrocket.inventario.models.IPLine;
+import com.cyberrocket.inventario.adapter.ListAdapterIPs;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -65,6 +67,7 @@ public class ScannerActivity extends AppCompatActivity {
     RecyclerView mListaMonitores;
     RecyclerView mListaArmazenamento;
     RecyclerView mListaArmazenamentoFisico;
+    RecyclerView mListaIPs;
     Button mBtNovaManutencao;
     ImageButton mBtAddMonitorScanner;
     ImageView mImvSyncDevice;
@@ -81,6 +84,7 @@ public class ScannerActivity extends AppCompatActivity {
     ArrayList<MonitorLine> listamonitores;
     ArrayList<ArmazenamentoLine> listaarmazenamento;
     ArrayList<ArmazenamentoLine> listaarmazenamentofisico;
+    ArrayList<IPLine> listaips;
     Boolean existemanutencaoaberta = false;
     ConstraintLayout mLayoutEquipamentos;
     ConstraintLayout mLayoutMonitores;
@@ -255,6 +259,8 @@ public class ScannerActivity extends AppCompatActivity {
         mLayoutMonitores = findViewById(R.id.LayoutMonitoresScanner);
         mLayoutManutencoes = findViewById(R.id.LayoutManutencoesScanner);
         mLayoutArmazenamento = findViewById(R.id.LayoutArmazenamentoScanner);
+        mListaIPs = findViewById(R.id.RvIPsScanner);
+        mListaIPs.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         mImvSyncDevice = findViewById(R.id.ImvSyncDevice);
 
@@ -289,6 +295,7 @@ public class ScannerActivity extends AppCompatActivity {
         listaequipamentos = new ArrayList<EquipamentoLine>();
         listaarmazenamento = new ArrayList<ArmazenamentoLine>();
         listaarmazenamentofisico = new ArrayList<ArmazenamentoLine>();
+        listaips = new ArrayList<IPLine>();
     }
 
     private void BuscarListaEquipamentos(String idequipamento) {
@@ -334,7 +341,24 @@ public class ScannerActivity extends AppCompatActivity {
                         }
                         
                         CriarListaEquipamentos("Nº Série:", jsonObject.optString("serial"), View.GONE, 0);
-                        CriarListaEquipamentos("Modificado:", jsonObject.optString("date_mod"), View.GONE, 0);
+                        String dateMod = jsonObject.optString("date_mod");
+                    if (dateMod != null && !dateMod.isEmpty()) {
+                        String[] parts = dateMod.split(" ");
+                        if (parts.length >= 1) {
+                            String[] dateParts = parts[0].split("-");
+                            if (dateParts.length == 3) {
+                                String formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
+                                CriarListaEquipamentos("Data:", formattedDate, View.GONE, 0);
+                            }
+                        }
+                        if (parts.length >= 2) {
+                            String[] timeParts = parts[1].split(":");
+                            if (timeParts.length >= 2) {
+                                String formattedTime = timeParts[0] + ":" + timeParts[1];
+                                CriarListaEquipamentos("Hora:", formattedTime, View.GONE, 0);
+                            }
+                        }
+                    }
                         CriarListaEquipamentos("Estado:", jsonObject.optString("states_id"), View.VISIBLE, 0);
                         CriarListaEquipamentos("Marca:", jsonObject.optString("manufacturers_id"), View.GONE, 0);
                         
@@ -347,45 +371,81 @@ public class ScannerActivity extends AppCompatActivity {
                         }
                         CriarListaEquipamentos(tipoLabel, tipoValue, View.GONE, 0);
                         
-                        // Pegar Endereço IP do computador (Busca profunda e recursiva)
+                        // Log focado na busca das placas de rede para depuração
                         try {
-                            ArrayList<String> ips = new ArrayList<>();
-                            // Função anônima recursiva não é simples em Java 8 sem declarar uma interface ou usar um helper
-                            // Vou usar uma abordagem iterativa com uma pilha para busca profunda
-                            java.util.Stack<Object> stack = new java.util.Stack<>();
-                            stack.push(jsonObject);
-                            
-                            while (!stack.isEmpty()) {
-                                Object current = stack.pop();
-                                if (current instanceof JSONObject) {
-                                    JSONObject obj = (JSONObject) current;
-                                    Iterator<String> keys = obj.keys();
-                                    while (keys.hasNext()) {
-                                        String key = keys.next();
-                                        Object val = obj.opt(key);
-                                        if (val instanceof String) {
-                                            String s = (String) val;
-                                            // Regex para PV4
-                                            if (s.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
-                                                if (!s.equals("0.0.0.0") && !s.equals("127.0.0.1") && !ips.contains(s)) {
-                                                    ips.add(s);
+                            JSONObject networkPortsLog = jsonObject.optJSONObject("_networkports");
+                            if (networkPortsLog != null) {
+                                String netJson = networkPortsLog.toString(2);
+                                int chunkSize = 3000;
+                                for (int i = 0; i < netJson.length(); i += chunkSize) {
+                                    Log.d("GLPI_NETWORK_DEBUG", netJson.substring(i, Math.min(netJson.length(), i + chunkSize)));
+                                }
+                            }
+                        } catch (Exception e) {
+                            Log.e("IPDebug", "Erro ao logar JSON de rede: " + e.getMessage());
+                        }
+
+                        // Pegar Endereço IP do computador (Busca dirigida em campos Nominais de IP do GLPI)
+                        try {
+                            listaips.clear();
+                            String ipRegex = "^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
+                                           "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
+                                           "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\." +
+                                           "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$";
+
+                            JSONObject networkPortsObj = jsonObject.optJSONObject("_networkports");
+                            if (networkPortsObj != null) {
+                                String[] portTypes = {"NetworkPortEthernet", "NetworkPortWifi", "NetworkPortWireless"};
+                                for (String type : portTypes) {
+                                    JSONArray ports = networkPortsObj.optJSONArray(type);
+                                    if (ports != null) {
+                                        for (int i = 0; i < ports.length(); i++) {
+                                            JSONObject port = ports.optJSONObject(i);
+                                            if (port == null) continue;
+
+                                            // Identifica se a interface é virtual
+                                            String portName = port.optString("name").toLowerCase();
+                                            String portComment = port.optString("comment").toLowerCase();
+                                            boolean isVirtual = portName.contains("virtualbox") || portName.contains("vmware") || 
+                                                              portName.contains("vethernet") || portName.contains("vbox") || 
+                                                              portName.contains("virtual") || portComment.contains("virtual") ||
+                                                              portComment.contains("virtualbox") || portComment.contains("vmware");
+
+                                            int iconResId;
+                                            if (isVirtual) {
+                                                iconResId = R.drawable.ic_virtual_machine_24dp;
+                                            } else {
+                                                iconResId = type.contains("Wifi") || type.contains("Wireless") ? 
+                                                        R.drawable.wifi_24 : R.drawable.settings_ethernet_24;
+                                            }
+
+                                            // 1. Tenta o caminho NetworkName -> IPAddress
+                                            JSONObject netName = port.optJSONObject("NetworkName");
+                                            if (netName != null) {
+                                                JSONArray ipAddresses = netName.optJSONArray("IPAddress");
+                                                if (ipAddresses != null) {
+                                                    for (int j = 0; j < ipAddresses.length(); j++) {
+                                                        String ip = ipAddresses.optJSONObject(j).optString("name");
+                                                        if (ip.matches(ipRegex)) {
+                                                            if (ip.equals("127.0.0.1") || ip.equals("0.0.0.0") || ip.startsWith("255.")) continue;
+                                                            boolean exists = false;
+                                                            for(IPLine item : listaips) { if(item.getIp().equals(ip)) { exists = true; break; } }
+                                                            if (!exists) listaips.add(new IPLine(ip, iconResId));
+                                                        }
+                                                    }
                                                 }
                                             }
-                                        } else if (val instanceof JSONObject || val instanceof JSONArray) {
-                                            stack.push(val);
-                                        }
-                                    }
-                                } else if (current instanceof JSONArray) {
-                                    JSONArray arr = (JSONArray) current;
-                                    for (int i = 0; i < arr.length(); i++) {
-                                        Object val = arr.opt(i);
-                                        if (val instanceof JSONObject || val instanceof JSONArray) {
-                                            stack.push(val);
-                                        } else if (val instanceof String) {
-                                            String s = (String) val;
-                                            if (s.matches("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$")) {
-                                                if (!s.equals("0.0.0.0") && !s.equals("127.0.0.1") && !ips.contains(s)) {
-                                                    ips.add(s);
+                                            // 2. Tenta _ipaddresses
+                                            JSONArray altIps = port.optJSONArray("_ipaddresses");
+                                            if (altIps != null) {
+                                                for (int j = 0; j < altIps.length(); j++) {
+                                                    String ip = altIps.optJSONObject(j).optString("name");
+                                                    if (ip.matches(ipRegex)) {
+                                                        if (ip.equals("127.0.0.1") || ip.equals("0.0.0.0") || ip.startsWith("255.")) continue;
+                                                        boolean exists = false;
+                                                        for(IPLine item : listaips) { if(item.getIp().equals(ip)) { exists = true; break; } }
+                                                        if (!exists) listaips.add(new IPLine(ip, iconResId));
+                                                    }
                                                 }
                                             }
                                         }
@@ -393,14 +453,13 @@ public class ScannerActivity extends AppCompatActivity {
                                 }
                             }
 
-                            if (!ips.isEmpty()) {
-                                // Ordenar IPs para ficarem bonitos (opcional)
-                                java.util.Collections.sort(ips);
-                                String ipList = android.text.TextUtils.join(", ", ips);
-                                CriarListaEquipamentos("Endereço IP:", ipList, View.GONE, 0);
+                            if (!listaips.isEmpty()) {
+                                mListaIPs.setVisibility(View.VISIBLE);
+                                ListAdapterIPs adapter = new ListAdapterIPs(listaips, ScannerActivity.this);
+                                mListaIPs.setAdapter(adapter);
                             }
                         } catch (Exception e) {
-                            Log.e("IPDebug", "Erro na busca profunda de IP: " + e.getMessage());
+                            Log.e("IPDebug", "Erro na busca dirigida por IP: " + e.getMessage());
                         }
 
                         //Seta dados para a lista de detalhes do equipamento
