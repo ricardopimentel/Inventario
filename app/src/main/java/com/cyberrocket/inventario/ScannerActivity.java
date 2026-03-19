@@ -55,7 +55,7 @@ import com.cyberrocket.inventario.adapter.ListAdapterSenhas;
 import com.cyberrocket.inventario.lib.PasswordManager;
 import com.cyberrocket.inventario.models.SenhaItem;
 import android.widget.LinearLayout;
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 public class ScannerActivity extends AppCompatActivity {
     TextView mTvIdEquipamento;
@@ -1003,7 +1003,7 @@ public class ScannerActivity extends AppCompatActivity {
     }
 
     public void AbrirCofreSenhas(String itemtype, String itemId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_gerenciar_senhas, null);
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();

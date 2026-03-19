@@ -1,90 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_marginVertical="4dp"
+    android:layout_marginHorizontal="2dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="?attr/colorSurfaceVariant">
 
-    <TextView
-        android:id="@+id/TvDescricaoSenha"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Descrição"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/BtnCopiarSenha"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/TvValorSenha"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="********"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/BtnCopiarSenha"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TvDescricaoSenha" />
-
-    <ImageButton
-        android:id="@+id/BtnEditarSenha"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/BtnCopiarSenha"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/edit24"
-        app:tint="?attr/colorPrimary"
-        android:contentDescription="Editar" />
-
-    <ImageButton
-        android:id="@+id/BtnCopiarSenha"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/BtnVerSenha"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/copy18"
-        app:tint="?attr/colorPrimary"
-        android:contentDescription="Copiar" />
-
-    <ImageButton
-        android:id="@+id/BtnVerSenha"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/BtnRemoverSenha"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/eye24"
-        app:tint="?attr/colorPrimary"
-        android:contentDescription="Visualizar" />
-
-    <ImageButton
-        android:id="@+id/BtnRemoverSenha"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/delete24"
-        app:tint="@color/md_theme_error"
-        android:contentDescription="Remover" />
-
-    <View
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/TvValorSenha" />
+        android:layout_height="wrap_content"
+        android:padding="12dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/TvDescricaoSenha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Descrição"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@+id/BtnEditarSenha"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/TvValorSenha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="********"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@+id/BtnEditarSenha"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TvDescricaoSenha" />
+
+        <ImageButton
+            android:id="@+id/BtnEditarSenha"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/BtnCopiarSenha"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/edit24"
+            app:tint="?attr/colorPrimary"
+            android:contentDescription="Editar" />
+
+        <ImageButton
+            android:id="@+id/BtnCopiarSenha"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/BtnVerSenha"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/copy18"
+            app:tint="?attr/colorPrimary"
+            android:contentDescription="Copiar" />
+
+        <ImageButton
+            android:id="@+id/BtnVerSenha"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/BtnRemoverSenha"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/eye24"
+            app:tint="?attr/colorPrimary"
+            android:contentDescription="Visualizar" />
+
+        <ImageButton
+            android:id="@+id/BtnRemoverSenha"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/delete24"
+            app:tint="@color/md_theme_error"
+            android:contentDescription="Remover" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

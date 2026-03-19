@@ -143,51 +143,57 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
         //Métodos
 
         private void ShowDialog(String tipo){
-            AutoCompleteTextView mListaLocais;
+            android.widget.Spinner mListaLocais;
             ArrayAdapter<String> mAdapter;
             ArrayList<String> mList;
             ArrayList mListaId;
             ArrayList mListaNomes;
-            String mId;
 
             //Inicializar
-            //Cria a caixa de dialogo
             View view = LayoutInflater.from(contexto).inflate(R.layout.activity_alterar_local, null);
             mListaLocais = view.findViewById(R.id.ListLocaisAlterarlocal);
             mList = new ArrayList<String>();
-            mAdapter = new ArrayAdapter<String>(contexto, android.R.layout.simple_list_item_1, mList);
+            mAdapter = new ArrayAdapter<String>(contexto, android.R.layout.simple_spinner_dropdown_item, mList);
             mListaLocais.setAdapter(mAdapter);
             mListaId = new ArrayList();
             mListaNomes = new ArrayList();
 
-            MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(contexto).setView(view);
+            MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(contexto).setView(view);
 
             if (tipo.equalsIgnoreCase("Estado:")) {
                 PreencherListaStatus(mAdapter, mListaNomes, mListaId);
-                mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String nome = mAdapter.getItem(position).toString();
-                        AlterarStatus(mListaId.get(mListaNomes.indexOf(nome)).toString());
-                    }
-                });
-                mListaLocais.setHint("Digite o novo estado");
-                dialog.setTitle("Escolher o Estado");
+                dialogBuilder.setTitle("Escolher o Estado");
             } else {
                 PreencherListaLocais(mAdapter, mListaNomes, mListaId);
-                mListaLocais.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String nome = mAdapter.getItem(position).toString();
-                        AlterarLocalizacao(mListaId.get(mListaNomes.indexOf(nome)).toString());
-                    }
-                });
-                mListaLocais.setHint("Digite o novo local");
-                dialog.setTitle("Escolher o Local");
+                dialogBuilder.setTitle("Escolher o Local");
             }
 
-            dialog.create();
-            dialog.show();
+            dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (mListaLocais.getSelectedItem() != null) {
+                        String nome = mListaLocais.getSelectedItem().toString();
+                        int index = mListaNomes.indexOf(nome);
+                        if (index != -1) {
+                            String id = mListaId.get(index).toString();
+                            if (tipo.equalsIgnoreCase("Estado:")) {
+                                AlterarStatus(id);
+                            } else {
+                                AlterarLocalizacao(id);
+                            }
+                        }
+                    }
+                }
+            });
+
+            dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialogBuilder.show();
         }
     }
 

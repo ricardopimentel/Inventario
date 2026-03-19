@@ -1,7 +1,7 @@
 package com.cyberrocket.inventario.adapter;
 
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -118,11 +120,7 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
             mBtEditarEstado.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent it = new Intent(contexto, AlterarEstadoMonitorActivity.class);
-                    it.putExtra("idmonitor", mTvId.getText().toString());
-                    it.putExtra("estadomonitor", mTvNome.getText().toString());
-                    it.putExtra("idequipamento", mIdEquipamento);
-                    IrPara(it);
+                    ShowDialogEstado();
                 }
             });
 
@@ -294,6 +292,111 @@ public class ListAdapterMonitores extends RecyclerView.Adapter<ListAdapterMonito
                     Intent it = new Intent(contexto, ScannerActivity.class);
                     it.putExtra("id", mIdEquipamento);
                     IrPara(it);
+                }
+            });
+        }
+
+        private void ShowDialogEstado(){
+            android.widget.Spinner mListaLocais;
+            ArrayAdapter<String> mAdapter;
+            ArrayList<String> mList;
+            ArrayList mListaId;
+            ArrayList mListaNomes;
+
+            //Inicializar
+            View view = LayoutInflater.from(contexto).inflate(R.layout.activity_alterar_local, null);
+            mListaLocais = view.findViewById(R.id.ListLocaisAlterarlocal);
+            mList = new ArrayList<String>();
+            mAdapter = new ArrayAdapter<String>(contexto, android.R.layout.simple_spinner_dropdown_item, mList);
+            mListaLocais.setAdapter(mAdapter);
+            mListaId = new ArrayList();
+            mListaNomes = new ArrayList();
+
+            MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(contexto)
+                    .setTitle("Escolher o Estado")
+                    .setView(view);
+
+            PreencherListaStatus(mAdapter, mListaNomes, mListaId);
+
+            dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (mListaLocais.getSelectedItem() != null) {
+                        String nome = mListaLocais.getSelectedItem().toString();
+                        int index = mListaNomes.indexOf(nome);
+                        if (index != -1) {
+                            String id = mListaId.get(index).toString();
+                            AlterarStatus(id);
+                        }
+                    }
+                }
+            });
+
+            dialogBuilder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            dialogBuilder.show();
+        }
+
+        private void PreencherListaStatus(ArrayAdapter<String> mAdapter, ArrayList mListaNomes, ArrayList mListaId) {
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.GetArray("/apirest.php/State?range=0-1000", new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    JSONArray jsonArray = new JSONArray();
+                    try {
+                        jsonArray = new JSONArray(response);
+                    }catch (JSONException err){
+                        Log.d("ParseError", err.toString());
+                    }
+                    try {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject local = jsonArray.getJSONObject(i);
+                            mAdapter.add(local.getString("name"));
+                            mListaNomes.add(local.getString("name"));
+                            mListaId.add(local.getString("id"));
+                        }
+                        mAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onVolleyFailure(String url) {
+                    Toast.makeText(contexto, "Erro de conexão\n"+url, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void AlterarStatus(String statusId) {
+            JSONObject postparams = new JSONObject();
+            JSONObject finalarray = new JSONObject();
+            try {
+                postparams.put("id", mTvId.getText().toString());
+                postparams.put("states_id", statusId);
+                finalarray.put("input", postparams);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            GLPIConnect con = new GLPIConnect(contexto);
+            con.UpdateItem("/apirest.php/Monitor/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+                @Override
+                public void onVolleySuccess(String url, String response) {
+                    Toast.makeText(contexto, "Estado do monitor atualizado!", Toast.LENGTH_SHORT).show();
+                    Intent it = new Intent(contexto, ScannerActivity.class);
+                    it.putExtra("id", mIdEquipamento);
+                    IrPara(it);
+                }
+
+                @Override
+                public void onVolleyFailure(String url) {
+                    Toast.makeText(contexto, "Erro ao alterar estado: "+ url, Toast.LENGTH_LONG).show();
                 }
             });
         }
