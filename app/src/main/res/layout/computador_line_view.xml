@@ -16,7 +16,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout2"
-        android:layout_width="403dp"
+        android:layout_width="match_parent"
         android:layout_height="4dp"
         android:background="@color/md_theme_primary"
         android:orientation="vertical"

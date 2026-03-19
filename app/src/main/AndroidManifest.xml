@@ -116,6 +116,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".CadMonitorActivity"
+            android:label="Cadastrar Monitor"
+            android:parentActivityName=".ScannerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name="com.cyberrocket.inventario.ui.knowledgebase.KnowbaseDetailsActivity"
             android:label="Detalhes da Base"
             android:parentActivityName=".HomeActivity"

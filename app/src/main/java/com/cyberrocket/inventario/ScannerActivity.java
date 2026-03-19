@@ -847,10 +847,23 @@ public class ScannerActivity extends AppCompatActivity {
         edittext.setAdapter(mMonitorAdapter);
         edittext.setThreshold(1); // Show suggestions after 1 character
 
-        MaterialAlertDialogBuilder dialog = new MaterialAlertDialogBuilder(ScannerActivity.this)
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(ScannerActivity.this)
             .setTitle("Nome do Monitor")
-            .setView(view)
-            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            .setView(view);
+
+        AlertDialog dialog = dialogBuilder.create();
+
+        view.findViewById(R.id.BtNovoMonitorVincular).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                Intent intent = new Intent(ScannerActivity.this, CadMonitorActivity.class);
+                intent.putExtra("computers_id", mTvIdEquipamento.getText().toString());
+                startActivity(intent);
+            }
+        });
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String nomeDigitado = edittext.getText().toString();
@@ -862,13 +875,15 @@ public class ScannerActivity extends AppCompatActivity {
                         Toast.makeText(ScannerActivity.this, "Selecione um monitor válido da lista.", Toast.LENGTH_LONG).show();
                     }
                 }
-            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.dismiss();
-                }
             });
-        dialog.create();
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
         dialog.show();
     }
 

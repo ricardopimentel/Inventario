@@ -20,6 +20,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:paddingBottom="100dp" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -90,7 +92,7 @@
         android:id="@+id/text_home_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nenhum computador encontrado"
+        android:text="Nenhum equipamento encontrado"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

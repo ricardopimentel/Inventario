@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment {
     private ListAdapterComputadores adapter;
 
     private String currentQuery = "";
-    private String currentCategory = "Computadores"; // Default
+    private String currentCategory = "Equipamentos"; // Default
     private String currentLocal = "Todos os Locais";
 
     private ArrayAdapter<String> adapterCategory;
@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void initSpinners() {
-        categorias.add("Computadores");
+        categorias.add("Equipamentos");
         categorias.add("Monitores");
         locaisUnicos.add("Todos os Locais");
 
@@ -268,7 +268,7 @@ public class HomeFragment extends Fragment {
 
         if (computadoresList.isEmpty()) {
             emptyTextView.setVisibility(View.VISIBLE);
-            String itemType = currentCategory.equals("Monitores") ? "monitor" : "computador";
+            String itemType = currentCategory.equals("Monitores") ? "monitor" : "equipamento";
             emptyTextView.setText("Nenhum " + itemType + " encontrado");
             recyclerView.setVisibility(View.GONE);
             tvItemCount.setText("(0)");
