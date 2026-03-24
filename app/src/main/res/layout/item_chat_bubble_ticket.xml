@@ -118,6 +118,29 @@
                 android:lineSpacingExtra="4dp"
                 android:textColor="@color/md_theme_onPrimary"/>
 
+            <LinearLayout
+                android:id="@+id/llInlineImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <HorizontalScrollView
+                android:id="@+id/svAttachments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:scrollbars="none"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/llAttachmentsContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

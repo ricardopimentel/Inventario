@@ -73,6 +73,29 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
         populateInitialTicketData();
     }
 
+    private void parseImages(TicketMessage message) {
+        String content = message.getContent();
+        if (content == null) return;
+        
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?i)<img[^>]+src=[\"']([^\"']+)[\"'][^>]*>").matcher(content);
+        java.util.List<String> imageUrls = new java.util.ArrayList<>();
+        while(m.find()) {
+            String src = m.group(1);
+            // Transform frontend document URL into REST API URL
+            java.util.regex.Matcher docIdMatcher = java.util.regex.Pattern.compile("docid=(\\d+)").matcher(src);
+            if (docIdMatcher.find()) {
+                String extractedDocId = docIdMatcher.group(1);
+                src = "/apirest.php/Document/" + extractedDocId + "?alt=media";
+            }
+            imageUrls.add(src);
+        }
+        message.setInlineImages(imageUrls);
+        
+        // Remove img tags so they don't render as missing object characters
+        content = content.replaceAll("(?i)<img[^>]*>", "");
+        message.setContent(content);
+    }
+
     private void populateInitialTicketData() {
         if (getIntent() != null) {
             ticketId = getIntent().getStringExtra("id");
@@ -93,6 +116,7 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
                     content
             );
             
+            parseImages(mainTicket);
             messagesList.add(mainTicket);
             chatAdapter.notifyDataSetChanged();
             
@@ -102,6 +126,7 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
                     getSupportActionBar().setTitle("Chamado #" + ticketId);
                 }
                 loadFollowups();
+                loadTicketAttachments(mainTicket);
             }
         }
     }
@@ -133,7 +158,11 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
                                 date,
                                 content
                         );
+                        parseImages(followup);
                         messagesList.add(followup);
+                        
+                        // Load attachments for this specific reply
+                        loadFollowupAttachments(followupId, followup);
                     }
                     
                     chatAdapter.notifyDataSetChanged();
@@ -153,6 +182,78 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
                     Toast.makeText(TicketDetailsActivity.this, "Erro ao carregar acompanhamentos do chamado", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+    }
+
+    private void loadTicketAttachments(TicketMessage mainTicket) {
+        GLPIConnect glpi = new GLPIConnect(this);
+        glpi.GetArray("/apirest.php/Ticket/" + ticketId + "/Document_Item", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String serverResponse) {
+                if (isFinishing() || isDestroyed()) return;
+                try {
+                    JSONArray array = new JSONArray(serverResponse);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        String docId = obj.optString("documents_id");
+                        if (docId != null && !docId.isEmpty() && !docId.equals("0")) {
+                            fetchDocumentDetails(docId, mainTicket);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onVolleyFailure(String error) {}
+        });
+    }
+
+    private void loadFollowupAttachments(String followupId, TicketMessage followupMessage) {
+        GLPIConnect glpi = new GLPIConnect(this);
+        glpi.GetArray("/apirest.php/ITILFollowup/" + followupId + "/Document_Item", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String serverResponse) {
+                if (isFinishing() || isDestroyed()) return;
+                try {
+                    JSONArray array = new JSONArray(serverResponse);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        String docId = obj.optString("documents_id");
+                        if (docId != null && !docId.isEmpty() && !docId.equals("0")) {
+                            fetchDocumentDetails(docId, followupMessage);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onVolleyFailure(String error) {}
+        });
+    }
+
+    private void fetchDocumentDetails(String docId, TicketMessage message) {
+        GLPIConnect glpi = new GLPIConnect(this);
+        glpi.GetItem("/apirest.php/Document/" + docId, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                if (isFinishing() || isDestroyed()) return;
+                try {
+                    JSONObject doc = new JSONObject(response);
+                    String filename = doc.optString("filename", "Anexo");
+                    // Force the safe REST API download link instead of doc.optString("link")
+                    String downloadLink = "/apirest.php/Document/" + docId + "?alt=media";
+                    String mime = doc.optString("mime", "");
+                    if (!downloadLink.isEmpty()) {
+                        com.cyberrocket.inventario.models.Attachment attachment = new com.cyberrocket.inventario.models.Attachment(docId, filename, downloadLink, mime);
+                        message.getAttachments().add(attachment);
+                        chatAdapter.notifyDataSetChanged();
+                    }
+                } catch (Exception e) {}
+            }
+            @Override
+            public void onVolleyFailure(String error) {}
         });
     }
 

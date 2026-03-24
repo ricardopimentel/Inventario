@@ -14,6 +14,10 @@ public class TicketMessage {
     private String lastUpdater;
     private String updateDate;
 
+    // Optional arrays for image parsing and documents
+    private java.util.List<String> inlineImages = new java.util.ArrayList<>();
+    private java.util.List<Attachment> attachments = new java.util.ArrayList<>();
+
     public TicketMessage(int messageType, String authorName, String creationDate, String content) {
         this.messageType = messageType;
         this.authorName = authorName;
@@ -83,5 +87,21 @@ public class TicketMessage {
 
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public java.util.List<String> getInlineImages() {
+        return inlineImages;
+    }
+
+    public void setInlineImages(java.util.List<String> inlineImages) {
+        this.inlineImages = inlineImages;
+    }
+
+    public java.util.List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(java.util.List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }

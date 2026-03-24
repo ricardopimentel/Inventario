@@ -84,6 +84,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return true;
                 }
             });
+            
+            bindImagesAndAttachments(holder.itemView.getContext(), message, ticketHolder.llInlineImages, ticketHolder.svAttachments, ticketHolder.llAttachmentsContainer);
 
         } else if (holder instanceof ReplyViewHolder) {
             ReplyViewHolder replyHolder = (ReplyViewHolder) holder;
@@ -116,6 +118,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     return true;
                 }
             });
+            
+            bindImagesAndAttachments(holder.itemView.getContext(), message, replyHolder.llInlineImages, replyHolder.svAttachments, replyHolder.llAttachmentsContainer);
         }
     }
 
@@ -143,6 +147,128 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return ssb;
     }
 
+    private void bindImagesAndAttachments(android.content.Context context, TicketMessage message, 
+                                          android.widget.LinearLayout llInlineImages, 
+                                          android.widget.HorizontalScrollView svAttachments, 
+                                          android.widget.LinearLayout llAttachmentsContainer) {
+        llInlineImages.removeAllViews();
+        llAttachmentsContainer.removeAllViews();
+        
+        com.cyberrocket.inventario.lib.Crud crud = new com.cyberrocket.inventario.lib.Crud();
+        String sessionToken = crud.SelectItem(context, "CONFIG", 1, 2);
+        String baseUrl = crud.SelectItem(context, "CONFIG", 1, 1);
+        
+        // Inline Images
+        if (message.getInlineImages() != null && !message.getInlineImages().isEmpty()) {
+            llInlineImages.setVisibility(View.VISIBLE);
+            for (String url : message.getInlineImages()) {
+                if(!url.startsWith("http")) url = baseUrl + url;
+                
+                android.widget.ImageView iv = new android.widget.ImageView(context);
+                android.widget.LinearLayout.LayoutParams params = new android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 
+                        android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(0, 16, 0, 16);
+                iv.setLayoutParams(params);
+                iv.setAdjustViewBounds(true);
+                iv.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
+                
+                llInlineImages.addView(iv);
+                loadImageSecurely(context, url, sessionToken, iv, null);
+            }
+        } else {
+            llInlineImages.setVisibility(View.GONE);
+        }
+        
+        // Attachments Carousel
+        if (message.getAttachments() != null && !message.getAttachments().isEmpty()) {
+            svAttachments.setVisibility(View.VISIBLE);
+            for (com.cyberrocket.inventario.models.Attachment attachment : message.getAttachments()) {
+                View carouselItem = LayoutInflater.from(context).inflate(R.layout.item_attachment_carousel, llAttachmentsContainer, false);
+                android.widget.ImageView ivThumb = carouselItem.findViewById(R.id.ivAttachmentImage);
+                TextView tvName = carouselItem.findViewById(R.id.tvAttachmentName);
+                
+                tvName.setText(attachment.getFilename());
+                
+                String attUrl = attachment.getUrl();
+                if(!attUrl.startsWith("http")) attUrl = baseUrl + attUrl;
+                
+                if (attachment.getMimeType() != null && attachment.getMimeType().startsWith("image/")) {
+                    loadImageSecurely(context, attUrl, sessionToken, ivThumb, tvName);
+                } else {
+                    ivThumb.setImageResource(android.R.drawable.ic_menu_agenda); // generic file icon
+                }
+                
+                // Click listener to open FullScreen viewer (only for images usually, but we can try for all)
+                String finalUrl = attUrl;
+                carouselItem.setOnClickListener(v -> {
+                    if(attachment.getMimeType() != null && attachment.getMimeType().startsWith("image/")) {
+                        showFullScreenImage(context, finalUrl, sessionToken);
+                    } else {
+                        android.widget.Toast.makeText(context, "Apenas anexos de imagem podem ser visualizados na tela cheia", android.widget.Toast.LENGTH_SHORT).show();
+                    }
+                });
+                
+                llAttachmentsContainer.addView(carouselItem);
+            }
+        } else {
+            svAttachments.setVisibility(View.GONE);
+        }
+    }
+    
+    private void loadImageSecurely(android.content.Context context, String url, String sessionToken, android.widget.ImageView imageView, TextView errorView) {
+        com.android.volley.toolbox.ImageRequest request = new com.android.volley.toolbox.ImageRequest(url,
+                new com.android.volley.Response.Listener<android.graphics.Bitmap>() {
+                    @Override
+                    public void onResponse(android.graphics.Bitmap response) {
+                        imageView.setImageBitmap(response);
+                    }
+                }, 0, 0, android.widget.ImageView.ScaleType.CENTER_INSIDE, android.graphics.Bitmap.Config.RGB_565,
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(com.android.volley.VolleyError error) {
+                        imageView.setImageResource(android.R.drawable.ic_menu_gallery);
+                        String errMsg = error != null ? error.toString() : "null";
+                        if (error != null && error.networkResponse != null) {
+                            errMsg += " Code: " + error.networkResponse.statusCode;
+                        }
+                        android.util.Log.e("VolleyImageError", "Failed URL: " + url + " Error: " + errMsg);
+                        
+                        // Show error on the screen for debugging
+                        if (errorView != null) {
+                            errorView.setText("Erro: " + errMsg);
+                        } else {
+                            android.widget.Toast.makeText(context, "Erro IMG: " + errMsg, android.widget.Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }) {
+            @Override
+            public java.util.Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
+                java.util.Map<String, String> headers = new java.util.HashMap<>();
+                headers.put("Session-Token", sessionToken);
+                // GLPI sometimes requires App-Token format, but if it worked for other queries, it's fine.
+                // Let's explicitly accept octet-stream to avoid GLPI returning JSON metadata
+                headers.put("Accept", "application/octet-stream");
+                return headers;
+            }
+        };
+        com.android.volley.toolbox.Volley.newRequestQueue(context).add(request);
+    }
+    
+    private void showFullScreenImage(android.content.Context context, String url, String sessionToken) {
+        android.app.Dialog dialog = new android.app.Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_fullscreen_image);
+        
+        android.widget.ImageView ivFull = dialog.findViewById(R.id.ivFullScreenImage);
+        android.widget.ImageButton btnClose = dialog.findViewById(R.id.btnCloseFullScreen);
+        
+        btnClose.setOnClickListener(v -> dialog.dismiss());
+        
+        loadImageSecurely(context, url, sessionToken, ivFull, null);
+        
+        dialog.show();
+    }
+
     @Override
     public int getItemCount() {
         return messages != null ? messages.size() : 0;
@@ -153,6 +279,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView tvCreationDate;
         TextView tvAuthor;
         TextView tvContent;
+        android.widget.LinearLayout llInlineImages;
+        android.widget.HorizontalScrollView svAttachments;
+        android.widget.LinearLayout llAttachmentsContainer;
 
         public TicketViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -160,6 +289,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvCreationDate = itemView.findViewById(R.id.tvCreationDate);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvContent = itemView.findViewById(R.id.tvContent);
+            llInlineImages = itemView.findViewById(R.id.llInlineImages);
+            svAttachments = itemView.findViewById(R.id.svAttachments);
+            llAttachmentsContainer = itemView.findViewById(R.id.llAttachmentsContainer);
         }
     }
 
@@ -168,6 +300,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         TextView tvCreationDate;
         TextView tvAuthor;
         TextView tvContent;
+        android.widget.LinearLayout llInlineImages;
+        android.widget.HorizontalScrollView svAttachments;
+        android.widget.LinearLayout llAttachmentsContainer;
 
         public ReplyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -175,6 +310,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             tvCreationDate = itemView.findViewById(R.id.tvCreationDate);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvContent = itemView.findViewById(R.id.tvContent);
+            llInlineImages = itemView.findViewById(R.id.llInlineImages);
+            svAttachments = itemView.findViewById(R.id.svAttachments);
+            llAttachmentsContainer = itemView.findViewById(R.id.llAttachmentsContainer);
         }
     }
 }
