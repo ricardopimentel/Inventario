@@ -68,6 +68,15 @@ public class ListAdapterIPs extends RecyclerView.Adapter<ListAdapterIPs.ViewHold
                     Toast.makeText(context, ipText.getText().toString() + " copiado", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    android.content.Intent intent = new android.content.Intent(context, com.cyberrocket.inventario.PingActivity.class);
+                    intent.putExtra("IP_ADDRESS", ipText.getText().toString());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }
