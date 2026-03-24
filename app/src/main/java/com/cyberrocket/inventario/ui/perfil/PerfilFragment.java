@@ -47,6 +47,17 @@ public class PerfilFragment extends Fragment {
         com.google.android.material.textfield.TextInputEditText etPrefix = root.findViewById(R.id.etPrefix);
         mCrud = new Crud();
 
+        TextView tvAppVersion = root.findViewById(R.id.text_app_version);
+        if (tvAppVersion != null) {
+            try {
+                android.content.pm.PackageInfo pInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+                tvAppVersion.setText("Inventário v" + pInfo.versionName);
+            } catch (Exception e) {
+                tvAppVersion.setText("Inventário");
+                e.printStackTrace();
+            }
+        }
+
         // Carrega prefixo atual (coluna 5 da tabela CONFIG)
         String currentPrefix = mCrud.SelectItem(getContext(), "CONFIG", 1, 5);
         if (currentPrefix != null && !currentPrefix.isEmpty()) {

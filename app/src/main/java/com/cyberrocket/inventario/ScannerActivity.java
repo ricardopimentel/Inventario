@@ -1034,7 +1034,7 @@ public class ScannerActivity extends AppCompatActivity {
         btnFechar.setVisibility(View.GONE);
         btnFechar.setText("Salvar no Servidor e Fechar");
         
-        edtDesc.setHint("Usuário / Identificador");
+        //edtDesc.setHint("Usuário / Identificador");
 
         tvTitle.setText(itemtype.equals("Computer") ? "Senhas da Máquina" : "Senhas do Local");
 
@@ -1098,7 +1098,7 @@ public class ScannerActivity extends AppCompatActivity {
                 edtDesc.setText(item.getDescricao());
                 edtValor.setText(item.getSenha());
                 editingPosition[0] = position;
-                btnAdd.setImageResource(android.R.drawable.ic_menu_save);
+                btnAdd.setImageResource(R.drawable.save_24);
                 updateButtonVisibility.run();
                 Toast.makeText(ScannerActivity.this, "Editando: " + item.getDescricao(), Toast.LENGTH_SHORT).show();
             }

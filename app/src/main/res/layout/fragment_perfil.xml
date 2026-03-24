@@ -148,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:hint="Prefixo (Opcional, Ex: PSO-)"
                     app:endIconMode="custom"
-                    app:endIconDrawable="@android:drawable/ic_menu_save">
+                    app:endIconDrawable="@drawable/save_24">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPrefix"
@@ -209,6 +209,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:id="@+id/text_app_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
