@@ -33,11 +33,32 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:hint="Endereço IP a testar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/EtIpAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/BtStartPing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Testar Ping"
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 android:id="@+id/TvPingStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Iniciando ping..."
+                android:text="Aguardando..."
                 android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
