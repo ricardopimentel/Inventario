@@ -224,4 +224,6 @@
     <color name="color_storage_cyan">#00BCD4</color>
     <color name="color_maintenance_green">#4CAF50</color>
     <color name="color_server_purple">#9C27B0</color>
+    
+    <color name="widget_bg_transparent">#B3E7E0E8</color>
 </resources>
