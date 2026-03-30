@@ -79,6 +79,15 @@
                 android:textColor="?attr/colorPrimary"/>
 
             <Spinner
+                android:id="@+id/spinnerTipo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minHeight="48dp"
+                android:visibility="gone"
+                android:textColor="?attr/colorPrimary"/>
+
+            <Spinner
                 android:id="@+id/spinnerLocal"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -17,11 +17,19 @@ import com.android.volley.Request;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.google.android.material.textfield.TextInputEditText;
 
+import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import com.cyberrocket.inventario.lib.Crud;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class CadMonitorActivity extends AppCompatActivity {
 
@@ -33,6 +41,7 @@ public class CadMonitorActivity extends AppCompatActivity {
 
     private ArrayList<String> modelNames = new ArrayList<>();
     private ArrayList<String> modelIds = new ArrayList<>();
+    private int currentScanType = 0; // 1 for Serie, 2 for Inventario
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,9 +63,82 @@ public class CadMonitorActivity extends AppCompatActivity {
         btnSalvar = findViewById(R.id.BtnSalvarMonitor);
         pgb = findViewById(R.id.PgbCadMonitor);
 
+        TextInputLayout tilSerieMonitor = findViewById(R.id.TilSerieMonitor);
+        tilSerieMonitor.setEndIconOnClickListener(v -> {
+            currentScanType = 1;
+            IntentIntegrator integrator = new IntentIntegrator(CadMonitorActivity.this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.setPrompt("Aponte para o Código de Série");
+            integrator.setCameraId(0);
+            integrator.setBeepEnabled(true);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.setOrientationLocked(false);
+            integrator.initiateScan();
+        });
+
+        TextInputLayout tilInventarioMonitor = findViewById(R.id.TilInventarioMonitor);
+        tilInventarioMonitor.setEndIconOnClickListener(v -> {
+            currentScanType = 2;
+            IntentIntegrator integrator = new IntentIntegrator(CadMonitorActivity.this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+            integrator.setPrompt("Aponte para o Código de Inventário");
+            integrator.setCameraId(0);
+            integrator.setBeepEnabled(true);
+            integrator.setBarcodeImageEnabled(false);
+            integrator.setOrientationLocked(false);
+            integrator.initiateScan();
+        });
+
+        edtInventario.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String inv = s.toString().trim();
+                if (!inv.isEmpty()) {
+                    Crud crud = new Crud();
+                    String prefixo = crud.SelectItem(CadMonitorActivity.this, "CONFIG", 1, 5);
+                    if (prefixo == null) prefixo = "";
+                    if (prefixo.endsWith("-")) {
+                        edtNome.setText(prefixo + inv);
+                    } else if (prefixo.isEmpty()) {
+                        edtNome.setText(inv);
+                    } else {
+                        edtNome.setText(prefixo + "-" + inv);
+                    }
+                } else {
+                    edtNome.setText("");
+                }
+            }
+        });
+
         btnSalvar.setOnClickListener(v -> salvarMonitor());
 
         loadModels();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() != null) {
+                String scannedCode = result.getContents();
+                if (currentScanType == 1) {
+                    edtSerie.setText(scannedCode);
+                } else if (currentScanType == 2) {
+                    edtInventario.setText(scannedCode);
+                }
+                currentScanType = 0;
+            } else {
+                Toast.makeText(this, "Leitura cancelada", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void loadModels() {

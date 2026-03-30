@@ -43,6 +43,7 @@ public class HomeFragment extends Fragment {
     private TextView emptyTextView;
     private SearchView searchView;
     private Spinner spinnerCategory; // Replaces spinnerMarca
+    private Spinner spinnerTipo;
     private Spinner spinnerLocal;
     private TextView tvItemCount;
     private com.google.android.material.floatingactionbutton.FloatingActionButton fabScanQr;
@@ -52,13 +53,16 @@ public class HomeFragment extends Fragment {
     private ListAdapterComputadores adapter;
 
     private String currentQuery = "";
-    private String currentCategory = "Equipamentos"; // Default
+    private String currentCategory = "Computadores"; // Default
+    private String currentTipo = "Todos os Tipos";
     private String currentLocal = "Todos os Locais";
 
     private ArrayAdapter<String> adapterCategory;
+    private ArrayAdapter<String> adapterTipo;
     private ArrayAdapter<String> adapterLocal;
     
     private List<String> categorias = new ArrayList<>();
+    private List<String> tiposUnicos = new ArrayList<>();
     private List<String> locaisUnicos = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,6 +73,7 @@ public class HomeFragment extends Fragment {
         emptyTextView = root.findViewById(R.id.text_home_empty);
         searchView = root.findViewById(R.id.searchViewComputadores);
         spinnerCategory = root.findViewById(R.id.spinnerMarca);
+        spinnerTipo = root.findViewById(R.id.spinnerTipo);
         spinnerLocal = root.findViewById(R.id.spinnerLocal);
         tvItemCount = root.findViewById(R.id.tvItemCount);
         fabScanQr = root.findViewById(R.id.fabScanQr);
@@ -86,6 +91,12 @@ public class HomeFragment extends Fragment {
         computadoresList = new ArrayList<>();
         adapter = new ListAdapterComputadores(computadoresList, getContext());
         recyclerView.setAdapter(adapter);
+
+        if (currentCategory.equals("Computadores")) {
+            spinnerTipo.setVisibility(View.VISIBLE);
+        } else {
+            spinnerTipo.setVisibility(View.GONE);
+        }
 
         // Inicializar Spinners
         initSpinners();
@@ -115,9 +126,18 @@ public class HomeFragment extends Fragment {
                     String selected = categorias.get(position);
                     if (!selected.equals(currentCategory)) {
                         currentCategory = selected;
+                        if (currentCategory.equals("Computadores")) {
+                            spinnerTipo.setVisibility(View.VISIBLE);
+                        } else {
+                            spinnerTipo.setVisibility(View.GONE);
+                            currentTipo = "Todos os Tipos";
+                        }
                         swipeRefreshLayout.setRefreshing(true);
                         loadEquipamentos();
                     }
+                } else if (parent.getId() == R.id.spinnerTipo) {
+                    currentTipo = tiposUnicos.get(position);
+                    applyFilters();
                 } else if (parent.getId() == R.id.spinnerLocal) {
                     currentLocal = locaisUnicos.get(position);
                     applyFilters();
@@ -129,6 +149,7 @@ public class HomeFragment extends Fragment {
         };
 
         spinnerCategory.setOnItemSelectedListener(spinnerListener);
+        spinnerTipo.setOnItemSelectedListener(spinnerListener);
         spinnerLocal.setOnItemSelectedListener(spinnerListener);
 
         swipeRefreshLayout.setOnRefreshListener(() -> loadEquipamentos());
@@ -140,12 +161,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void initSpinners() {
-        categorias.add("Equipamentos");
+        categorias.add("Computadores");
         categorias.add("Monitores");
+
+        tiposUnicos.add("Todos os Tipos");
         locaisUnicos.add("Todos os Locais");
 
         adapterCategory = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, categorias);
         spinnerCategory.setAdapter(adapterCategory);
+
+        adapterTipo = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, tiposUnicos);
+        spinnerTipo.setAdapter(adapterTipo);
 
         adapterLocal = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, locaisUnicos);
         spinnerLocal.setAdapter(adapterLocal);
@@ -153,28 +179,48 @@ public class HomeFragment extends Fragment {
 
     private void updateSpinnersData() {
         HashSet<String> locaisSet = new HashSet<>();
+        HashSet<String> tiposSet = new HashSet<>();
 
         for (Computador c : computadoresListOriginal) {
             String l = c.getLocalizacao();
             if (l != null && !l.isEmpty() && !l.equals("0")) locaisSet.add(l);
+            
+            String t = c.getTipo();
+            if (t != null && !t.isEmpty() && !t.equals("0") && !t.equals("Monitor")) tiposSet.add(t);
         }
 
         String lSelected = currentLocal;
+        String tSelected = currentTipo;
 
         locaisUnicos.clear();
         locaisUnicos.add("Todos os Locais");
+
+        tiposUnicos.clear();
+        tiposUnicos.add("Todos os Tipos");
 
         List<String> sortedLocais = new ArrayList<>(locaisSet);
         Collections.sort(sortedLocais);
         locaisUnicos.addAll(sortedLocais);
 
+        List<String> sortedTipos = new ArrayList<>(tiposSet);
+        Collections.sort(sortedTipos);
+        tiposUnicos.addAll(sortedTipos);
+
         adapterLocal.notifyDataSetChanged();
+        adapterTipo.notifyDataSetChanged();
 
         if (locaisUnicos.contains(lSelected)) {
             spinnerLocal.setSelection(locaisUnicos.indexOf(lSelected), false);
         } else {
             spinnerLocal.setSelection(0, false);
             currentLocal = "Todos os Locais";
+        }
+
+        if (tiposUnicos.contains(tSelected)) {
+            spinnerTipo.setSelection(tiposUnicos.indexOf(tSelected), false);
+        } else {
+            spinnerTipo.setSelection(0, false);
+            currentTipo = "Todos os Tipos";
         }
     }
 
@@ -210,7 +256,7 @@ public class HomeFragment extends Fragment {
                         // Set Status Image based on state
                         String st = comp.getStatusInfo().toLowerCase();
                         ImageView imgStatus = new ImageView(getContext());
-                        if (st.contains("em uso") || st.contains("produção") || st.isEmpty() || st.equals("0")) {
+                        if (st.contains("produção")) {
                             imgStatus.setImageResource(R.drawable.checkcircle24);
                         } else {
                             imgStatus.setImageResource(R.drawable.uncheckcircle24);
@@ -260,15 +306,20 @@ public class HomeFragment extends Fragment {
             if (!currentLocal.equals("Todos os Locais")) {
                 matchesLocal = currentLocal.equals(comp.getLocalizacao());
             }
+            
+            boolean matchesTipo = true;
+            if (!currentTipo.equals("Todos os Tipos") && currentCategory.equals("Computadores")) {
+                matchesTipo = currentTipo.equals(comp.getTipo());
+            }
 
-            if (matchesQuery && matchesLocal) {
+            if (matchesQuery && matchesLocal && matchesTipo) {
                 computadoresList.add(comp);
             }
         }
 
         if (computadoresList.isEmpty()) {
             emptyTextView.setVisibility(View.VISIBLE);
-            String itemType = currentCategory.equals("Monitores") ? "monitor" : "equipamento";
+            String itemType = currentCategory.equals("Monitores") ? "monitor" : "computador";
             emptyTextView.setText("Nenhum " + itemType + " encontrado");
             recyclerView.setVisibility(View.GONE);
             tvItemCount.setText("(0)");

@@ -140,4 +140,11 @@
     <color name="md_theme_surfaceContainer_highContrast">#211F24</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#2C292F</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#36343A</color>
+
+    <!-- Less saturated accent colors for icons in dark mode -->
+    <color name="color_equipment_orange">#FFD180</color>
+    <color name="color_monitor_pink">#F06292</color>
+    <color name="color_storage_cyan">#4DD0E1</color>
+    <color name="color_maintenance_green">#81C784</color>
+    <color name="color_server_purple">#BA68C8</color>
 </resources>

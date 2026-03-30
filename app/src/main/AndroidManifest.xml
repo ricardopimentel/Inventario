@@ -132,6 +132,19 @@
             android:label="Ping Test"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <receiver android:name=".widget.TicketWidgetProvider" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/ticket_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.TicketWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+            
     </application>
 
 </manifest>

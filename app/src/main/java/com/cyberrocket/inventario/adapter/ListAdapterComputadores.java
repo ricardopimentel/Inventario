@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,21 +57,40 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             
             // Dynamic Icon Selection based on Tipo
             String tipoLower = (computador.getTipo() != null ? computador.getTipo() : "").toLowerCase();
+            int iconColor;
             if (tipoLower.contains("monitor")) {
-                holder.mImgIconComputador.setImageResource(R.drawable.monitor_icone2);
+                holder.mImgIconComputador.setImageResource(R.drawable.monitor_24);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_monitor_pink); // Pink for monitors
             } else if (tipoLower.contains("notebook") || tipoLower.contains("laptop")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_laptop_24dp);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_maintenance_green); // Green for laptops
             } else if (tipoLower.contains("servidor") || tipoLower.contains("server")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_dns_24dp);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_server_purple); // Purple for servers
             } else if (tipoLower.contains("virtual") || tipoLower.contains("vmware") || tipoLower.contains("vm")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_virtual_machine_24dp);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_storage_cyan); // Cyan for VMs
             } else {
                 // Default to desktop for Mini PC, Low Profile, etc.
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_computer_24dp);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_equipment_orange); // Orange for Desktops
+            }
+
+            // Apply color to background (border) only, and clear previous color filters on the icon
+            holder.mImgIconComputador.clearColorFilter();
+            if (holder.mImgIconComputador.getBackground() != null) {
+                holder.mImgIconComputador.getBackground().mutate().setColorFilter(iconColor, android.graphics.PorterDuff.Mode.SRC_IN);
             }
 
             if (computador.getImagemStatus() != null && computador.getImagemStatus().getDrawable() != null) {
                 holder.mImgStatusComputador.setImageDrawable(computador.getImagemStatus().getDrawable());
+                
+                String statusMsg = (computador.getStatusInfo() != null ? computador.getStatusInfo() : "").toLowerCase();
+                if (statusMsg.contains("produção")) {
+                    holder.mImgStatusComputador.setColorFilter(Color.parseColor("#4CAF50"), android.graphics.PorterDuff.Mode.SRC_IN);
+                } else {
+                    holder.mImgStatusComputador.setColorFilter(Color.parseColor("#F44336"), android.graphics.PorterDuff.Mode.SRC_IN);
+                }
             }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {

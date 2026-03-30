@@ -217,4 +217,11 @@
     <color name="md_theme_dark_inverseSurface_mediumContrast">#E6E1E6</color>
     <color name="md_theme_dark_inverseOnSurface_mediumContrast">#322F35</color>
     <color name="md_theme_dark_inversePrimary_mediumContrast">#6750</color>
+    
+    <!-- Accent colors for icons -->
+    <color name="color_equipment_orange">#FF9800</color>
+    <color name="color_monitor_pink">#E91E63</color>
+    <color name="color_storage_cyan">#00BCD4</color>
+    <color name="color_maintenance_green">#4CAF50</color>
+    <color name="color_server_purple">#9C27B0</color>
 </resources>
