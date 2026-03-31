@@ -342,17 +342,19 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
     @Override
     public void onMessageLongClick(TicketMessage message) {
         if (message.getMessageType() == TicketMessage.TYPE_TICKET && message.getId() != null) {
-            CharSequence[] options = new CharSequence[]{"Editar Chamado"};
+            CharSequence[] options = new CharSequence[]{"Editar Chamado", "Copiar Texto"};
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Opções do Chamado");
             builder.setItems(options, (dialog, which) -> {
                 if (which == 0) {
                     showEditTicketDialog();
+                } else if (which == 1) {
+                    copyToClipboard(message.getContent());
                 }
             });
             builder.show();
         } else if (message.getMessageType() == TicketMessage.TYPE_REPLY && message.getId() != null) {
-            CharSequence[] options = new CharSequence[]{"Editar", "Excluir"};
+            CharSequence[] options = new CharSequence[]{"Editar", "Excluir", "Copiar Texto"};
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Opções");
             builder.setItems(options, (dialog, which) -> {
@@ -377,9 +379,26 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
                             .setPositiveButton("Sim", (d, w) -> deleteFollowup(message.getId()))
                             .setNegativeButton("Não", null)
                             .show();
+                } else if (which == 2) {
+                    copyToClipboard(message.getContent());
                 }
             });
             builder.show();
+        }
+    }
+
+    private void copyToClipboard(String htmlContent) {
+        String plainText;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            plainText = android.text.Html.fromHtml(htmlContent, android.text.Html.FROM_HTML_MODE_COMPACT).toString();
+        } else {
+            plainText = android.text.Html.fromHtml(htmlContent).toString();
+        }
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(android.content.Context.CLIPBOARD_SERVICE);
+        android.content.ClipData clip = android.content.ClipData.newPlainText("Chamado", plainText.trim());
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(clip);
+            Toast.makeText(this, "Texto copiado para a área de transferência", Toast.LENGTH_SHORT).show();
         }
     }
 
