@@ -101,8 +101,37 @@ public class TicketRemoteViewsFactory implements RemoteViewsService.RemoteViewsF
         RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_ticket_item);
         
         rv.setTextViewText(R.id.widget_item_title, chamado.getTitulo() != null && !chamado.getTitulo().isEmpty() ? chamado.getTitulo() : "Sem Título");
-        rv.setTextViewText(R.id.widget_item_id, chamado.getId() != null ? "#" + chamado.getId() : "");
-        rv.setTextViewText(R.id.widget_item_date, chamado.getDataCriacao() != null ? chamado.getDataCriacao() : "");
+
+        String desc = chamado.getDescricao() != null ? chamado.getDescricao() : "";
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                desc = android.text.Html.fromHtml(desc, android.text.Html.FROM_HTML_MODE_COMPACT).toString();
+            } else {
+                desc = android.text.Html.fromHtml(desc).toString();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        desc = desc.trim().replaceAll("\\s+", " ");
+        rv.setTextViewText(R.id.widget_item_desc, desc);
+
+        String dateStr = chamado.getDataCriacao();
+        String formattedDate = "";
+        if (dateStr != null && !dateStr.isEmpty()) {
+            String datePart = dateStr.contains(" ") ? dateStr.split(" ")[0] : dateStr;
+            String[] parts = datePart.split("-");
+            if (parts.length == 3) {
+                java.util.Locale currentLocale = context.getResources().getConfiguration().locale;
+                if (currentLocale.getLanguage().equals("pt")) {
+                    formattedDate = parts[2] + "/" + parts[1] + "/" + parts[0];
+                } else {
+                    formattedDate = parts[1] + "/" + parts[2] + "/" + parts[0];
+                }
+            } else {
+                formattedDate = dateStr;
+            }
+        }
+        rv.setTextViewText(R.id.widget_item_date, formattedDate);
 
         Intent fillInIntent = new Intent();
         fillInIntent.putExtra("id", chamado.getId());

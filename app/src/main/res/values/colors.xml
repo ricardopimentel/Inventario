@@ -225,5 +225,9 @@
     <color name="color_maintenance_green">#4CAF50</color>
     <color name="color_server_purple">#9C27B0</color>
     
-    <color name="widget_bg_transparent">#B3E7E0E8</color>
+    <color name="widget_bg_transparent">#CCE7E0E8</color>
+    
+    <!-- Widget Backgrounds (Fallbacks for Android < 12) -->
+    <color name="widget_bg_dynamic">@color/md_theme_surfaceContainerLow</color>
+    <color name="widget_item_bg_dynamic">@color/md_theme_surfaceContainerHigh</color>
 </resources>

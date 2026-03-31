@@ -211,9 +211,14 @@ public class TicketsFragment extends Fragment {
                                 
                                 if (formId.isEmpty() || formName.isEmpty()) continue;
                                 
-                                android.widget.Button btn = new android.widget.Button(getContext());
+                                androidx.appcompat.widget.AppCompatButton btn = new androidx.appcompat.widget.AppCompatButton(getContext());
                                 btn.setText(formName);
                                 btn.setAllCaps(false);
+                                btn.setBackgroundResource(R.drawable.form_btn_bg);
+                                btn.setMinimumHeight(0);
+                                btn.setMinHeight(0);
+                                btn.setMinimumWidth(0);
+                                btn.setMinWidth(0);
                                 
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -303,9 +308,14 @@ public class TicketsFragment extends Fragment {
                                 String formName = obj.optString("name");
                                 if (formId.isEmpty() || formName.isEmpty()) continue;
                                 
-                                android.widget.Button btn = new android.widget.Button(getContext());
+                                androidx.appcompat.widget.AppCompatButton btn = new androidx.appcompat.widget.AppCompatButton(getContext());
                                 btn.setText(formName);
                                 btn.setAllCaps(false);
+                                btn.setBackgroundResource(R.drawable.form_btn_bg);
+                                btn.setMinimumHeight(0);
+                                btn.setMinHeight(0);
+                                btn.setMinimumWidth(0);
+                                btn.setMinWidth(0);
                                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                                         LinearLayout.LayoutParams.WRAP_CONTENT,
                                         LinearLayout.LayoutParams.WRAP_CONTENT

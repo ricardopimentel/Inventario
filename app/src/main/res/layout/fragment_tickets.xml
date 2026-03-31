@@ -67,6 +67,8 @@
             android:scrollbars="none"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
+            android:paddingBottom="0dp"
+            android:paddingTop="4dp"
             android:background="@android:color/transparent"
             android:visibility="gone">
 

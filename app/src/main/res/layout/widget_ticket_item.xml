@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="6dp"
+    android:layout_marginBottom="1dp"
     android:background="@drawable/widget_item_bg">
 
     <TextView
@@ -13,9 +15,8 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textColor="@color/md_theme_primary"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+        android:textColor="@color/md_theme_onSurface"
+        android:textSize="14sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,25 +25,24 @@
         android:layout_marginTop="2dp">
 
         <TextView
-            android:id="@+id/widget_item_id"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/md_theme_primary"
-            android:alpha="0.8"
-            android:textSize="12sp"
-            android:layout_marginEnd="8dp" />
-
-        <TextView
-            android:id="@+id/widget_item_date"
+            android:id="@+id/widget_item_desc"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="end"
-            android:textColor="@color/md_theme_primary"
-            android:alpha="0.8"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_theme_onSurfaceVariant"
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/widget_item_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:layout_marginStart="8dp" />
+            
     </LinearLayout>
 
 </LinearLayout>

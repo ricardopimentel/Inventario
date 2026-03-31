@@ -140,4 +140,7 @@
     <color name="md_theme_surfaceContainer_highContrast">#211F24</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#2C292F</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#36343A</color>
+    <!-- Cores Dinâmicas e Coloridas do Android 12+ (Dark Mode) -->
+    <color name="widget_bg_dynamic">@android:color/system_accent2_900</color>
+    <color name="widget_item_bg_dynamic">@android:color/system_accent2_800</color>
 </resources>

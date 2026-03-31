@@ -6,25 +6,74 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <TextView
-        android:id="@+id/widget_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Chamados em Andamento"
-        android:textColor="@color/md_theme_primary"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:gravity="center" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:padding="2dp"
+            android:src="@drawable/ic_menu_book_24dp"
+            android:contentDescription="Icon"
+            android:tint="@color/md_theme_primary"/>
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Chamados"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:id="@+id/widget_refresh_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_header_btn_bg"
+            android:backgroundTint="@color/md_theme_surfaceVariant"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_refresh_24dp"
+                android:tint="@color/md_theme_onSurfaceVariant"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/widget_new_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_header_btn_bg"
+            android:backgroundTint="@color/md_theme_primary"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/baseline_add_24"
+                android:tint="@color/md_theme_onPrimary"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/widget_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:divider="@android:color/transparent"
-        android:dividerHeight="4dp" />
+        android:dividerHeight="2dp" />
 
     <LinearLayout
         android:id="@+id/widget_empty_view"
@@ -32,8 +81,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_margin="8dp"
-        android:padding="8dp"
         android:visibility="gone">
 
         <LinearLayout
@@ -42,15 +89,14 @@
             android:background="@drawable/widget_item_bg"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="24dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tudo limpinho! 🧹😊"
-                android:textColor="@color/md_theme_primary"
+                android:textColor="@color/md_theme_onSurface"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 android:gravity="center" />
 
             <TextView
@@ -59,7 +105,7 @@
                 android:text="Nenhum chamado em andamento."
                 android:textColor="@color/md_theme_onSurfaceVariant"
                 android:textSize="12sp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="6dp"
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>

@@ -77,6 +77,19 @@ public class HomeFragment extends Fragment {
         spinnerLocal = root.findViewById(R.id.spinnerLocal);
         tvItemCount = root.findViewById(R.id.tvItemCount);
         fabScanQr = root.findViewById(R.id.fabScanQr);
+        
+        View cardCadComputador = root.findViewById(R.id.cardCadComputador);
+        View cardCadMonitor = root.findViewById(R.id.cardCadMonitor);
+
+        cardCadComputador.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), com.cyberrocket.inventario.CadEquipamentoActivity.class);
+            startActivity(intent);
+        });
+
+        cardCadMonitor.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), com.cyberrocket.inventario.CadMonitorActivity.class);
+            startActivity(intent);
+        });
 
         fabScanQr.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ScannerActivity.class);
