@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:ellipsize="end"
-        android:textColor="@color/md_theme_onSurface"
+        android:textColor="@color/md_theme_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -27,7 +27,7 @@
             android:id="@+id/widget_item_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:textColor="@color/md_theme_primary"
             android:alpha="0.8"
             android:textSize="12sp"
             android:layout_marginEnd="8dp" />
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="end"
-            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:textColor="@color/md_theme_primary"
             android:alpha="0.8"
             android:maxLines="1"
             android:ellipsize="end"
