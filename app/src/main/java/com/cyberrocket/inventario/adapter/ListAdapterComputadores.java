@@ -55,24 +55,30 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             
             holder.mTvLocalComputador.setText(computador.getLocalizacao() != null ? computador.getLocalizacao() : "");
             
-            // Dynamic Icon Selection based on Tipo
+            // Dynamic Icon Selection purely based on Tipo from GLPI
             String tipoLower = (computador.getTipo() != null ? computador.getTipo() : "").toLowerCase();
             int iconColor;
             if (tipoLower.contains("monitor")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.monitor_24);
                 iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_monitor_pink); // Pink for monitors
-            } else if (tipoLower.contains("notebook") || tipoLower.contains("laptop")) {
+            } else if (tipoLower.contains("notebook")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_laptop_24dp);
                 iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_maintenance_green); // Green for laptops
-            } else if (tipoLower.contains("servidor") || tipoLower.contains("server")) {
-                holder.mImgIconComputador.setImageResource(R.drawable.ic_dns_24dp);
-                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_server_purple); // Purple for servers
-            } else if (tipoLower.contains("virtual") || tipoLower.contains("vmware") || tipoLower.contains("vm")) {
+            } else if (tipoLower.contains("servidor virtual")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.desktop_cloud_stack);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_virtual_server_red); // Red for Virtual Servers
+            } else if (tipoLower.contains("servidor f") || tipoLower.equals("servidor")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.desktop_tower);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_server_tower_indigo); // Indigo for Physical Servers
+            } else if (tipoLower.contains("maquina virtual") || tipoLower.contains("máquina virtual") || tipoLower.contains("vmware")) {
                 holder.mImgIconComputador.setImageResource(R.drawable.ic_virtual_machine_24dp);
                 iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_storage_cyan); // Cyan for VMs
+            } else if (tipoLower.contains("mini pc")) {
+                holder.mImgIconComputador.setImageResource(R.drawable.desktop_classic);
+                iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_minipc_teal); // Teal for Mini PCs
             } else {
-                // Default to desktop for Mini PC, Low Profile, etc.
-                holder.mImgIconComputador.setImageResource(R.drawable.ic_computer_24dp);
+                // Fallback / Desktop
+                holder.mImgIconComputador.setImageResource(R.drawable.desktop_tower_monitor);
                 iconColor = androidx.core.content.ContextCompat.getColor(contexto, R.color.color_equipment_orange); // Orange for Desktops
             }
 

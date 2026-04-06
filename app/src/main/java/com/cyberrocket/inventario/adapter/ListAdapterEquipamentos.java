@@ -163,6 +163,9 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             if (tipo.equalsIgnoreCase("Estado:")) {
                 PreencherListaStatus(mAdapter, mListaNomes, mListaId);
                 dialogBuilder.setTitle("Escolher o Estado");
+            } else if (tipo.equalsIgnoreCase("Tipo:")) {
+                PreencherListaTipo(mAdapter, mListaNomes, mListaId);
+                dialogBuilder.setTitle("Escolher o Tipo");
             } else {
                 PreencherListaLocais(mAdapter, mListaNomes, mListaId);
                 dialogBuilder.setTitle("Escolher o Local");
@@ -178,6 +181,8 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
                             String id = mListaId.get(index).toString();
                             if (tipo.equalsIgnoreCase("Estado:")) {
                                 AlterarStatus(id);
+                            } else if (tipo.equalsIgnoreCase("Tipo:")) {
+                                AlterarTipo(id);
                             } else {
                                 AlterarLocalizacao(id);
                             }
@@ -233,6 +238,12 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
     private void AlterarLocalizacao(String local) {
         JSONObject postparams = new JSONObject();
         JSONObject finalarray = new JSONObject();
+        String endpoint = "/apirest.php/Computer/";
+        if (contexto instanceof ScannerActivity) {
+            if (((ScannerActivity)contexto).mItemType.equals("Monitor")) {
+                endpoint = "/apirest.php/Monitor/";
+            }
+        }
         try {
             postparams.put("id", mIdEquipamento);
             postparams.put("locations_id", local);
@@ -244,7 +255,7 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
         Log.e("sessiontoken", finalarray.toString());
 
         GLPIConnect con = new GLPIConnect(contexto);
-        con.UpdateItem("/apirest.php/Computer/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+        con.UpdateItem(endpoint, finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 IrPara(ScannerActivity.class);
@@ -292,6 +303,12 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
     private void AlterarStatus(String statusId) {
         JSONObject postparams = new JSONObject();
         JSONObject finalarray = new JSONObject();
+        String endpoint = "/apirest.php/Computer/";
+        if (contexto instanceof ScannerActivity) {
+            if (((ScannerActivity)contexto).mItemType.equals("Monitor")) {
+                endpoint = "/apirest.php/Monitor/";
+            }
+        }
         try {
             postparams.put("id", mIdEquipamento);
             postparams.put("states_id", statusId);
@@ -301,7 +318,7 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
         }
 
         GLPIConnect con = new GLPIConnect(contexto);
-        con.UpdateItem("/apirest.php/Computer/", finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+        con.UpdateItem(endpoint, finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 Toast.makeText(contexto, "Estado atualizado gravado no servidor!", Toast.LENGTH_SHORT).show();
@@ -311,6 +328,79 @@ public class ListAdapterEquipamentos extends RecyclerView.Adapter<ListAdapterEqu
             @Override
             public void onVolleyFailure(String url) {
                 Toast.makeText(contexto, "Erro ao alterar estado: "+ url, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void PreencherListaTipo(ArrayAdapter<String> mAdapter, ArrayList mListaNomes, ArrayList mListaId) {
+        GLPIConnect con = new GLPIConnect(contexto);
+        String endpoint = "/apirest.php/ComputerType?range=0-1000";
+        if (contexto instanceof ScannerActivity) {
+            if (((ScannerActivity)contexto).mItemType.equals("Monitor")) {
+                endpoint = "/apirest.php/MonitorType?range=0-1000";
+            }
+        }
+        con.GetArray(endpoint, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                JSONArray jsonArray = new JSONArray();
+                try {
+                    jsonArray = new JSONArray(response);
+                }catch (JSONException err){
+                    Log.d("ParseError", err.toString());
+                }
+                try {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject local = jsonArray.getJSONObject(i);
+                        mAdapter.add(local.getString("name"));
+                        mListaNomes.add(local.getString("name"));
+                        mListaId.add(local.getString("id"));
+                    }
+                    mAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                Toast.makeText(contexto, "Erro de conexão\n"+url, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void AlterarTipo(String tipoId) {
+        JSONObject postparams = new JSONObject();
+        JSONObject finalarray = new JSONObject();
+        String endpoint = "/apirest.php/Computer/";
+        String field = "computertypes_id";
+        
+        if (contexto instanceof ScannerActivity) {
+            if (((ScannerActivity)contexto).mItemType.equals("Monitor")) {
+                endpoint = "/apirest.php/Monitor/";
+                field = "monitortypes_id";
+            }
+        }
+        
+        try {
+            postparams.put("id", mIdEquipamento);
+            postparams.put(field, tipoId);
+            finalarray.put("input", postparams);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        GLPIConnect con = new GLPIConnect(contexto);
+        con.UpdateItem(endpoint, finalarray, Request.Method.PUT, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                Toast.makeText(contexto, "Tipo atualizado gravado no servidor!", Toast.LENGTH_SHORT).show();
+                IrPara(ScannerActivity.class);
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                Toast.makeText(contexto, "Erro ao alterar tipo: "+ url, Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -92,7 +92,7 @@ public class ScannerActivity extends AppCompatActivity {
     ConstraintLayout mLayoutArmazenamento;
     String mIdMonitor;
     SwipeRefreshLayout mSwipeRefreshListEquipamento;
-    String mItemType = "Computer"; // Default
+    public String mItemType = "Computer"; // Default
 
     // Autocomplete for Monitor
     ArrayList<String> mMonitorNamesList;
@@ -369,7 +369,7 @@ public class ScannerActivity extends AppCompatActivity {
                         } else {
                             tipoValue = jsonObject.optString("computertypes_id");
                         }
-                        CriarListaEquipamentos(tipoLabel, tipoValue, View.GONE, 0);
+                        CriarListaEquipamentos(tipoLabel, tipoValue, View.VISIBLE, 0);
                         
                         // Log focado na busca das placas de rede para depuração
                         try {
