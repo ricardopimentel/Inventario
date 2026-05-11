@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -27,7 +29,7 @@ import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.lib.PasswordVaultHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +44,8 @@ public class PasswordVaultFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView emptyTextView;
     private SearchView searchView;
-    private TabLayout tabLayout;
+    private MaterialButtonToggleGroup toggleGroup;
+    private Spinner spinnerComputerType;
     private FloatingActionButton fabAdd;
 
     private PasswordVaultHelper vaultHelper;
@@ -52,6 +55,10 @@ public class PasswordVaultFragment extends Fragment {
 
     private String currentTab = "Computer";
     private String currentQuery = "";
+    private String selectedComputerTypeId = "0"; // 0 means all
+
+    private ArrayList<String> computerTypeNames = new ArrayList<>();
+    private ArrayList<String> computerTypeIds = new ArrayList<>();
 
     @Nullable
     @Override
@@ -63,12 +70,13 @@ public class PasswordVaultFragment extends Fragment {
         progressBar = root.findViewById(R.id.pbVault);
         emptyTextView = root.findViewById(R.id.tvVaultEmpty);
         searchView = root.findViewById(R.id.searchViewVault);
-        tabLayout = root.findViewById(R.id.tabLayoutVault);
+        toggleGroup = root.findViewById(R.id.toggleGroupVault);
+        spinnerComputerType = root.findViewById(R.id.spinnerComputerTypeVault);
         fabAdd = root.findViewById(R.id.fabAddVaultLink);
 
         vaultHelper = new PasswordVaultHelper(getContext());
         
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adapter = new ListAdapterVaultGroups(vaultItemsFiltered, getContext(), vaultHelper, new PasswordVaultHelper.VaultOperationListener() {
             @Override
             public void onLoading(boolean loading) {
@@ -83,14 +91,23 @@ public class PasswordVaultFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                currentTab = tab.getPosition() == 0 ? "Computer" : "Location";
+        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                currentTab = checkedId == R.id.btnTabComputadores ? "Computer" : "Location";
+                spinnerComputerType.setVisibility(currentTab.equals("Computer") ? View.VISIBLE : View.GONE);
                 loadVaultItems();
             }
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        loadComputerTypes();
+
+        spinnerComputerType.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                selectedComputerTypeId = computerTypeIds.get(position);
+                applyFilters();
+            }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -122,64 +139,75 @@ public class PasswordVaultFragment extends Fragment {
         swipeRefreshLayout.setRefreshing(true);
         GLPIConnect con = new GLPIConnect(getContext());
         
-        // Endpoint to get all items that HAVE a vault secret link
-        // Note the trailing slash before the ? - GLPI is very picky about this
-        String endpoint = "/apirest.php/PluginFields" + currentTab + "cofredesenha/?expand_dropdowns=true&range=0-500";
-        
+        String endpoint = "/apirest.php/PluginFields" + currentTab + "cofredesenha/?range=0-500";
         con.GetArray(endpoint, new GLPIConnect.VolleyResponseListener() {
             @Override
             public void onVolleySuccess(String url, String response) {
                 if (!isAdded()) return;
-                swipeRefreshLayout.setRefreshing(false);
-                vaultItemsOriginal.clear();
                 try {
                     JSONArray array = new JSONArray(response);
+                    ArrayList<String> idsWithSecrets = new ArrayList<>();
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
                         String vaultId = obj.optString("vaultsecretidfield", "");
                         if (!vaultId.isEmpty() && !vaultId.equals("null")) {
-                            String itemId = obj.optString("items_id");
-                            // The 'items_id' in PluginFields often comes as a name if expand_dropdowns is true
-                            // but we need the ID too. GLPI API is tricky here.
-                            // Usually, there's a field like 'Computer' or 'Location' with the name.
-                            String name = obj.optString(currentTab, "Item #" + itemId);
-                            vaultItemsOriginal.add(new ListAdapterVaultGroups.VaultItem(itemId, name, currentTab));
+                            idsWithSecrets.add(obj.optString("items_id"));
                         }
                     }
-                    applyFilters();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    applyFilters();
-                }
+                    if (idsWithSecrets.isEmpty()) {
+                        vaultItemsOriginal.clear();
+                        applyFilters();
+                        swipeRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+                    String itemsEndpoint = "/apirest.php/" + currentTab + "/?expand_dropdowns=true&range=0-1000";
+                    con.GetArray(itemsEndpoint, new GLPIConnect.VolleyResponseListener() {
+                        @Override
+                        public void onVolleySuccess(String url2, String response2) {
+                            if (!isAdded()) return;
+                            try {
+                                JSONArray itemsArray = new JSONArray(response2);
+                                vaultItemsOriginal.clear();
+                                for (int i = 0; i < itemsArray.length(); i++) {
+                                    JSONObject itemObj = itemsArray.getJSONObject(i);
+                                    String id = itemObj.optString("id");
+                                    if (idsWithSecrets.contains(id)) {
+                                        String fullName = itemObj.optString(currentTab.equals("Location") ? "completename" : "name");
+                                        String name = fullName;
+                                        if (currentTab.equals("Location") && name.contains(">")) {
+                                            String[] parts = name.split(">");
+                                            name = parts[parts.length - 1].trim();
+                                        }
+                                        String typeId = "0";
+                                        if (currentTab.equals("Computer")) {
+                                            JSONArray links = itemObj.optJSONArray("links");
+                                            if (links != null) {
+                                                for (int j = 0; j < links.length(); j++) {
+                                                    JSONObject l = links.getJSONObject(j);
+                                                    if (l.optString("rel").equals("ComputerType")) {
+                                                        String h = l.optString("href");
+                                                        typeId = h.substring(h.lastIndexOf("/") + 1);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        vaultItemsOriginal.add(new ListAdapterVaultGroups.VaultItem(id, name, fullName, currentTab, typeId));
+                                    }
+                                }
+                                applyFilters();
+                            } catch (JSONException e) { e.printStackTrace(); }
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        @Override public void onVolleyFailure(String error) { if (!isAdded()) return; swipeRefreshLayout.setRefreshing(false); }
+                    });
+                } catch (JSONException e) { e.printStackTrace(); swipeRefreshLayout.setRefreshing(false); }
             }
-
-            @Override
-            public void onVolleyFailure(String errorMessage) {
-                if (!isAdded()) return;
-                swipeRefreshLayout.setRefreshing(false);
-                Log.e("VaultFragment", "Erro GLPI: " + errorMessage);
-                Toast.makeText(getContext(), "Erro GLPI: " + errorMessage, Toast.LENGTH_LONG).show();
-            }
+            @Override public void onVolleyFailure(String errorMessage) { if (!isAdded()) return; swipeRefreshLayout.setRefreshing(false); }
         });
     }
 
-    private void applyFilters() {
-        vaultItemsFiltered.clear();
-        for (ListAdapterVaultGroups.VaultItem item : vaultItemsOriginal) {
-            if (currentQuery.isEmpty() || item.name.toLowerCase().contains(currentQuery.toLowerCase()) || item.id.contains(currentQuery)) {
-                vaultItemsFiltered.add(item);
-            }
-        }
-        
-        if (vaultItemsFiltered.isEmpty()) {
-            emptyTextView.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            emptyTextView.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-        adapter.notifyDataSetChanged();
-    }
+
 
     private void showAddItemDialog() {
         String[] types = {"Computador", "Localidade"};
@@ -213,7 +241,15 @@ public class PasswordVaultFragment extends Fragment {
                     JSONArray array = new JSONArray(response);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
-                        names.add(obj.getString("name"));
+                        String name = obj.getString("name");
+                        
+                        // Simplify location names in search results
+                        if (type.equals("Location") && name.contains(">")) {
+                            String[] parts = name.split(">");
+                            name = parts[parts.length - 1].trim();
+                        }
+                        
+                        names.add(name);
                         ids.add(obj.getString("id"));
                     }
                     searchAdapter.notifyDataSetChanged();
@@ -243,5 +279,66 @@ public class PasswordVaultFragment extends Fragment {
             
         // Hide "Novo Monitor" button from activity_vincular_monitor if present
         view.findViewById(R.id.BtNovoMonitorVincular).setVisibility(View.GONE);
+    }
+    private void applyFilters() {
+        vaultItemsFiltered.clear();
+        for (ListAdapterVaultGroups.VaultItem item : vaultItemsOriginal) {
+            boolean matchesSearch = currentQuery.isEmpty() || 
+                                   item.name.toLowerCase().contains(currentQuery.toLowerCase()) || 
+                                   item.fullName.toLowerCase().contains(currentQuery.toLowerCase()) ||
+                                   item.id.contains(currentQuery);
+            
+            boolean matchesType = true;
+            if (currentTab.equals("Computer") && !selectedComputerTypeId.equals("0")) {
+                matchesType = item.computerTypeId != null && item.computerTypeId.equals(selectedComputerTypeId);
+            }
+            
+            if (matchesSearch && matchesType) {
+                vaultItemsFiltered.add(item);
+            }
+        }
+        
+        if (adapter != null) adapter.notifyDataSetChanged();
+        
+        if (vaultItemsFiltered.isEmpty()) {
+            emptyTextView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            emptyTextView.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void loadComputerTypes() {
+        if (getContext() == null) return;
+        GLPIConnect con = new GLPIConnect(getContext());
+        con.GetArray("/apirest.php/ComputerType/", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                try {
+                    JSONArray array = new JSONArray(response);
+                    computerTypeNames.clear();
+                    computerTypeIds.clear();
+                    
+                    computerTypeNames.add("Todos os Tipos");
+                    computerTypeIds.add("0");
+                    
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        computerTypeNames.add(obj.optString("name"));
+                        computerTypeIds.add(obj.optString("id"));
+                    }
+                    
+                    if (isAdded() && getContext() != null) {
+                        ArrayAdapter<String> adapterType = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, computerTypeNames);
+                        adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinnerComputerType.setAdapter(adapterType);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override public void onVolleyFailure(String error) {}
+        });
     }
 }

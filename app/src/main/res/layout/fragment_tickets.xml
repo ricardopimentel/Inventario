@@ -137,6 +137,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@android:drawable/ic_input_add"
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimary"
         android:contentDescription="Criar Novo Chamado" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

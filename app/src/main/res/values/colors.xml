@@ -228,6 +228,9 @@
     <color name="color_server_tower_indigo">#3F51B5</color>
     <color name="color_virtual_server_red">#E53935</color>
     
+    <color name="vault_color_computer">#6750A4</color>
+    <color name="vault_color_location">#2E7D32</color>
+    
     <color name="widget_bg_transparent">#CCE7E0E8</color>
     
     <!-- Widget Backgrounds (Fallbacks for Android < 12) -->
