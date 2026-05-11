@@ -18,8 +18,18 @@ import com.cyberrocket.inventario.LoginActivity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import android.util.Base64;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import com.android.volley.toolbox.HurlStack;
 
 public class GLPIConnect {
     private RequestQueue mQueue;
@@ -27,6 +37,28 @@ public class GLPIConnect {
 
     public GLPIConnect(Context context){
         mContext = context;
+        mQueue = Volley.newRequestQueue(mContext, new HurlStack(null, getUnsafeSocketFactory()));
+    }
+
+    private SSLSocketFactory getUnsafeSocketFactory() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                }
+            };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            
+            HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+            
+            return sc.getSocketFactory();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void LoginGLPI(String user, String password, final VolleyResponseListener listener){
@@ -35,8 +67,6 @@ public class GLPIConnect {
         byte[] data = (user+":"+password).getBytes(java.nio.charset.StandardCharsets.UTF_8);
         final String autorizacao = "Basic " + Base64.encodeToString(data, Base64.DEFAULT);
 
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();
@@ -75,8 +105,6 @@ public class GLPIConnect {
 
     public void LogoffGLPI(final VolleyResponseListener listener){
         //logoff no glpi, envia o token para remover do sistema
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();
@@ -112,8 +140,6 @@ public class GLPIConnect {
     }
 
     public void GetItem(String complemento, final VolleyResponseListener listener){
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();
@@ -150,9 +176,6 @@ public class GLPIConnect {
     }
 
     public void GetArray(String complemento, final VolleyResponseListener listener) {
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
-
         // pega URL no banco de dados
         Crud crud = new Crud();
         final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+complemento;
@@ -191,8 +214,6 @@ public class GLPIConnect {
     }
 
     public void UpdateItem(String complemento, JSONObject postparams, int method, final VolleyResponseListener listener) {
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();
@@ -229,8 +250,6 @@ public class GLPIConnect {
     }
 
     public void InsertItem(String complemento, JSONObject postparams, int method, final VolleyResponseListener listener) {
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();
@@ -287,7 +306,6 @@ public class GLPIConnect {
     }
 
     public void UpdateItemRaw(String complemento, JSONObject postparams, int method, final VolleyResponseListener listener) {
-        mQueue = Volley.newRequestQueue(mContext);
 
         Crud crud = new Crud();
         final String url = crud.SelectItem(mContext, "CONFIG", 1, 1)+ complemento;
@@ -340,8 +358,6 @@ public class GLPIConnect {
     }
 
     public void DeleteItem(String complemento, final VolleyResponseListener listener) {
-        //instancia objs
-        mQueue = Volley.newRequestQueue(mContext);
 
         // pega URL no banco de dados
         Crud crud = new Crud();

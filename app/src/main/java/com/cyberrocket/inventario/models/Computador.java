@@ -10,6 +10,10 @@ public class Computador {
     private String tipo;
     private String statusInfo;
     private ImageView imagemStatus;
+    private String ipAddress;
+    private boolean selected;
+    private String serial;
+    private String modelo;
 
     public String getId() {
         return id;
@@ -65,5 +69,37 @@ public class Computador {
 
     public void setImagemStatus(ImageView imagemStatus) {
         this.imagemStatus = imagemStatus;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
     }
 }

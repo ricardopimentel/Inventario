@@ -22,10 +22,70 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
 
     private ArrayList<Computador> dados;
     private Context contexto;
+    private boolean isSelectionMode = false;
+    private OnSelectionChangeListener selectionChangeListener;
+
+    public interface OnSelectionChangeListener {
+        void onSelectionChanged(int selectedCount);
+    }
 
     public ListAdapterComputadores(ArrayList<Computador> dados, Context contexto) {
         this.dados = dados;
         this.contexto = contexto;
+    }
+
+    public void setOnSelectionChangeListener(OnSelectionChangeListener listener) {
+        this.selectionChangeListener = listener;
+    }
+
+    public boolean isSelectionMode() {
+        return isSelectionMode;
+    }
+
+    public void setSelectionMode(boolean selectionMode) {
+        isSelectionMode = selectionMode;
+        if (!selectionMode) {
+            for (Computador c : dados) {
+                c.setSelected(false);
+            }
+            if (selectionChangeListener != null) {
+                selectionChangeListener.onSelectionChanged(0);
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    public void selectAll() {
+        if (!isSelectionMode) return;
+        boolean allSelected = true;
+        for (Computador c : dados) {
+            if (!c.isSelected()) {
+                allSelected = false;
+                break;
+            }
+        }
+        
+        int count = 0;
+        for (Computador c : dados) {
+            c.setSelected(!allSelected);
+            if (!allSelected) count++;
+        }
+        notifyDataSetChanged();
+        if (selectionChangeListener != null) {
+            selectionChangeListener.onSelectionChanged(count);
+        }
+    }
+
+    public ArrayList<Computador> getSelectedItems() {
+        ArrayList<Computador> selectedItems = new ArrayList<>();
+        if (dados != null) {
+            for (Computador c : dados) {
+                if (c.isSelected()) {
+                    selectedItems.add(c);
+                }
+            }
+        }
+        return selectedItems;
     }
 
     @NonNull
@@ -43,6 +103,9 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             
             holder.mTvIdComputador.setText(computador.getId() != null ? "#" + computador.getId() : "");
             holder.mTvNomeComputador.setText(computador.getNome() != null ? computador.getNome() : "Sem Nome");
+            
+            String serialId = computador.getSerial() != null && !computador.getSerial().isEmpty() ? computador.getSerial() : "SN: Indefinido";
+            holder.mTvSerialComputador.setText(serialId);
             
             String marca = computador.getFabricante() != null ? computador.getFabricante() : "";
             String tipo = computador.getTipo() != null ? computador.getTipo() : "";
@@ -99,14 +162,54 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
                 }
             }
 
+            if (holder.itemView instanceof com.google.android.material.card.MaterialCardView) {
+                com.google.android.material.card.MaterialCardView card = (com.google.android.material.card.MaterialCardView) holder.itemView;
+                card.setCheckable(true);
+                card.setChecked(computador.isSelected());
+            } else {
+                if (computador.isSelected()) {
+                    holder.itemView.setBackgroundColor(Color.parseColor("#33000000"));
+                } else {
+                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                }
+            }
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(contexto, ScannerActivity.class);
-                    intent.putExtra("id", computador.getId());
-                    String itemType = tipoLower.contains("monitor") ? "Monitor" : "Computer";
-                    intent.putExtra("item_type", itemType);
-                    contexto.startActivity(intent);
+                    if (isSelectionMode) {
+                        computador.setSelected(!computador.isSelected());
+                        notifyItemChanged(position);
+                        
+                        int selectedCount = getSelectedItems().size();
+                        if (selectedCount == 0) {
+                            setSelectionMode(false);
+                        } else if (selectionChangeListener != null) {
+                            selectionChangeListener.onSelectionChanged(selectedCount);
+                        }
+                    } else {
+                        Intent intent = new Intent(contexto, ScannerActivity.class);
+                        intent.putExtra("id", computador.getId());
+                        String itemType = tipoLower.contains("monitor") ? "Monitor" : "Computer";
+                        intent.putExtra("item_type", itemType);
+                        contexto.startActivity(intent);
+                    }
+                }
+            });
+
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (!isSelectionMode) {
+                        isSelectionMode = true;
+                        computador.setSelected(true);
+                        notifyItemChanged(position);
+                        if (selectionChangeListener != null) {
+                            selectionChangeListener.onSelectionChanged(1);
+                        }
+                        return true;
+                    }
+                    return false;
                 }
             });
         }
@@ -120,6 +223,7 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
     public class ViewHolderComputador extends RecyclerView.ViewHolder {
         public TextView mTvIdComputador;
         public TextView mTvNomeComputador;
+        public TextView mTvSerialComputador;
         public TextView mTvInfoComputador;
         public TextView mTvLocalComputador;
         public ImageView mImgStatusComputador;
@@ -129,6 +233,7 @@ public class ListAdapterComputadores extends RecyclerView.Adapter<ListAdapterCom
             super(itemView);
             mTvIdComputador = itemView.findViewById(R.id.TvIdComputador);
             mTvNomeComputador = itemView.findViewById(R.id.TvNomeComputador);
+            mTvSerialComputador = itemView.findViewById(R.id.TvSerialComputador);
             mTvInfoComputador = itemView.findViewById(R.id.TvInfoComputador);
             mTvLocalComputador = itemView.findViewById(R.id.TvLocalComputador);
             mImgStatusComputador = itemView.findViewById(R.id.ImgStatusComputador);

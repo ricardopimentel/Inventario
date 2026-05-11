@@ -52,6 +52,17 @@
                 app:iconifiedByDefault="false"
                 android:textColor="?attr/colorPrimary"/>
 
+            <ImageView
+                android:id="@+id/btnScanSearch"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="6dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/photo_camera_24"
+                app:tint="?attr/colorPrimary"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Ler código" />
+
             <TextView
                 android:id="@+id/tvItemCount"
                 android:layout_width="wrap_content"
@@ -206,15 +217,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabScanQr"
-        android:layout_width="wrap_content"
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSelectionActionMode"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="85dp"
+        android:layout_marginBottom="90dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorPrimaryContainer"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/qr_code"
-        android:contentDescription="Ler QR Code" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp">
+
+            <Button
+                android:id="@+id/btnSelectAll"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selecionar Todos"
+                android:textColor="?attr/colorPrimary" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvSelectedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:text="(1)"
+                android:textColor="?attr/colorOnSurface"
+                android:layout_marginEnd="12dp"
+                android:textSize="18sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportPdf"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/picture_as_pdf_24"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="28dp"
+                app:cornerRadius="28dp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/navigation_password_vault"
+        android:name="com.cyberrocket.inventario.ui.vault.PasswordVaultFragment"
+        android:label="@string/title_password_vault"
+        tools:layout="@layout/fragment_password_vault" />
+
+    <fragment
         android:id="@+id/navigation_tickets"
         android:name="com.cyberrocket.inventario.ui.tickets.TicketsFragment"
         android:label="@string/title_tickets"
