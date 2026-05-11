@@ -311,14 +311,45 @@ public class ScannerActivity extends AppCompatActivity {
                     }
                     Log.e("jason", jsonObject.toString());
 
-                    //Pegar Versão do Agente do GLPI
+                    //Pegar Versão do Agente e Data da Última Atualização
                     String versaoagente = "";
+                    String dataUltimaAtualizacao = "";
                     try {
+                        // Tenta pegar a data do inventário no objeto principal
+                        String lastInventory = jsonObject.optString("last_inventory_update", "");
+                        if (!lastInventory.isEmpty() && !lastInventory.equals("null")) {
+                            try {
+                                String[] parts = lastInventory.split(" ");
+                                if (parts.length >= 1) {
+                                    String[] dateParts = parts[0].split("-");
+                                    if (dateParts.length == 3) {
+                                        dataUltimaAtualizacao = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
+                                    }
+                                }
+                                if (parts.length >= 2) {
+                                    String[] timeParts = parts[1].split(":");
+                                    if (timeParts.length >= 2) {
+                                        dataUltimaAtualizacao += " " + timeParts[0] + ":" + timeParts[1];
+                                    }
+                                }
+                            } catch (Exception e) { e.printStackTrace(); }
+                        }
+
                         JSONArray softwaresarray = jsonObject.getJSONArray("_softwares");
                         for (int i = 0; i < softwaresarray.length(); i++) {
                             JSONObject software = softwaresarray.getJSONObject(i);
-                            if(software.getString("softwares_id").contains("GLPI Agen")){
+                            if(software.getString("softwares_id").contains("GLPI Agen") || software.getString("softwares_id").contains("FusionInventory")){
                                 versaoagente = software.getString("softwareversions_id");
+                                // Se o software tiver uma data de instalação/atualização específica, podemos considerar também
+                                break;
+                            }
+                        }
+                        
+                        if (!dataUltimaAtualizacao.isEmpty()) {
+                            if (!versaoagente.isEmpty()) {
+                                versaoagente += " (" + dataUltimaAtualizacao + ")";
+                            } else {
+                                versaoagente = dataUltimaAtualizacao;
                             }
                         }
                     } catch (Exception e) {
