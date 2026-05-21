@@ -1,6 +1,7 @@
 package com.cyberrocket.inventario;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +21,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.android.volley.Request;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -37,6 +39,7 @@ public class CadEquipamentoActivity extends AppCompatActivity {
     private TextInputEditText edtSerie, edtInventario, edtNome;
     private Button btnSalvar;
     private ProgressBar pgb;
+    private MaterialSwitch switchManterDados;
 
     private ArrayList<String> typeNames = new ArrayList<>();   
     private ArrayList<String> typeIds = new ArrayList<>();
@@ -78,6 +81,18 @@ public class CadEquipamentoActivity extends AppCompatActivity {
 
         btnSalvar = findViewById(R.id.BtnSalvarComputador);
         pgb = findViewById(R.id.PgbCadComputador);
+        switchManterDados = findViewById(R.id.SwitchManterDados);
+
+        SharedPreferences prefs = getSharedPreferences("InventarioPrefs", MODE_PRIVATE);
+        boolean manterDados = prefs.getBoolean("manter_dados_cadastro", false);
+        switchManterDados.setChecked(manterDados);
+
+        switchManterDados.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            getSharedPreferences("InventarioPrefs", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("manter_dados_cadastro", isChecked)
+                    .apply();
+        });
 
         TextInputLayout tilSerie = findViewById(R.id.TilSerieComputador);
         tilSerie.setEndIconOnClickListener(v -> {
@@ -261,8 +276,17 @@ public class CadEquipamentoActivity extends AppCompatActivity {
                 @Override
                 public void onVolleySuccess(String url, String response) {
                     pgb.setVisibility(View.GONE);
-                    Toast.makeText(CadEquipamentoActivity.this, "Computador cadastrado com sucesso!", Toast.LENGTH_LONG).show();
-                    finish();
+                    if (switchManterDados != null && switchManterDados.isChecked()) {
+                        Toast.makeText(CadEquipamentoActivity.this, "Computador cadastrado! Insira o próximo.", Toast.LENGTH_SHORT).show();
+                        edtSerie.setText("");
+                        edtInventario.setText("");
+                        edtNome.setText("");
+                        btnSalvar.setEnabled(true);
+                        edtSerie.requestFocus();
+                    } else {
+                        Toast.makeText(CadEquipamentoActivity.this, "Computador cadastrado com sucesso!", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
                 }
 
                 @Override
