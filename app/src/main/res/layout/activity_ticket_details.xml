@@ -13,7 +13,7 @@
         android:clipToPadding="false"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/llInputContainer"
+        app:layout_constraintBottom_toTopOf="@+id/hsvImagePreviews"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,8 +28,29 @@
         android:clickable="true"
         android:focusable="true"
         app:srcCompat="@drawable/edit24"
-        app:layout_constraintBottom_toTopOf="@+id/llInputContainer"
+        app:layout_constraintBottom_toTopOf="@+id/hsvImagePreviews"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Image Previews Container -->
+    <HorizontalScrollView
+        android:id="@+id/hsvImagePreviews"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#0D000000"
+        android:visibility="gone"
+        android:padding="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/llInputContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/layoutImagePreviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <!-- Previews added dynamically -->
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <!-- Message Input Bar -->
     <LinearLayout
@@ -39,9 +60,21 @@
         android:elevation="8dp"
         android:orientation="horizontal"
         android:padding="8dp"
+        android:gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnAttachImage"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="4dp"
+            android:layout_gravity="bottom"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/baseline_attach_file_24"
+            android:tint="@color/md_theme_primary"
+            android:contentDescription="Anexar imagem" />
 
         <EditText
             android:id="@+id/etMessageInput"

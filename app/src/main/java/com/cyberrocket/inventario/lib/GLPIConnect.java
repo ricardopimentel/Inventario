@@ -406,6 +406,129 @@ public class GLPIConnect {
         }
     }
 
+    public void UploadDocument(final String fileName, final byte[] fileData, final String mimeType, final VolleyResponseListener listener) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Crud crud = new Crud();
+                    String baseUrl = crud.SelectItem(mContext, "CONFIG", 1, 1);
+                    String sessionToken = crud.SelectItem(mContext, "CONFIG", 1, 2);
+                    final String urlStr = baseUrl + "/apirest.php/Document";
+
+                    java.net.URL url = new java.net.URL(urlStr);
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                    if (conn instanceof javax.net.ssl.HttpsURLConnection) {
+                        javax.net.ssl.SSLSocketFactory unsafeSf = getUnsafeSocketFactory();
+                        if (unsafeSf != null) {
+                            ((javax.net.ssl.HttpsURLConnection) conn).setSSLSocketFactory(unsafeSf);
+                        }
+                        ((javax.net.ssl.HttpsURLConnection) conn).setHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
+                            @Override
+                            public boolean verify(String hostname, javax.net.ssl.SSLSession session) {
+                                return true;
+                            }
+                        });
+                    }
+
+                    String boundary = "Boundary-" + System.currentTimeMillis();
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+                    conn.setUseCaches(false);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Connection", "Keep-Alive");
+                    conn.setRequestProperty("User-Agent", "Android Multipart");
+                    conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+                    conn.setRequestProperty("Session-Token", sessionToken);
+
+                    java.io.OutputStream out = conn.getOutputStream();
+                    java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.OutputStreamWriter(out, "UTF-8"), true);
+
+                    // part 1: uploadManifest
+                    writer.append("--" + boundary).append("\r\n");
+                    writer.append("Content-Disposition: form-data; name=\"uploadManifest\"").append("\r\n");
+                    writer.append("Content-Type: application/json; charset=UTF-8").append("\r\n");
+                    writer.append("\r\n");
+                    
+                    JSONObject input = new JSONObject();
+                    input.put("name", fileName);
+                    
+                    JSONArray filenames = new JSONArray();
+                    filenames.put(fileName);
+                    input.put("_filename", filenames);
+                    
+                    JSONObject manifest = new JSONObject();
+                    manifest.put("input", input);
+                    
+                    writer.append(manifest.toString()).append("\r\n");
+                    writer.flush();
+
+                    // part 2: filename[0]
+                    writer.append("--" + boundary).append("\r\n");
+                    writer.append("Content-Disposition: form-data; name=\"filename[0]\"; filename=\"" + fileName + "\"").append("\r\n");
+                    writer.append("Content-Type: " + mimeType).append("\r\n");
+                    writer.append("\r\n");
+                    writer.flush();
+
+                    out.write(fileData);
+                    out.flush();
+
+                    writer.append("\r\n");
+                    writer.append("--" + boundary + "--").append("\r\n");
+                    writer.flush();
+                    writer.close();
+
+                    final int responseCode = conn.getResponseCode();
+                    if (responseCode == 200 || responseCode == 201) {
+                        java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream(), "UTF-8"));
+                        StringBuilder response = new StringBuilder();
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            response.append(line);
+                        }
+                        in.close();
+                        final String resStr = response.toString();
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onVolleySuccess(urlStr, resStr);
+                            }
+                        });
+                    } else {
+                        java.io.InputStream errorStream = conn.getErrorStream();
+                        final String errStr;
+                        if (errorStream != null) {
+                            java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(errorStream, "UTF-8"));
+                            StringBuilder errResponse = new StringBuilder();
+                            String line;
+                            while ((line = in.readLine()) != null) {
+                                errResponse.append(line);
+                            }
+                            in.close();
+                            errStr = "HTTP " + responseCode + ": " + errResponse.toString();
+                        } else {
+                            errStr = "HTTP " + responseCode;
+                        }
+                        new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onVolleyFailure(errStr);
+                            }
+                        });
+                    }
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onVolleyFailure(e.getMessage());
+                        }
+                    });
+                }
+            }
+        }).start();
+    }
+
     private void IrPara(Class para){
         Intent intent = new Intent(mContext, para);
         mContext.startActivity(intent);
