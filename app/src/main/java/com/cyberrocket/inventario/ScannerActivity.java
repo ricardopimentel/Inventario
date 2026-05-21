@@ -9,6 +9,10 @@ import com.cyberrocket.inventario.adapter.ListAdapterEquipamentos;
 import com.cyberrocket.inventario.adapter.ListAdapterMonitores;
 import com.cyberrocket.inventario.adapter.ListAdapterMudancas;
 import com.cyberrocket.inventario.adapter.ListAdapterArmazenamento;
+import com.cyberrocket.inventario.adapter.ListAdapterComputadoresVinculados;
+import com.cyberrocket.inventario.models.ComputadorLine;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.cyberrocket.inventario.lib.Crud;
 import com.cyberrocket.inventario.lib.GLPIConnect;
 import com.cyberrocket.inventario.lib.InfisicalConnect;
@@ -96,6 +100,12 @@ public class ScannerActivity extends AppCompatActivity {
     ArrayList<String> mMonitorIdsList;
     ArrayAdapter<String> mMonitorAdapter;
 
+    // Autocomplete for Computer
+    ArrayList<String> mComputerNamesList;
+    ArrayList<String> mComputerIdsList;
+    ArrayAdapter<String> mComputerAdapter;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +152,11 @@ public class ScannerActivity extends AppCompatActivity {
         mBtAddMonitorScanner.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PreencherListaMonitores();
+                if (mItemType.equals("Monitor")) {
+                    PreencherListaComputadores();
+                } else {
+                    PreencherListaMonitores();
+                }
             }
         });
 
@@ -491,9 +505,159 @@ public class ScannerActivity extends AppCompatActivity {
                                 mLayoutMonitores.setVisibility(View.GONE);
                             }
                         } else {
-                            // É um monitor, esconde a lista de monitores (ele não tem monitores vinculados a ele da mesma forma)
-                            mLayoutMonitores.setVisibility(View.GONE);
+                            // É um monitor, esconde o armazenamento e exibe computadores vinculados
                             mLayoutArmazenamento.setVisibility(View.GONE);
+
+                            // Altera o texto do cabeçalho da seção de "Monitores" para "Computadores"
+                            TextView tvHeader = findViewById(R.id.textView3);
+                            if (tvHeader != null) {
+                                tvHeader.setText("Computadores");
+                            }
+
+                            // Altera o ícone da seção de monitor para computador
+                            ImageView imgHeader = findViewById(R.id.imageView5);
+                            if (imgHeader != null) {
+                                imgHeader.setImageResource(R.drawable.desktop_tower_monitor);
+                            }
+
+                            // Mostra a seção de computadores de forma consistente com a tela de detalhes de computador
+                            mLayoutMonitores.setVisibility(View.VISIBLE);
+
+                            // Habilita inicialmente o botão de vincular computador (ocultaremos se já houver um vinculado)
+                            if (mBtAddMonitorScanner != null) {
+                                mBtAddMonitorScanner.setVisibility(View.VISIBLE);
+                            }
+
+                            // Preenche a lista de computadores vinculados
+                            final ArrayList<ComputadorLine> listacomputadores = new ArrayList<>();
+                            final String finalIdEquipamento = idequipamento;
+                            
+                            // Primeiro tenta buscar as conexões a partir do relacionamento oficial Computer_Item
+                            GLPIConnect conSub = new GLPIConnect(ScannerActivity.this);
+                            conSub.GetArray("/apirest.php/Monitor/" + finalIdEquipamento + "/Computer_Item/?range=0-2000", new GLPIConnect.VolleyResponseListener() {
+                                @Override
+                                public void onVolleySuccess(String url, String subResponse) {
+                                    try {
+                                        JSONArray connectionsArray = new JSONArray(subResponse);
+                                        if (connectionsArray.length() == 0) {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if (mBtAddMonitorScanner != null) {
+                                                        mBtAddMonitorScanner.setVisibility(View.VISIBLE);
+                                                    }
+                                                    mLayoutMonitores.setVisibility(View.VISIBLE);
+                                                }
+                                            });
+                                            return;
+                                        }
+
+                                        final int totalConnections = connectionsArray.length();
+                                        final java.util.concurrent.atomic.AtomicInteger loadedCount = new java.util.concurrent.atomic.AtomicInteger(0);
+
+                                        for (int i = 0; i < connectionsArray.length(); i++) {
+                                            JSONObject connection = connectionsArray.getJSONObject(i);
+                                            String itemsId = connection.optString("items_id");
+                                            String itemtype = connection.optString("itemtype");
+
+                                            // Filter: only load if it is linked to the current monitor
+                                            if (!itemsId.equals(finalIdEquipamento) || !itemtype.equalsIgnoreCase("Monitor")) {
+                                                if (loadedCount.incrementAndGet() == totalConnections) {
+                                                    updateComputersList(listacomputadores);
+                                                }
+                                                continue;
+                                            }
+
+                                            String compId = connection.optString("computers_id");
+                                            if (compId == null || compId.isEmpty() || compId.equals("0")) {
+                                                if (loadedCount.incrementAndGet() == totalConnections) {
+                                                    updateComputersList(listacomputadores);
+                                                }
+                                                continue;
+                                            }
+
+                                            // Busca informações detalhadas desse computador (com expand_dropdowns para resolver estado/marca/modelo amigáveis)
+                                            GLPIConnect conComp = new GLPIConnect(ScannerActivity.this);
+                                            conComp.GetItem("/apirest.php/Computer/" + compId + "?expand_dropdowns=true", new GLPIConnect.VolleyResponseListener() {
+                                                @Override
+                                                public void onVolleySuccess(String url, String compResponse) {
+                                                    try {
+                                                        JSONObject compJson = new JSONObject(compResponse);
+                                                        ComputadorLine compLine = new ComputadorLine();
+                                                        compLine.setNome(compJson.optString("name"));
+                                                        compLine.setMarca(compJson.optString("manufacturers_id"));
+                                                        compLine.setModelo(compJson.optString("computermodels_id"));
+                                                        compLine.setEstado(compJson.optString("states_id"));
+                                                        compLine.setIdComputador(compJson.optString("id"));
+                                                        compLine.setNumeroSerie(compJson.optString("serial"));
+
+                                                        synchronized (listacomputadores) {
+                                                            listacomputadores.add(compLine);
+                                                        }
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    if (loadedCount.incrementAndGet() == totalConnections) {
+                                                        updateComputersList(listacomputadores);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onVolleyFailure(String errorMsg) {
+                                                    if (loadedCount.incrementAndGet() == totalConnections) {
+                                                        updateComputersList(listacomputadores);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (mBtAddMonitorScanner != null) {
+                                                    mBtAddMonitorScanner.setVisibility(View.VISIBLE);
+                                                }
+                                                mLayoutMonitores.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onVolleyFailure(String errorMsg) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (mBtAddMonitorScanner != null) {
+                                                mBtAddMonitorScanner.setVisibility(View.VISIBLE);
+                                            }
+                                            mLayoutMonitores.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+                                }
+
+                                private void updateComputersList(final ArrayList<ComputadorLine> list) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (!list.isEmpty()) {
+                                                ListAdapterComputadoresVinculados adaptercomps = new ListAdapterComputadoresVinculados(list, ScannerActivity.this, finalIdEquipamento);
+                                                mListaMonitores.setAdapter(adaptercomps);
+                                                // Oculta o botão de vincular computador se já existir um vinculado
+                                                if (mBtAddMonitorScanner != null) {
+                                                    mBtAddMonitorScanner.setVisibility(View.GONE);
+                                                }
+                                            } else {
+                                                if (mBtAddMonitorScanner != null) {
+                                                    mBtAddMonitorScanner.setVisibility(View.VISIBLE);
+                                                }
+                                            }
+                                            mLayoutMonitores.setVisibility(View.VISIBLE);
+                                        }
+                                    });
+                                }
+                            });
                         }
 
                         // Debug keys for storage and partitions finding  
@@ -923,6 +1087,114 @@ public class ScannerActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void PreencherListaComputadores() {
+        mPgbProgresso.setIndeterminate(true);
+        mComputerNamesList = new ArrayList<>();
+        mComputerIdsList = new ArrayList<>();
+        mComputerAdapter = new ArrayAdapter<>(ScannerActivity.this, android.R.layout.simple_dropdown_item_1line, mComputerNamesList);
+
+        GLPIConnect con = new GLPIConnect(this);
+        con.GetArray("/apirest.php/Computer?range=0-1000", new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                mPgbProgresso.setIndeterminate(false);
+                try {
+                    JSONArray jsonArray = new JSONArray(response);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject computer = jsonArray.getJSONObject(i);
+                        mComputerNamesList.add(computer.getString("name"));
+                        mComputerIdsList.add(computer.getString("id"));
+                    }
+                    mComputerAdapter.notifyDataSetChanged();
+                    VincularComputadorDialog();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(ScannerActivity.this, "Erro ao processar computadores.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onVolleyFailure(String url) {
+                mPgbProgresso.setIndeterminate(false);
+                Toast.makeText(ScannerActivity.this, "Erro de conexão ao buscar computadores:\n" + url, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void VincularComputadorDialog() {
+        View view = LayoutInflater.from(ScannerActivity.this).inflate(R.layout.activity_vincular_monitor, null);
+        android.widget.AutoCompleteTextView edittext = view.findViewById(R.id.TvNomeMonitorVincularMonitor);
+        
+        edittext.setAdapter(mComputerAdapter);
+        edittext.setThreshold(1); // Show suggestions after 1 character
+
+        View btNovoMonitor = view.findViewById(R.id.BtNovoMonitorVincular);
+        if (btNovoMonitor != null) {
+            btNovoMonitor.setVisibility(View.GONE);
+        }
+
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(ScannerActivity.this)
+            .setTitle("Nome do Computador")
+            .setView(view);
+
+        AlertDialog dialog = dialogBuilder.create();
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                String nomeDigitado = edittext.getText().toString();
+                int index = mComputerNamesList.indexOf(nomeDigitado);
+                if (index != -1) {
+                    String idComputadorSelecionado = mComputerIdsList.get(index);
+                    AddConexaoComputador(idComputadorSelecionado);
+                } else {
+                    Toast.makeText(ScannerActivity.this, "Selecione um computador válido da lista.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void AddConexaoComputador(String idcomputer) {
+        JSONObject postparams = new JSONObject();
+        JSONObject finalarray = new JSONObject();
+        try {
+            postparams.put("items_id", mTvIdEquipamento.getText().toString());
+            postparams.put("computers_id", idcomputer);
+            postparams.put("itemtype", "Monitor");
+            postparams.put("is_deleted", "0");
+            postparams.put("is_dynamic", "1");
+
+            finalarray.put("input", postparams);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        GLPIConnect con = new GLPIConnect(ScannerActivity.this);
+        con.InsertItem("/apirest.php/Computer_Item/", finalarray, Request.Method.POST, new GLPIConnect.VolleyResponseListener() {
+            @Override
+            public void onVolleySuccess(String url, String response) {
+                IrPara(ScannerActivity.class, true);
+            }
+            @Override
+            public void onVolleyFailure(String errorMsg) {
+                if(errorMsg != null && errorMsg.contains("ERROR_GLPI_ADD")) {
+                    Toast.makeText(ScannerActivity.this, "Erro: Computador já está vinculado a este monitor ou conexão inválida.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(ScannerActivity.this, "Erro: " + errorMsg, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
 
     private void GetIdMonitor(String nome) {
         mIdMonitor = "";
