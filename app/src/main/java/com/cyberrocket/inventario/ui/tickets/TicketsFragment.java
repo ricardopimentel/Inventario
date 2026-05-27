@@ -61,6 +61,7 @@ public class TicketsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_tickets, container, false);
+        setHasOptionsMenu(true);
 
         recyclerView = root.findViewById(R.id.recyclerViewChamados);
         swipeRefreshLayout = root.findViewById(R.id.swipeRefreshLayout);
@@ -390,6 +391,12 @@ public class TicketsFragment extends Fragment {
                         chamado.setDataCriacao(obj.optString("date"));
                         chamado.setDataFechamento(obj.optString("closedate"));
                         
+                        String req = obj.optString("users_id_recipient");
+                        if (req == null || req.isEmpty() || req.equals("0")) {
+                            req = obj.optString("users_id_lastupdater");
+                        }
+                        chamado.setUsuarioRequerente(req);
+                        
                         // Map type (1 = Incident, 2 = Request)
                         int tipo = obj.optInt("type", 1);
                         chamado.setTipo(String.valueOf(tipo));
@@ -579,5 +586,21 @@ public class TicketsFragment extends Fragment {
             }
             loadChamados();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull android.view.Menu menu, @NonNull android.view.MenuInflater inflater) {
+        inflater.inflate(R.menu.tickets_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull android.view.MenuItem item) {
+        if (item.getItemId() == R.id.action_reports) {
+            Intent intent = new Intent(getContext(), TicketReportsActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,115 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Título do Chamado"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/md_theme_onSurface"/>
-
-    <EditText
-        android:id="@+id/etTicketTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Ex: Computador não liga"
-        android:inputType="text"
-        android:padding="12dp"
-        android:background="#1A000000"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tipo"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/md_theme_onSurface"/>
-
-    <Spinner
-        android:id="@+id/spinnerTicketType"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:spinnerMode="dropdown"
-        android:background="#1A000000"
-        android:layout_marginBottom="16dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Descrição"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/md_theme_onSurface"/>
-
-    <EditText
-        android:id="@+id/etTicketDescription"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="top|start"
-        android:hint="Descreva o problema ou solicitação detalhadamente..."
-        android:inputType="textMultiLine"
-        android:padding="12dp"
-        android:background="#1A000000"
-        android:layout_marginBottom="24dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Imagens do Problema"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/md_theme_onSurface"/>
+    android:fillViewport="true"
+    android:background="@color/md_theme_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAttachImage"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Adicionar"
-            app:icon="@drawable/baseline_add_24" />
-
-        <HorizontalScrollView
+        <!-- AI Assistant Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAIHelp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp">
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp"
+            app:strokeWidth="1.5dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:cardBackgroundColor="#0D6200EE"
+            android:clickable="true"
+            android:focusable="true">
 
             <LinearLayout
-                android:id="@+id/layoutImagePreviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_ai_spark"
+                    app:tint="?attr/colorPrimary" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Escrever com IA (Gemini)"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="?attr/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Descreva o problema em suas palavras e deixe o Gemini formular o título e a descrição perfeitos."
+                        android:textSize="12sp"
+                        android:textColor="@color/md_theme_onSurfaceVariant" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/baseline_arrow_forward_24"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Título do Chamado -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketTitle"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="Título do Chamado"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Tipo -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketType"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="Tipo do Chamado">
+
+            <AutoCompleteTextView
+                android:id="@+id/spinnerTicketType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Categoria -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketCategory"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:hint="Categoria">
+
+            <AutoCompleteTextView
+                android:id="@+id/actvTicketCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Descrição -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTicketDescription"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:hint="Descrição Detalhada">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTicketDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="5"
+                android:gravity="top|start"
+                android:inputType="textMultiLine" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Imagens do Problema Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Imagens do Problema"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"
+            android:textColor="@color/md_theme_onSurface"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="28dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAttachImage"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <!-- Previews added dynamically -->
-            </LinearLayout>
-        </HorizontalScrollView>
+                android:text="Adicionar"
+                app:icon="@drawable/baseline_add_24" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp">
+
+                <LinearLayout
+                    android:id="@+id/layoutImagePreviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <!-- Previews added dynamically -->
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <!-- Botão Abrir Chamado -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSubmitTicket"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="ABRIR CHAMADO"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/md_theme_onPrimary"
+            android:backgroundTint="@color/md_theme_primary"
+            app:cornerRadius="12dp" />
+
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnSubmitTicket"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="ABRIR CHAMADO"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@color/md_theme_onPrimary"
-        android:backgroundTint="@color/md_theme_primary"/>
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

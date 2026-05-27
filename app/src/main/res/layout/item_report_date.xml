@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="1dp"
+    app:strokeColor="#0F000000">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Date Badge -->
+        <LinearLayout
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="#0D6200EE"
+            android:padding="4dp">
+
+            <TextView
+                android:id="@+id/tvReportDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="26"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary" />
+
+            <TextView
+                android:id="@+id/tvReportMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MAI"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginTop="-2dp" />
+        </LinearLayout>
+
+        <!-- Ticket Metrics for this Date -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="14dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvReportDateFull"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terça-feira, 26 de Maio de 2026"
+                android:textSize="12sp"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:layout_marginBottom="2dp" />
+
+            <TextView
+                android:id="@+id/tvReportTicketCounts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 Chamados Criados • 1 Concluído"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/tvReportExecutionTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tempo de execução: 3h 45m"
+                android:textSize="12sp"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

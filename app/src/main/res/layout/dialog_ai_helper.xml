@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardAIDialogRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="24dp"
+    app:strokeWidth="1.5dp"
+    app:strokeColor="?attr/colorPrimary"
+    app:cardBackgroundColor="?attr/colorSurface"
+    android:layout_margin="16dp">
+
+    <ViewFlipper
+        android:id="@+id/viewFlipperAI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- SCREEN 1: GENERATION INPUT -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_ai_spark"
+                        app:tint="?attr/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Assistente de IA"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <ImageButton
+                        android:id="@+id/btnAISettings"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/build_24"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="Configurações de IA" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Formule o título e descrição perfeitos com o poder do Gemini."
+                    android:textSize="13sp"
+                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:layout_marginBottom="20dp" />
+
+                <!-- API Key settings section (collapsed by default) -->
+                <LinearLayout
+                    android:id="@+id/layoutAISettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="#0D000000"
+                    android:padding="16dp"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Configurar API Key do Gemini"
+                        android:textStyle="bold"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Insira sua chave de API para habilitar a geração de chamados."
+                        android:textSize="11sp"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="12dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilGeminiApiKey"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:passwordToggleEnabled="true"
+                        app:passwordToggleTint="@color/md_theme_onSurfaceVariant">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etGeminiApiKey"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Chave de API do Gemini"
+                            android:inputType="textPassword"
+                            android:textSize="14sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <!-- Mode Selector (Chamado vs PGD) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Modo de Registro"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/toggleGroupMode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:checkedButton="@id/btnModeChamado"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnModeChamado"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Chamado"
+                        app:cornerRadius="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnModePGD"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="PGD"
+                        app:cornerRadius="12dp" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <!-- User Problem Description Input with Voice Dictation End Icon -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilAIUserReport"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Descreva o que está acontecendo"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="300"
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/baseline_mic_24"
+                    app:endIconContentDescription="Ditado por voz"
+                    app:endIconTint="?attr/colorPrimary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAIUserReport"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:textSize="14sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Tone/Style Selector -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilAITone"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:hint="Estilo de Tom">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerAITone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Generate Button Container -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginBottom="16dp">
+
+                    <!-- The actual button (ImageButton) -->
+                    <ImageButton
+                        android:id="@+id/btnAIGenerate"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/wizard_24"
+                        app:tint="@color/md_theme_onPrimary"
+                        android:background="@drawable/form_btn_bg"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:contentDescription="Gerar com IA" />
+
+                    <!-- Floating Rotating Spark Animation inside the button (hidden by default) -->
+                    <ImageView
+                        android:id="@+id/ivAIBtnLoadingSpark"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_ai_spark"
+                        app:tint="@color/md_theme_onPrimary"
+                        android:visibility="gone"
+                        android:contentDescription="Gerando..." />
+                </FrameLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAICancel"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelar"
+                    android:textColor="@color/md_theme_error" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- SCREEN 2: PREVIEW / RESULT -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Using the same R.id.layoutAIResult so existing findViews work, but made visible now -->
+            <LinearLayout
+                android:id="@+id/layoutAIResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Header for preview -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_ai_spark"
+                        app:tint="?attr/colorPrimary" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="Sugestão Elaborada"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <ImageButton
+                        android:id="@+id/btnAIBackToInput"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:tint="?attr/colorPrimary"
+                        android:contentDescription="Voltar para edição" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Deslize para a esquerda para voltar e editar o relato se necessário."
+                    android:textSize="12sp"
+                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Title Preview -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#1F000000"
+                    app:cardBackgroundColor="#05000000"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Título Sugerido"
+                            android:textSize="11sp"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAISuggestedTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="[Título Sugerido]"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginTop="6dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Description Preview -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#1F000000"
+                    app:cardBackgroundColor="#05000000"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginBottom="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Descrição Sugerida"
+                            android:textSize="11sp"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAISuggestedDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="[Descrição Sugerida]"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginTop="6dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Category Preview (NEW) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAISuggestedCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#1F000000"
+                    app:cardBackgroundColor="#05000000"
+                    android:layout_marginHorizontal="2dp"
+                    android:layout_marginBottom="24dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Categoria Sugerida"
+                            android:textSize="11sp"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvAISuggestedCategory"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="[Categoria Sugerida]"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginTop="6dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Action buttons for suggestion -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAIApply"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="APLICAR E FECHAR"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/md_theme_primary"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="12dp"
+                    android:layout_marginBottom="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAICancelPreview"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cancelar"
+                    android:textColor="@color/md_theme_error" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </ViewFlipper>
+</com.google.android.material.card.MaterialCardView>
