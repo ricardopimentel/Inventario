@@ -27,7 +27,7 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:focusable="true"
-        app:srcCompat="@drawable/edit24"
+        app:srcCompat="@drawable/check_circle_24"
         app:layout_constraintBottom_toTopOf="@+id/hsvImagePreviews"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -72,7 +72,7 @@
             android:layout_marginEnd="4dp"
             android:layout_gravity="bottom"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/baseline_attach_file_24"
+            android:src="@drawable/attachment_24"
             android:tint="@color/md_theme_primary"
             android:contentDescription="Anexar imagem" />
 
@@ -96,7 +96,7 @@
             android:layout_gravity="bottom"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/send24"
-            android:tint="@color/md_theme_primaryContainer"/>
+            android:tint="@color/md_theme_primary"/>
 
     </LinearLayout>
 

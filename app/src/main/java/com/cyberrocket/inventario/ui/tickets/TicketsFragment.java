@@ -163,6 +163,7 @@ public class TicketsFragment extends Fragment {
         return root;
     }
 
+
     private void loadForms() {
         android.content.SharedPreferences prefs = getContext().getSharedPreferences("GLPI_PREFS", android.content.Context.MODE_PRIVATE);
         String host = prefs.getString("glpi_host", "");
@@ -405,6 +406,10 @@ public class TicketsFragment extends Fragment {
                         int status = obj.optInt("status", 1);
                         chamado.setStatusInfo(String.valueOf(status));
 
+                        // Categoria
+                        chamado.setCategoria(obj.optString("itilcategories_id"));
+
+
                         // Tenta definir o ícone baseando-se no status
                         ImageView imgStatus = new ImageView(getContext());
                         if (status == 1 || status == 2 || status == 3) { // Novo ou em atendimento
@@ -604,3 +609,4 @@ public class TicketsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 }
+

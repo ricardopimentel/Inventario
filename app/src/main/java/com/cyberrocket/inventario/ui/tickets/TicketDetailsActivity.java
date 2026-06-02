@@ -649,7 +649,7 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
     }
 
     private void showEditTicketDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder = new com.google.android.material.dialog.MaterialAlertDialogBuilder(this);
         builder.setTitle("Editar Chamado");
 
         LinearLayout layout = new LinearLayout(this);
@@ -799,57 +799,60 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
     }
 
     private void showMetadataDialog(ArrayList<String> locationNames, ArrayList<Integer> locationIds, int currentStatus, int currentLocationId) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder = new com.google.android.material.dialog.MaterialAlertDialogBuilder(this);
         builder.setTitle("Editar Informações do Chamado");
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(50, 40, 50, 10);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_metadata, null);
+        builder.setView(dialogView);
 
-        // Status Spinner
-        TextView tvStatusLabel = new TextView(this);
-        tvStatusLabel.setText("Status:");
-        layout.addView(tvStatusLabel);
+        android.widget.AutoCompleteTextView actvStatus = dialogView.findViewById(R.id.actvMetadataStatus);
+        android.widget.AutoCompleteTextView actvLocation = dialogView.findViewById(R.id.actvMetadataLocation);
 
-        Spinner statusSpinner = new Spinner(this);
         String[] statusArray = {"Novo", "Atribuído", "Planejado", "Pendente", "Resolvido", "Fechado"};
-        int[] statusValues = {1, 2, 3, 4, 5, 6};
-        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statusArray);
-        statusSpinner.setAdapter(statusAdapter);
+        final int[] statusValues = {1, 2, 3, 4, 5, 6};
         
-        // Find current status index
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, statusArray);
+        actvStatus.setAdapter(statusAdapter);
+        actvStatus.setOnClickListener(v -> actvStatus.showDropDown());
+        
+        // Find and set current status
         for (int i = 0; i < statusValues.length; i++) {
             if (statusValues[i] == currentStatus) {
-                statusSpinner.setSelection(i);
+                actvStatus.setText(statusArray[i], false);
                 break;
             }
         }
-        layout.addView(statusSpinner);
 
-        // Location Spinner
-        TextView tvLocLabel = new TextView(this);
-        tvLocLabel.setText("Localização:");
-        tvLocLabel.setPadding(0, 30, 0, 0);
-        layout.addView(tvLocLabel);
-
-        Spinner locSpinner = new Spinner(this);
         ArrayAdapter<String> locAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, locationNames);
-        locSpinner.setAdapter(locAdapter);
+        actvLocation.setAdapter(locAdapter);
+        actvLocation.setOnClickListener(v -> actvLocation.showDropDown());
 
-        // Find current location index
+        // Find and set current location
         for (int i = 0; i < locationIds.size(); i++) {
             if (locationIds.get(i) == currentLocationId) {
-                locSpinner.setSelection(i);
+                actvLocation.setText(locationNames.get(i), false);
                 break;
             }
         }
-        layout.addView(locSpinner);
-
-        builder.setView(layout);
 
         builder.setPositiveButton("Salvar", (dialog, which) -> {
-            int selectedStatus = statusValues[statusSpinner.getSelectedItemPosition()];
-            int selectedLocId = locationIds.get(locSpinner.getSelectedItemPosition());
+            String selectedStatusStr = actvStatus.getText().toString();
+            int selectedStatus = 1;
+            for (int i = 0; i < statusArray.length; i++) {
+                if (statusArray[i].equals(selectedStatusStr)) {
+                    selectedStatus = statusValues[i];
+                    break;
+                }
+            }
+
+            String selectedLocStr = actvLocation.getText().toString();
+            int selectedLocId = 0;
+            for (int i = 0; i < locationNames.size(); i++) {
+                if (locationNames.get(i).equals(selectedLocStr)) {
+                    selectedLocId = locationIds.get(i);
+                    break;
+                }
+            }
 
             updateTicketMetadata(selectedStatus, selectedLocId);
         });

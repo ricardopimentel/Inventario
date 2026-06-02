@@ -119,6 +119,26 @@ public class PerfilFragment extends Fragment {
             }
         });
 
+        // Configuração da API Key do Gemini
+        com.google.android.material.textfield.TextInputLayout tilGeminiApiKey = root.findViewById(R.id.tilGeminiApiKey);
+        com.google.android.material.textfield.TextInputEditText etGeminiApiKey = root.findViewById(R.id.etGeminiApiKey);
+        android.content.SharedPreferences geminiPrefs = getContext().getSharedPreferences("GEMINI_PREFS", android.content.Context.MODE_PRIVATE);
+
+        if (etGeminiApiKey != null) {
+            String savedApiKey = geminiPrefs.getString("api_key", "");
+            etGeminiApiKey.setText(savedApiKey);
+        }
+
+        if (tilGeminiApiKey != null && etGeminiApiKey != null) {
+            tilGeminiApiKey.setEndIconOnClickListener(v -> {
+                String newApiKey = etGeminiApiKey.getText().toString().trim();
+                geminiPrefs.edit().putString("api_key", newApiKey).apply();
+                Toast.makeText(getContext(), "Chave de API do Gemini salva com sucesso!", Toast.LENGTH_SHORT).show();
+                etGeminiApiKey.clearFocus();
+            });
+        }
+
+
         return root;
     }
 

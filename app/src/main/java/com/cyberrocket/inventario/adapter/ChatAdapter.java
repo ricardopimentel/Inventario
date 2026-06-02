@@ -71,6 +71,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getContent() != null) {
                 ticketHolder.tvContent.setText(parseHtmlWithoutColors(message.getContent()));
+                ticketHolder.tvContent.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
             } else {
                 ticketHolder.tvContent.setText("");
             }
@@ -105,6 +106,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             if (message.getContent() != null) {
                 replyHolder.tvContent.setText(parseHtmlWithoutColors(message.getContent()));
+                replyHolder.tvContent.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
             } else {
                 replyHolder.tvContent.setText("");
             }
@@ -126,6 +128,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private CharSequence parseHtmlWithoutColors(String htmlString) {
         if (htmlString == null) return "";
 
+        // Convert simple markdown to HTML tags
+        // 1. Markdown links [text](url) -> <a href="url">text</a>
+        htmlString = htmlString.replaceAll("\\[([^\\]]+)\\]\\((https?://[^\\s)]+)\\)", "<a href=\"$2\">$1</a>");
+        // 2. Bold **text** -> <b>text</b>
+        htmlString = htmlString.replaceAll("\\*\\*(.*?)\\*\\*", "<b>$1</b>");
+        // 3. Italic *text* -> <i>text</i>
+        htmlString = htmlString.replaceAll("\\*(.*?)\\*", "<i>$1</i>");
+        // 4. Inline code `code` -> <tt>code</tt>
+        htmlString = htmlString.replaceAll("`(.*?)`", "<tt>$1</tt>");
+
         Spanned spanned;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             spanned = Html.fromHtml(htmlString, Html.FROM_HTML_MODE_COMPACT);
@@ -134,6 +146,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         SpannableStringBuilder ssb = new SpannableStringBuilder(spanned);
+        
+        // Remove foreground/background color spans (keeps links, bold, italic intact)
         ForegroundColorSpan[] fgSpans = ssb.getSpans(0, ssb.length(), ForegroundColorSpan.class);
         for (ForegroundColorSpan span : fgSpans) {
             ssb.removeSpan(span);
@@ -143,6 +157,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (BackgroundColorSpan span : bgSpans) {
             ssb.removeSpan(span);
         }
+
+        // Linkify raw URLs without overriding existing Spans (like HTML link tags)
+        android.text.util.Linkify.addLinks(ssb, android.text.util.Linkify.WEB_URLS);
 
         return ssb;
     }

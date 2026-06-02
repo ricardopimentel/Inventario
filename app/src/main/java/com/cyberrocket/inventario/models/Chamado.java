@@ -102,4 +102,15 @@ public class Chamado {
     public void setSelected(boolean selected) {
         isSelected = selected;
     }
+
+    private String categoria;
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
 }
+

@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
+        android:elevation="8dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,7 +20,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -27,49 +29,68 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Title & User name -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Title & User details in a premium banner card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Dashboard de Produtividade"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer">
 
-            <TextView
-                android:id="@+id/tvUserDashboardLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Relatório pessoal de chamados"
-                android:textSize="14sp"
-                android:textColor="@color/md_theme_onSurfaceVariant"
-                android:layout_marginBottom="16dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dashboard de Produtividade"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvUserDashboardLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Relatório pessoal de chamados"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:alpha="0.8" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Period Date Filter Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
                 app:strokeWidth="1dp"
-                app:strokeColor="#1F000000"
+                app:strokeColor="#0F000000"
                 app:cardBackgroundColor="?attr/colorSurface">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="12dp">
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Selecione o Período"
+                        android:text="Filtrar por Período"
                         android:textStyle="bold"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:textColor="?attr/colorPrimary"
-                        android:layout_marginBottom="8dp" />
+                        android:layout_marginBottom="12dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -83,8 +104,9 @@
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:background="#1A000000"
+                            android:gravity="center"
+                            android:background="@drawable/form_btn_bg"
+                            android:backgroundTint="?attr/colorSurfaceVariant"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
                             android:layout_marginEnd="6dp"
@@ -92,8 +114,8 @@
                             android:focusable="true">
 
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:src="@android:drawable/ic_menu_my_calendar"
                                 app:tint="?attr/colorPrimary" />
 
@@ -104,7 +126,8 @@
                                 android:text="Início"
                                 android:layout_marginStart="8dp"
                                 android:textSize="13sp"
-                                android:textColor="?attr/colorOnSurface" />
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurfaceVariant" />
                         </LinearLayout>
 
                         <!-- End Date Button -->
@@ -114,8 +137,9 @@
                             android:layout_height="48dp"
                             android:layout_weight="1"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:background="#1A000000"
+                            android:gravity="center"
+                            android:background="@drawable/form_btn_bg"
+                            android:backgroundTint="?attr/colorSurfaceVariant"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
                             android:layout_marginStart="6dp"
@@ -123,8 +147,8 @@
                             android:focusable="true">
 
                             <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
                                 android:src="@android:drawable/ic_menu_my_calendar"
                                 app:tint="?attr/colorPrimary" />
 
@@ -135,49 +159,239 @@
                                 android:text="Fim"
                                 android:layout_marginStart="8dp"
                                 android:textSize="13sp"
-                                android:textColor="?attr/colorOnSurface" />
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurfaceVariant" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Grid-like Metrics Cards (Vertical layout of beautiful wide cards) -->
+            <!-- Segmented Slider (Chamados vs PGD) -->
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleGroupDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:checkedButton="@id/btnDashboardChamados"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDashboardChamados"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chamados"
+                    app:cornerRadius="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDashboardPGD"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="PGD"
+                    app:cornerRadius="12dp" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- PGD AI Section -->
             <LinearLayout
+                android:id="@+id/llPgdDashboardSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginBottom="20dp">
+                android:visibility="gone">
 
-                <!-- Metric 1: Total -->
+                <!-- Generate Report Card -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPgdAiGenerator"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
                     app:strokeWidth="1dp"
-                    app:strokeColor="#10000000">
+                    app:strokeColor="#0F000000"
+                    app:cardBackgroundColor="?attr/colorSurface">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:orientation="vertical"
+                        android:gravity="center_horizontal"
+                        android:padding="20dp">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:src="@drawable/wizard_24"
+                            app:tint="?attr/colorPrimary"
+                            android:layout_marginBottom="12dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Resumo de Atividades com IA"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"
+                            android:layout_marginBottom="6dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="O Gemini consolidará suas atividades sob as categorias de PGD e fará um resumo detalhado com estimativas de tempo."
+                            android:gravity="center"
+                            android:textSize="13sp"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            android:layout_marginBottom="16dp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnGeneratePgdAiReport"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Gerar Relatório Inteligente"
+                            app:icon="@drawable/wizard_24"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- PGD Loading State -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPgdAiLoading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="32dp">
+
+                        <ProgressBar
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:indeterminateTint="?attr/colorPrimary"
+                            android:layout_marginBottom="12dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="O Gemini está analisando suas atividades..."
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- PGD Report Content -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPgdReportResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#0F000000"
+                    app:cardBackgroundColor="?attr/colorSurface">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Relatório Consolidado PGD"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorPrimary"
+                            android:layout_marginBottom="12dp"/>
+
+                        <TextView
+                            android:id="@+id/tvPgdDashboardReportText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:lineSpacingMultiplier="1.2"/>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <!-- Metrics Cards Grid (2x2 structure) -->
+            <LinearLayout
+                android:id="@+id/llMetricsDashboardContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <!-- Row 1: Total & Closed -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:layout_marginBottom="8dp">
+
+                    <!-- Metric 1: Total (Primary Tint) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#0F000000"
+                        app:cardBackgroundColor="?attr/colorSurface">
 
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
+                            <RelativeLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="TOTAL DE CHAMADOS"
-                                android:textSize="11sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/md_theme_onSurfaceVariant" />
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_toStartOf="@+id/ivIconTotal"
+                                    android:layout_centerVertical="true"
+                                    android:text="TOTAL"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/md_theme_onSurfaceVariant" />
+
+                                <ImageView
+                                    android:id="@+id/ivIconTotal"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:src="@drawable/ic_assignment_24dp"
+                                    app:tint="?attr/colorPrimary"
+                                    android:background="@drawable/circle_background_surface"
+                                    android:padding="6dp"/>
+                            </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvMetricTotal"
@@ -186,155 +400,540 @@
                                 android:text="0"
                                 android:textSize="26sp"
                                 android:textStyle="bold"
-                                android:textColor="?attr/colorOnSurface"
-                                android:layout_marginTop="4dp" />
-                        </LinearLayout>
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_assignment_24dp"
-                            app:tint="?attr/colorPrimary"
-                            android:background="@drawable/circle_background_surface"
-                            android:padding="8dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Metric 2: Execution Time -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#10000000">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                                android:textColor="?attr/colorOnSurface" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="TEMPO MÉDIO DE EXECUÇÃO"
+                                android:text="Chamados no período"
                                 android:textSize="11sp"
+                                android:textColor="@color/md_theme_onSurfaceVariant"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Metric 2: Resolution (Success Green Tint) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#0F000000"
+                        app:cardBackgroundColor="?attr/colorSurface">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_toStartOf="@+id/ivIconClosed"
+                                    android:layout_centerVertical="true"
+                                    android:text="RESOLUÇÃO"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/md_theme_onSurfaceVariant" />
+
+                                <ImageView
+                                    android:id="@+id/ivIconClosed"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:src="@drawable/checkcircle24"
+                                    app:tint="#4CAF50"
+                                    android:background="@drawable/circle_background_surface"
+                                    android:padding="6dp"/>
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/tvMetricCompletionRate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0%"
+                                android:textSize="26sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/md_theme_onSurfaceVariant" />
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <TextView
+                                android:id="@+id/tvMetricClosedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 resolvidos"
+                                android:textSize="11sp"
+                                android:textColor="@color/md_theme_onSurfaceVariant"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Row 2: Pending & Average Time -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <!-- Metric 3: Pending / Open (Amber/Warning Tint) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="4dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#0F000000"
+                        app:cardBackgroundColor="?attr/colorSurface">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_toStartOf="@+id/ivIconPending"
+                                    android:layout_centerVertical="true"
+                                    android:text="PENDENTES"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/md_theme_onSurfaceVariant" />
+
+                                <ImageView
+                                    android:id="@+id/ivIconPending"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:src="@drawable/circle24"
+                                    app:tint="#FF9800"
+                                    android:background="@drawable/circle_background_surface"
+                                    android:padding="6dp"/>
+                            </RelativeLayout>
+
+                            <TextView
+                                android:id="@+id/tvMetricPending"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textSize="26sp"
+                                android:textStyle="bold"
+                                android:textColor="?attr/colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Abertos / Em andamento"
+                                android:textSize="11sp"
+                                android:textColor="@color/md_theme_onSurfaceVariant"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Metric 4: Average Time (Purple/Indigo Tint) -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="4dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#0F000000"
+                        app:cardBackgroundColor="?attr/colorSurface">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_toStartOf="@+id/ivIconTime"
+                                    android:layout_centerVertical="true"
+                                    android:text="TEMPO MÉDIO"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/md_theme_onSurfaceVariant" />
+
+                                <ImageView
+                                    android:id="@+id/ivIconTime"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:src="@drawable/ic_refresh_24dp"
+                                    app:tint="#9C27B0"
+                                    android:background="@drawable/circle_background_surface"
+                                    android:padding="6dp"/>
+                            </RelativeLayout>
 
                             <TextView
                                 android:id="@+id/tvMetricAvgTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="--"
-                                android:textSize="20sp"
+                                android:textSize="18sp"
                                 android:textStyle="bold"
                                 android:textColor="?attr/colorOnSurface"
-                                android:layout_marginTop="4dp" />
+                                android:layout_marginTop="6dp"
+                                android:layout_marginBottom="2dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tempo médio de solução"
+                                android:textSize="11sp"
+                                android:textColor="@color/md_theme_onSurfaceVariant" />
                         </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_refresh_24dp"
-                            app:tint="@color/md_theme_primary"
-                            android:background="@drawable/circle_background_surface"
-                            android:padding="8dp"/>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+            <!-- Distribution Charts Section (Interactive visual distribution) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDistributions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0F000000"
+                app:cardBackgroundColor="?attr/colorSurface">
 
-                <!-- Metric 3: Resolution Rate -->
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="?attr/colorSurface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="#10000000">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Distribuição Analítica"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:textColor="?attr/colorOnSurface"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Chart 1: Distribution by Status -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="STATUS DO CHAMADO"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Segmented progress bar for status -->
+                    <LinearLayout
+                        android:id="@+id/layoutStatusSegmentBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:weightSum="100">
+
+                        <View
+                            android:id="@+id/statusSegmentNew"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bg_segment_left"
+                            android:backgroundTint="#2196F3" />
+
+                        <View
+                            android:id="@+id/statusSegmentPending"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bg_segment_middle"
+                            android:backgroundTint="#FF9800" />
+
+                        <View
+                            android:id="@+id/statusSegmentClosed"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bg_segment_right"
+                            android:backgroundTint="#4CAF50" />
+                    </LinearLayout>
+
+                    <!-- Status Legend -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
+                        android:gravity="center_horizontal"
+                        android:layout_marginBottom="16dp">
 
+                        <!-- New dot -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginEnd="12dp">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/circle_background_surface"
+                                android:backgroundTint="#2196F3" />
                             <TextView
+                                android:id="@+id/tvLegendNew"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="CONCLUÍDOS / TAXA DE RESOLUÇÃO"
+                                android:text="Novo (0)"
                                 android:textSize="11sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/md_theme_onSurfaceVariant" />
-
-                            <TextView
-                                android:id="@+id/tvMetricCompletionRate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0% (0 fechados)"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
                                 android:textColor="?attr/colorOnSurface"
-                                android:layout_marginTop="4dp" />
+                                android:layout_marginStart="4dp" />
                         </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/checkcircle24"
-                            app:tint="#4CAF50"
-                            android:background="@drawable/circle_background_surface"
-                            android:padding="8dp"/>
+                        <!-- Pending dot -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginEnd="12dp">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/circle_background_surface"
+                                android:backgroundTint="#FF9800" />
+                            <TextView
+                                android:id="@+id/tvLegendPending"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Pendente (0)"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
+
+                        <!-- Closed dot -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/circle_background_surface"
+                                android:backgroundTint="#4CAF50" />
+                            <TextView
+                                android:id="@+id/tvLegendClosed"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Resolvido (0)"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#14000000"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Chart 2: Distribution by Type -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TIPO DE CHAMADO"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="8dp" />
+
+                    <!-- Segmented progress bar for type -->
+                    <LinearLayout
+                        android:id="@+id/layoutTypeSegmentBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:weightSum="100">
+
+                        <View
+                            android:id="@+id/typeSegmentIncident"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bg_segment_left"
+                            android:backgroundTint="#9C27B0" />
+
+                        <View
+                            android:id="@+id/typeSegmentRequest"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0"
+                            android:background="@drawable/bg_segment_right"
+                            android:backgroundTint="#009688" />
+                    </LinearLayout>
+
+                    <!-- Type Legend -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal">
+
+                        <!-- Incident dot -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginEnd="20dp">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/circle_background_surface"
+                                android:backgroundTint="#9C27B0" />
+                            <TextView
+                                android:id="@+id/tvLegendIncident"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Incidente (0)"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
+
+                        <!-- Request dot -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <View
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
+                                android:background="@drawable/circle_background_surface"
+                                android:backgroundTint="#009688" />
+                            <TextView
+                                android:id="@+id/tvLegendRequest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Requisição (0)"
+                                android:textSize="11sp"
+                                android:textColor="?attr/colorOnSurface"
+                                android:layout_marginStart="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Detailed List Section Container -->
+            <LinearLayout
+                android:id="@+id/llDetailedSectionContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Detailed List Section Header -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Detalhamento Diário"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Daily Statistics List -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReportsDaily"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_report_date" />
             </LinearLayout>
 
-            <!-- Detailed List Section Header -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Detalhamento por Data"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Daily Statistics List -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvReportsDaily"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_report_date" />
-
             <!-- Empty State View -->
-            <TextView
-                android:id="@+id/tvReportsEmpty"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardReportsEmpty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nenhum chamado encontrado para este período."
-                android:gravity="center"
-                android:padding="32dp"
-                android:textSize="14sp"
-                android:textColor="@color/md_theme_onSurfaceVariant"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="#0D000000"
+                app:cardBackgroundColor="?attr/colorSurfaceVariant">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="32dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_assignment_24dp"
+                        app:tint="@color/md_theme_onSurfaceVariant"
+                        android:alpha="0.5"
+                        android:layout_marginBottom="12dp"/>
+
+                    <TextView
+                        android:id="@+id/tvReportsEmpty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nenhum chamado encontrado para este período."
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:textColor="@color/md_theme_onSurfaceVariant" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabExportPdf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/picture_as_pdf_24"
+        app:tint="?attr/colorOnPrimary"
+        app:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="Exportar PDF" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
