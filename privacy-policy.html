@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvenTI - Política de Privacidade</title>
+    <!-- Import Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0F0D13;
+            --card-bg: #1D1B20;
+            --primary: #6750A4;
+            --primary-light: #EADDFF;
+            --text-color: #E6E1E6;
+            --text-muted: #CBC4CF;
+            --border-color: #36343A;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #D3BCFD, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .last-update {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #D3BCFD;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            color: var(--text-muted);
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+
+        .highlight {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        footer a {
+            color: #D3BCFD;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: var(--primary-light);
+            text-decoration: underline;
+        }
+
+        /* Responsive changes */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+            }
+            .card {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo">InvenTI</div>
+        <h1>Política de Privacidade</h1>
+        <div class="last-update">Última atualização: Agosto de 2026</div>
+    </header>
+
+    <div class="card">
+        <h2>1. Introdução</h2>
+        <p>Esta Política de Privacidade descreve como o aplicativo <span class="highlight">InvenTI</span> trata os seus dados e informações pessoais. Nosso compromisso é garantir a máxima transparência e segurança para todos os usuários.</p>
+
+        <h2>2. Coleta e Armazenamento de Dados</h2>
+        <p>O InvenTI foi desenvolvido sob a premissa de privacidade local e descentralizada:</p>
+        <ul>
+            <li><span class="highlight">Armazenamento Local:</span> Suas credenciais de acesso ao GLPI (URL do servidor, usuário, senha e tokens de sessão) são armazenadas <span class="highlight">exclusivamente no banco de dados interno (SQLite) do seu próprio dispositivo móvel</span>.</li>
+            <li><span class="highlight">Cofre de Senhas:</span> As chaves e segredos utilizados na integração com o gerenciador de segredos **Infisical** são guardados usando a criptografia nativa do Android (EncryptedSharedPreferences), garantindo que apenas o aplicativo no seu dispositivo tenha acesso.</li>
+            <li><span class="highlight">Sem Servidores Intermediários:</span> Nós não coletamos, não processamos e não armazenamos nenhuma credencial ou dado de inventário em servidores de terceiros ou próprios. Todas as requisições de API são feitas diretamente entre o seu dispositivo e o servidor GLPI e/ou Infisical configurados por você.</li>
+        </ul>
+
+        <h2>3. Permissões Requeridas pelo Aplicativo</h2>
+        <p>O aplicativo solicita acesso a recursos específicos do dispositivo apenas para viabilizar as seguintes funcionalidades:</p>
+        <ul>
+            <li><span class="highlight">Câmera:</span> Utilizada exclusivamente para a leitura de códigos de barras ou QR Codes no processo de busca, consulta e vinculação de ativos de TI (computadores e monitores).</li>
+            <li><span class="highlight">Acesso à Internet:</span> Necessário para estabelecer a comunicação direta com a API do seu servidor GLPI configurado e com o serviço do cofre de senhas Infisical.</li>
+            <li><span class="highlight">Armazenamento (Opcional):</span> Utilizado para salvar os relatórios de chamados e arquivos PDF de etiquetas gerados pelo próprio usuário no dispositivo.</li>
+        </ul>
+
+        <h2>4. Compartilhamento de Informações</h2>
+        <p>Como o aplicativo opera de forma direta e local, <span class="highlight">não há compartilhamento de informações</span> com empresas de publicidade, análise de dados ou quaisquer terceiros. A comunicação é realizada estritamente com os servidores de destino que você mesmo parametrizou nas configurações.</p>
+
+        <h2>5. Segurança dos Dados</h2>
+        <p>Adotamos as melhores práticas de desenvolvimento Android para proteger as informações guardadas localmente, incluindo o uso de criptografia do sistema operacional para armazenamento sensível. É de responsabilidade do usuário manter o dispositivo seguro contra acessos físicos ou lógicos não autorizados.</p>
+
+        <h2>6. Alterações nesta Política</h2>
+        <p>Esta Política de Privacidade pode ser atualizada ocasionalmente para refletir melhorias no app ou mudanças legais. A data da última atualização estará sempre visível no topo da página.</p>
+
+        <h2>7. Contato e Suporte</h2>
+        <p>Se você tiver alguma dúvida ou sugestão sobre esta Política de Privacidade, entre em contato com a equipe de suporte ou administração de TI da sua instituição vinculada.</p>
+    </div>
+
+    <footer>
+        <p>© 2026 InvenTI. Hospedado no <a href="https://pages.github.com/" target="_blank" rel="noopener noreferrer">GitHub Pages</a>.</p>
+    </footer>
+</div>
+
+</body>
+</html>
