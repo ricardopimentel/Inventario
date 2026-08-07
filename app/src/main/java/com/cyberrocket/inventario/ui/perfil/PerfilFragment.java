@@ -49,13 +49,7 @@ public class PerfilFragment extends Fragment {
 
         TextView tvAppVersion = root.findViewById(R.id.text_app_version);
         if (tvAppVersion != null) {
-            try {
-                android.content.pm.PackageInfo pInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
-                tvAppVersion.setText("Inventário v" + pInfo.versionName);
-            } catch (Exception e) {
-                tvAppVersion.setText("Inventário");
-                e.printStackTrace();
-            }
+            tvAppVersion.setText("InvenTI v" + com.cyberrocket.inventario.BuildConfig.VERSION_NAME);
         }
 
         // Carrega prefixo atual (coluna 5 da tabela CONFIG)

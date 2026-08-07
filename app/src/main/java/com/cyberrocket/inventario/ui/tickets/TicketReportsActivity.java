@@ -866,8 +866,7 @@ public class TicketReportsActivity extends AppCompatActivity {
                 + "Para cada categoria encontrada nas atividades:\n"
                 + "1. Informe a quantidade de chamados encontrados sob aquela categoria (exemplo: '<b>Quantidade de Chamados:</b> X').\n"
                 + "2. Faça um resumo conciso e formal do que foi concluído pelo usuário naquela categoria (consolidando atividades similares se necessário).\n"
-                + "3. Estime o tempo total gasto na categoria com base na quantidade e complexidade das tarefas (por exemplo: '<b>Estimativa de Tempo:</b> X horas').\n"
-                + "4. Insira no final da categoria ou do relatório as referências aos chamados associados, com um chamado por linha (usando a tag HTML <br> para que fiquem um abaixo do outro de forma bem organizada). Cada referência deve ser no formato de link HTML com o número e o título do chamado (exemplo: '<b>Referências:</b><br><a href=\"[Link]\">Chamado #[ID] - [Título]</a><br><a href=\"[Link]\">Chamado #[ID2] - [Título2]</a>').\n\n"
+                + "3. Insira no final da categoria ou do relatório as referências aos chamados associados, com um chamado por linha (usando a tag HTML <br> para que fiquem um abaixo do outro de forma bem organizada). Cada referência deve ser no formato de link HTML com o número e o título do chamado (exemplo: '<b>Referências:</b><br><a href=\"[Link]\">Chamado #[ID] - [Título]</a><br><a href=\"[Link]\">Chamado #[ID2] - [Título2]</a>').\n\n"
                 + "Importante: Retorne a resposta formatada EXCLUSIVAMENTE em tags HTML básicas como <b>, <i>, <ul>, <li>, <br> e <a href=\"...\"> para que possa ser exibida diretamente em um TextView Android com links clicáveis. Não adicione tags de bloco markdown como ```html ou ```. Seja elegante e direto.\n\n"
                 + "Lista de Atividades PGD:\n"
                 + ticketsData.toString();
@@ -1108,7 +1107,7 @@ public class TicketReportsActivity extends AppCompatActivity {
                     if (currentPage == 0) {
                         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
                         paint.setTextSize(22f);
-                        canvas.drawText("Relatório PGD (IA Gemini)", margins, margins + 30, paint);
+                        canvas.drawText("Relatório PGD", margins, margins + 30, paint);
                         
                         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
                         paint.setTextSize(12f);
@@ -1123,7 +1122,7 @@ public class TicketReportsActivity extends AppCompatActivity {
                         currentStartY = margins + 40;
                         paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
                         paint.setTextSize(10f);
-                        canvas.drawText("Relatório PGD (IA Gemini) - Continuação - Página " + (currentPage + 1), margins, margins + 10, paint);
+                        canvas.drawText("Relatório PGD - Continuação - Página " + (currentPage + 1), margins, margins + 10, paint);
                         paint.setStrokeWidth(1f);
                         canvas.drawLine(margins, margins + 20, pageWidth - margins, margins + 20, paint);
                     }

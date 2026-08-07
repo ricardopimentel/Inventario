@@ -37,6 +37,14 @@ public class LoginActivity extends AppCompatActivity {
         mTvToken = findViewById(R.id.TvToken);
         mCrud = new Crud();
 
+        // Garante que a URL padrão do IFTO esteja preenchida se o campo no banco de dados estiver vazio
+        String currentUrl = mCrud.SelectItem(getApplicationContext(), "CONFIG", 1, 1);
+        if (currentUrl == null || currentUrl.trim().isEmpty()) {
+            ContentValues values = new ContentValues();
+            values.put("URL", "https://campusparaiso.ifto.edu.br/glpi");
+            mCrud.UpdateItem(getApplicationContext(), "CONFIG", 1, values);
+        }
+
         //Métodos Automaticos
         GetToken();
 

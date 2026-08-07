@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 34
+    compileSdk 36
     defaultConfig {
-        applicationId "com.cyberrocket.coard"
+        applicationId "com.cyberrocket.inventario"
         minSdk 24
-        targetSdk 34
-        versionCode 30
-        versionName "6.0"
+        targetSdk 36
+        versionCode 32
+        versionName "6.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -19,10 +19,16 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
     }
     namespace 'com.cyberrocket.inventario'
 }

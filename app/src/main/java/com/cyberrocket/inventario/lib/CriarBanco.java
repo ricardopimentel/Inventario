@@ -23,7 +23,7 @@ public class CriarBanco extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_CONFIG);
         // Insere a linha inicial se não existir
-        db.execSQL("INSERT OR IGNORE INTO " + TABLE_NAME + " (_ID, URL, SESSION_TOKEN, PREFIXO) VALUES (1, '', '', '')");
+        db.execSQL("INSERT OR IGNORE INTO " + TABLE_NAME + " (_ID, URL, SESSION_TOKEN, PREFIXO) VALUES (1, 'https://campusparaiso.ifto.edu.br/glpi', '', '')");
     }
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 3) {
