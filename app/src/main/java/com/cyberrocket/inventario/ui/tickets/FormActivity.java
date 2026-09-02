@@ -1,18 +1,26 @@
 package com.cyberrocket.inventario.ui.tickets;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -23,6 +31,29 @@ public class FormActivity extends AppCompatActivity {
 
     private WebView webView;
     private ProgressBar progressBar;
+    private ValueCallback<Uri[]> uploadMessage;
+
+    private final ActivityResultLauncher<Intent> fileChooserLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (uploadMessage == null) return;
+                Uri[] results = null;
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Intent data = result.getData();
+                    if (data.getData() != null) {
+                        results = new Uri[]{data.getData()};
+                    } else if (data.getClipData() != null) {
+                        int count = data.getClipData().getItemCount();
+                        results = new Uri[count];
+                        for (int i = 0; i < count; i++) {
+                            results[i] = data.getClipData().getItemAt(i).getUri();
+                        }
+                    }
+                }
+                uploadMessage.onReceiveValue(results);
+                uploadMessage = null;
+            }
+    );
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -154,6 +185,41 @@ public class FormActivity extends AppCompatActivity {
                     progressBar.setProgress(newProgress);
                 }
             }
+
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                if (uploadMessage != null) {
+                    uploadMessage.onReceiveValue(null);
+                    uploadMessage = null;
+                }
+                uploadMessage = filePathCallback;
+
+                Intent intent = null;
+                try {
+                    intent = fileChooserParams.createIntent();
+                } catch (Exception e) {
+                    android.util.Log.e("FormActivity", "Erro ao criar intent do fileChooser", e);
+                }
+
+                if (intent == null) {
+                    intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                }
+
+                if (fileChooserParams.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE) {
+                    intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                }
+
+                try {
+                    fileChooserLauncher.launch(Intent.createChooser(intent, "Selecionar Arquivo"));
+                } catch (ActivityNotFoundException e) {
+                    uploadMessage = null;
+                    Toast.makeText(FormActivity.this, "Nenhum gerenciador de arquivos encontrado", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                return true;
+            }
         });
 
         if (url != null) {
@@ -162,9 +228,21 @@ public class FormActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_form, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
+            return true;
+        } else if (item.getItemId() == R.id.action_open_browser) {
+            if (webView != null && webView.getUrl() != null) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webView.getUrl()));
+                startActivity(browserIntent);
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
