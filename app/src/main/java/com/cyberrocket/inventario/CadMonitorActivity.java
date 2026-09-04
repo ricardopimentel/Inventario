@@ -48,6 +48,8 @@ public class CadMonitorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cad_monitor);
 
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerCadMonitor), findViewById(R.id.statusBarBackground));
+
         computersId = getIntent().getStringExtra("computers_id");
 
         Toolbar toolbar = findViewById(R.id.toolbarCadMonitor);

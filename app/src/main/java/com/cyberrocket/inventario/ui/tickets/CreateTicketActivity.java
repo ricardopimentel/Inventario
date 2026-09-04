@@ -54,9 +54,15 @@ public class CreateTicketActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_ticket);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Novo Chamado");
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerCreateTicket), findViewById(R.id.statusBarBackground));
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarCreateTicket);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle("Novo Chamado");
+            }
         }
 
         etTicketTitle = findViewById(R.id.etTicketTitle);

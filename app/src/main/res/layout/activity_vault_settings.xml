@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/containerVault"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Configurações do Infisical Vault"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+    <View
+        android:id="@+id/statusBarBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/md_theme_primary" />
 
-    <Button
-        android:id="@+id/BtnScanVaultQR"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Configurar via QR Code"
-        android:layout_marginBottom="24dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:icon="@android:drawable/ic_menu_camera"/>
+        android:background="@color/md_theme_surfaceContainer"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarVault"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/md_theme_surfaceContainer"
+            app:titleTextColor="?attr/colorOnSurface"
+            app:title="Cofre Infisical"
+            app:navigationIcon="?attr/homeAsUpIndicator" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <Button
+                android:id="@+id/BtnScanVaultQR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Configurar via QR Code"
+                android:layout_marginBottom="24dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                app:icon="@android:drawable/ic_menu_camera"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -81,5 +107,17 @@
         android:layout_height="wrap_content"
         android:text="Salvar Credenciais"
         android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/BtnLimparVault"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Limpar Credenciais Salvas"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:textColor="?attr/colorError"/>
+
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

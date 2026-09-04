@@ -23,6 +23,8 @@ public class PingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ping);
 
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerPing), findViewById(R.id.statusBarBackground));
+
         MaterialToolbar toolbar = findViewById(R.id.toolbarPing);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {

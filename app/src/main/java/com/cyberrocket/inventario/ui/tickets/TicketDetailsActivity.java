@@ -65,9 +65,15 @@ public class TicketDetailsActivity extends AppCompatActivity implements ChatAdap
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_details);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Detalhes do Chamado");
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerTicketDetails), findViewById(R.id.statusBarBackground));
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarTicketDetails);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle("Detalhes do Chamado");
+            }
         }
 
         etMessageInput = findViewById(R.id.etMessageInput);

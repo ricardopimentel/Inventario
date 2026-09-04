@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.cyberrocket.coard",
+  "applicationId": "com.cyberrocket.inventario",
   "variantName": "release",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 31,
-      "versionName": "6.1",
+      "versionCode": 33,
+      "versionName": "6.1.7",
       "outputFile": "app-release.apk"
     }
   ],

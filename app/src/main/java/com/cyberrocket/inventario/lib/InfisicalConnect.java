@@ -43,24 +43,14 @@ public class InfisicalConnect {
 
     private void loadCredentials() {
         try {
-            MasterKey masterKey = new MasterKey.Builder(context)
-                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                    .build();
-
-            SharedPreferences prefs = EncryptedSharedPreferences.create(
-                    context,
-                    VaultSettingsActivity.PREF_FILE_NAME,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
+            SharedPreferences prefs = VaultSettingsActivity.getEncryptedSharedPreferences(context);
 
             this.clientId = prefs.getString(VaultSettingsActivity.KEY_CLIENT_ID, "");
             this.clientSecret = prefs.getString(VaultSettingsActivity.KEY_CLIENT_SECRET, "");
             this.workspaceId = prefs.getString(VaultSettingsActivity.KEY_WORKSPACE_ID, "");
             this.environment = prefs.getString(VaultSettingsActivity.KEY_ENVIRONMENT, "prod");
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("InfisicalConnect", "Erro ao carregar credenciais do cofre", e);
         }
     }
 

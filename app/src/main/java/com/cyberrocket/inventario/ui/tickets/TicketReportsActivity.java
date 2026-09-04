@@ -127,9 +127,15 @@ public class TicketReportsActivity extends AppCompatActivity {
             }
         );
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Relatórios de Chamados");
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerTicketReports), findViewById(R.id.statusBarBackground));
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarTicketReports);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle("Relatório de Chamados");
+            }
         }
 
         // Initialize UI Elements

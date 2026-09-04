@@ -1,7 +1,10 @@
 package com.cyberrocket.inventario;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -16,13 +19,10 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Intent;
-import android.util.Log;
-
 public class VaultSettingsActivity extends AppCompatActivity {
 
     private TextInputEditText edtClientId, edtClientSecret, edtWorkspaceId, edtEnvironment;
-    private Button btnSalvar, btnScanQR;
+    private Button btnSalvar, btnScanQR, btnLimpar;
 
     public static final String PREF_FILE_NAME = "secret_vault_prefs";
     public static final String KEY_CLIENT_ID = "infisical_client_id";
@@ -34,10 +34,16 @@ public class VaultSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vault_settings);
+
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerVault), findViewById(R.id.statusBarBackground));
         
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Cofre Infisical");
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbarVault);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setTitle("Cofre Infisical");
+            }
         }
 
         edtClientId = findViewById(R.id.EdtClientId);
@@ -46,10 +52,12 @@ public class VaultSettingsActivity extends AppCompatActivity {
         edtEnvironment = findViewById(R.id.EdtEnvironment);
         btnSalvar = findViewById(R.id.BtnSalvarVault);
         btnScanQR = findViewById(R.id.BtnScanVaultQR);
+        btnLimpar = findViewById(R.id.BtnLimparVault);
 
         loadPreferences();
 
         btnSalvar.setOnClickListener(v -> savePreferences());
+        btnLimpar.setOnClickListener(v -> clearPreferences());
         
         btnScanQR.setOnClickListener(v -> {
             IntentIntegrator integrator = new IntentIntegrator(this);
@@ -87,7 +95,6 @@ public class VaultSettingsActivity extends AppCompatActivity {
                         edtEnvironment.setText(environment);
                         
                         Toast.makeText(this, "Configurações importadas! Clique em Salvar.", Toast.LENGTH_SHORT).show();
-                        // Opcional: chamar savePreferences() automaticamente aqui
                     }
                 } catch (JSONException e) {
                     Log.e("VaultQR", "Erro ao processar QR: " + e.getMessage());
@@ -97,30 +104,52 @@ public class VaultSettingsActivity extends AppCompatActivity {
         }
     }
 
-    private SharedPreferences getEncryptedSharedPreferences() throws Exception {
-        MasterKey masterKey = new MasterKey.Builder(this)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build();
+    public static SharedPreferences getEncryptedSharedPreferences(Context context) {
+        try {
+            MasterKey masterKey = new MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build();
 
-        return EncryptedSharedPreferences.create(
-                this,
-                PREF_FILE_NAME,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        );
+            return EncryptedSharedPreferences.create(
+                    context,
+                    PREF_FILE_NAME,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            );
+        } catch (Exception e) {
+            Log.e("VaultSettings", "EncryptedSharedPreferences falhou (chave incompativel/restaurada). Resetando arquivo de prefs...", e);
+            try {
+                context.deleteSharedPreferences(PREF_FILE_NAME);
+
+                MasterKey masterKey = new MasterKey.Builder(context)
+                        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                        .build();
+
+                return EncryptedSharedPreferences.create(
+                        context,
+                        PREF_FILE_NAME,
+                        masterKey,
+                        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                );
+            } catch (Exception e2) {
+                Log.e("VaultSettings", "Fallback para SharedPreferences padrao", e2);
+                return context.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE);
+            }
+        }
     }
 
     private void loadPreferences() {
         try {
-            SharedPreferences sharedPreferences = getEncryptedSharedPreferences();
+            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(this);
             edtClientId.setText(sharedPreferences.getString(KEY_CLIENT_ID, ""));
             edtClientSecret.setText(sharedPreferences.getString(KEY_CLIENT_SECRET, ""));
             edtWorkspaceId.setText(sharedPreferences.getString(KEY_WORKSPACE_ID, ""));
             edtEnvironment.setText(sharedPreferences.getString(KEY_ENVIRONMENT, "prod"));
         } catch (Exception e) {
             Toast.makeText(this, "Erro ao carregar credenciais seguras.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            Log.e("VaultSettings", "Erro ao carregar credenciais", e);
         }
     }
 
@@ -136,7 +165,7 @@ public class VaultSettingsActivity extends AppCompatActivity {
         }
 
         try {
-            SharedPreferences sharedPreferences = getEncryptedSharedPreferences();
+            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(KEY_CLIENT_ID, clientId);
             editor.putString(KEY_CLIENT_SECRET, clientSecret);
@@ -148,7 +177,23 @@ public class VaultSettingsActivity extends AppCompatActivity {
             finish();
         } catch (Exception e) {
             Toast.makeText(this, "Erro ao salvar credenciais.", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+            Log.e("VaultSettings", "Erro ao salvar credenciais", e);
+        }
+    }
+
+    private void clearPreferences() {
+        try {
+            SharedPreferences sharedPreferences = getEncryptedSharedPreferences(this);
+            sharedPreferences.edit().clear().apply();
+            deleteSharedPreferences(PREF_FILE_NAME);
+            edtClientId.setText("");
+            edtClientSecret.setText("");
+            edtWorkspaceId.setText("");
+            edtEnvironment.setText("prod");
+            Toast.makeText(this, "Credenciais do cofre limpas!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Erro ao limpar credenciais.", Toast.LENGTH_SHORT).show();
+            Log.e("VaultSettings", "Erro ao limpar credenciais", e);
         }
     }
 

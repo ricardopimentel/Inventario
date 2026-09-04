@@ -17,6 +17,8 @@ public class KnowbaseDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_knowbase_details);
 
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerKB), findViewById(R.id.statusBarBackground));
+
         Toolbar toolbar = findViewById(R.id.toolbarKB);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {

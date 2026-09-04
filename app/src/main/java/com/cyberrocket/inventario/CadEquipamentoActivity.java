@@ -63,6 +63,8 @@ public class CadEquipamentoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cad_equipamento);
 
+        com.cyberrocket.inventario.lib.StatusBarHelper.setupStatusBar(this, findViewById(R.id.containerCadEquipamento), findViewById(R.id.statusBarBackground));
+
         Toolbar toolbar = findViewById(R.id.toolbarCadComputador);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
